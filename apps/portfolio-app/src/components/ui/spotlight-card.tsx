@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, ReactNode } from 'react';
 
+type GlowStyle = React.CSSProperties & Record<`--${string}`, string | number>;
+
 interface GlowCardProps {
   children: ReactNode;
   className?: string;
@@ -64,8 +66,8 @@ const GlowCard: React.FC<GlowCardProps> = ({
     return sizeMap[size];
   };
 
-  const getInlineStyles = (): React.CSSProperties => {
-    const baseStyles: React.CSSProperties = {
+  const getInlineStyles = (): GlowStyle => {
+    const baseStyles: GlowStyle = {
       '--base': base,
       '--spread': spread,
       '--radius': '14',
@@ -94,10 +96,10 @@ const GlowCard: React.FC<GlowCardProps> = ({
 
     // Add width and height if provided
     if (customSize && width !== undefined) {
-      (baseStyles as any).width = typeof width === 'number' ? `${width}px` : width;
+      baseStyles.width = typeof width === 'number' ? `${width}px` : width;
     }
     if (customSize && height !== undefined) {
-      (baseStyles as any).height = typeof height === 'number' ? `${height}px` : height;
+      baseStyles.height = typeof height === 'number' ? `${height}px` : height;
     }
 
     return baseStyles;

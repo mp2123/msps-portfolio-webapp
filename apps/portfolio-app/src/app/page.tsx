@@ -1,14 +1,18 @@
-// apps/portfolio-app/src/app/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import Image from "next/image";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Download,
+  FileText,
+  GraduationCap,
+  MapPin,
+  ShieldCheck,
+} from "lucide-react";
+
 import { Header } from "@/components/ui/header-1";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { Database, LineChart, Code2, Cpu, Sparkles, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ExperienceTimeline } from "@/components/ui/experience-timeline";
-import { SkillsMatrix } from "@/components/ui/skills-matrix";
-import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import { ROICalculator } from "@/components/ui/roi-calculator";
 import { LiveDataChart } from "@/components/ui/live-data-chart";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
@@ -16,288 +20,534 @@ import { FloatingAiAssistant } from "@/components/ui/glowing-ai-chat-assistant";
 import { HospitalityStory } from "@/components/ui/hospitality-story";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { TerminalWindow } from "@/components/ui/terminal-window";
-import { CodeSnippet } from "@/components/ui/code-snippet";
-import { InteractiveGlobe } from "@/components/ui/globe";
-
-const experienceData = [
-  {
-    title: "Business Analyst Intern (Global Sales Enablement)",
-    company: "Avnet",
-    date: "May 2024 - Jan 2026",
-    location: "Phoenix, Arizona",
-    description: [
-      "Co-led expansion of internal 'Command Center' analytics hub.",
-      "Cleaned/transformed large datasets in Power Query (M); developed DAX measures/KPIs.",
-      "Built supervised ML/predictive analytics in Python and integrated outputs into Power BI.",
-      "Automated recurring reporting workflows using VBA, saving 20+ hours/week."
-    ]
-  },
-  {
-    title: "Supervisor / Bartender",
-    company: "Hilton Hotels & Resorts",
-    date: "Sep 2022 - May 2025",
-    location: "Phoenix, Arizona",
-    description: [
-      "Led high-volume shift execution and coached team members.",
-      "Resolved complex guest issues in real time under extreme pressure.",
-      "Managed cash handling and closeout procedures with absolute precision."
-    ]
-  },
-  {
-    title: "Bar Manager",
-    company: "Paramount Barco",
-    date: "Nov 2021 - Aug 2022",
-    location: "Iowa City, Iowa",
-    description: [
-      "Assisted GM in hiring, training, and standardizing operations.",
-      "Performed bookkeeping tasks, inventory analysis, and daily business operational functions."
-    ]
-  }
-];
-
-const bentoItems: BentoItem[] = [
-
-    {
-
-        title: "Avnet BI Infrastructure",
-
-        meta: "Power BI",
-
-        description:
-
-            "Co-led expansion of 'Command Center' analytics hub, building scalable DAX models.",
-
-        icon: <Database className="w-4 h-4 text-blue-500" />,
-
-        status: "Live",
-
-        tags: ["DAX", "Power Query", "BI"],
-
-        colSpan: 2,
-
-        hasPersistentHover: true,
-
-    },
-
-    {
-
-        title: "Adidas IT Prediction",
-
-        meta: "$280K Savings",
-
-        description: "Gradient Boosting model to predict IT ticket reassignment.",
-
-        icon: <LineChart className="w-4 h-4 text-emerald-500" />,
-
-        status: "Completed",
-
-        tags: ["Python", "ML"],
-
-    },
-
-    {
-
-        title: "Agentic AI Orchestration",
-
-        meta: "CLI Tool",
-
-        description: "Framework for multi-agent AI workflows with durable context.",
-
-        icon: <Cpu className="w-4 h-4 text-cyan-500" />,
-
-        tags: ["AI", "CLI"],
-
-        colSpan: 1,
-
-    },
-
-    {
-
-        title: "Spotify ML Model",
-
-        meta: "R² > 0.85",
-
-        description: "Regression model to predict song popularity from audio features.",
-
-        icon: <TrendingUp className="w-4 h-4 text-green-500" />,
-
-        tags: ["Regression", "Python"],
-
-        colSpan: 2,
-
-    },
-
-];
-
-
-
-export default function PortfolioHome() {
-
-  useEffect(() => {
-
-    // renderCanvas(); // Deprecated by the new hero
-
-  }, []);
-
-
-
-  return (
-
-    <div className="flex w-full flex-col relative bg-background overflow-x-hidden min-h-screen">
-
-      <Header />
-
-
-
-      <ScrollExpandMedia
-
-        mediaType="video"
-
-        mediaSrc="https://videos.pexels.com/video-files/3214439/3214439-hd.mp4" // Abstract data network video
-
-        bgImageSrc="https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg" // Dark, abstract background
-
-        title="From Operations to Analytics"
-
-        date="Michael Panico"
-
-        scrollToExpand="Scroll to Explore"
-
-        textBlend
-
-      >
-
-        <TerminalWindow>
-
-          <main className="grow relative z-10 bg-transparent">
-
-            {/* THE SALES HOOK: ROI CALCULATOR */}
-
-            <section className="w-full relative z-20" id="roi-calculator">
-
-              <ROICalculator />
-
-            </section>
-
-
-
-            {/* THE COMMAND CENTER (PROJECTS) */}
-
-            <section className="mx-auto w-full max-w-6xl px-4 py-20" id="projects">
-
-                <div className="mb-16 text-center space-y-4">
-
-                  <h2 className="text-4xl font-bold">The Command Center</h2>
-
-                  <p className="text-muted-foreground text-lg">Scalable reporting, predictive modeling, and workflow automation.</p>
-
-                </div>
-
-                
-
-                <div className="mb-12">
-
-                  <LiveDataChart />
-
-                </div>
-
-
-
-                <BentoGrid items={bentoItems} />
-
-            </section>
-
-
-
-            {/* SKILLS MATRIX */}
-
-            <section className="w-full bg-background/50 py-20 relative overflow-hidden" id="skills">
-
-              {/* Subtle Background Elements */}
-
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
-
-              
-
-              <div className="relative z-10">
-
-                <div className="mb-12 text-center space-y-4">
-
-                  <h2 className="text-4xl font-bold tracking-tight">Technical Arsenal</h2>
-
-                  <p className="text-muted-foreground text-lg">Tools and languages driving my analytics workflows.</p>
-
-                </div>
-
-                <SkillsMatrix />
-
-              </div>
-
-            </section>
-
-
-
-            {/* THE HOSPITALITY ADVANTAGE */}
-
-            <section className="w-full bg-black/30 border-y border-border" id="advantage">
-
-              <HospitalityStory />
-
-            </section>
-
-
-
-            {/* EXPERIENCE TIMELINE */}
-
-            <section className="w-full bg-black/50 py-20" id="experience">
-
-              <div className="max-w-5xl mx-auto px-4">
-
-                <div className="mb-16 text-center space-y-4">
-
-                  <h2 className="text-4xl font-bold">Experience</h2>
-
-                  <p className="text-muted-foreground text-lg">My professional journey so far.</p>
-
-                </div>
-
-                <ExperienceTimeline experiences={experienceData} />
-
-              </div>
-
-            </section>
-
-
-
-            {/* RECOMMENDATIONS */}
-
-            <section className="w-full py-20" id="recommendations">
-
-              <div className="mb-12 text-center space-y-4">
-
-                <h2 className="text-4xl font-bold tracking-tight">What Leaders Say</h2>
-
-                <p className="text-muted-foreground text-lg">Feedback from managers who have overseen my impact.</p>
-
-              </div>
-
-              <RecommendationsCarousel />
-
-            </section>
-
-          </main>
-
-        </TerminalWindow>
-
-      </ScrollExpandMedia>
-
-
-
-      <FloatingAiAssistant />
-
-    </div>
-
-  );
-
+import { SkillsMatrix } from "@/components/ui/skills-matrix";
+import { RecommendationsCarousel } from "@/components/ui/recommendations";
+import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
+import { ExperienceGlobe } from "@/components/ui/experience-globe";
+import { SpiralSignal } from "@/components/ui/spiral-signal";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
+import {
+  artifacts,
+  careerNodes,
+  contactProfile,
+  getArtifactById,
+  heroContent,
+  proofMetrics,
+  projects,
+  recommendations,
+  skillsGroups,
+} from "@/content/portfolio";
+
+const projectCards: BentoItem[] = projects.map((project) => {
+  const Icon = project.icon;
+
+  return {
+    title: project.title,
+    meta: project.meta,
+    description: project.oneLiner,
+    icon: <Icon className="h-5 w-5 text-cyan-200" />,
+    status: project.status,
+    tags: project.tags,
+    problem: project.problem,
+    method: project.method,
+    result: project.result,
+    proofLabel: project.impactLabel,
+    proofValue: project.impact,
+    actions: project.artifactIds.map((artifactId) => {
+      const artifact = getArtifactById(artifactId);
+
+      return {
+        label: artifact?.ctaLabel ?? "Artifact slot",
+        href: artifact?.href ?? `#${artifactId}`,
+        note: artifact?.note,
+      };
+    }),
+    colSpan: project.colSpan,
+  };
+});
+
+function handleTrackedNavigation(
+  eventType: Parameters<typeof trackPortfolioEvent>[0]["eventType"],
+  label: string,
+  href?: string,
+  section?: string,
+  metadata?: Record<string, unknown>
+) {
+  return () =>
+    trackPortfolioEvent({
+      eventType,
+      label,
+      href,
+      section,
+      metadata,
+    });
 }
 
+function ProofStrip() {
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4 py-12" id="home">
+      <div className="mb-10 max-w-3xl space-y-4">
+        <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
+          Recruiter-first briefing
+        </Badge>
+        <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
+          Proof over polish, with enough polish to hold attention.
+        </h2>
+        <p className="text-base leading-relaxed text-zinc-300 md:text-lg">
+          This portfolio is designed to answer the recruiter questions that matter fastest:
+          what Michael builds, what business leverage he creates, and why his operator-first
+          background makes the analytics work stronger.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {proofMetrics.map((metric) => {
+          const Icon = metric.icon;
+
+          return (
+            <div
+              key={metric.label}
+              className="rounded-3xl border border-white/10 bg-black/25 p-5 shadow-[0_0_30px_rgba(34,211,238,0.04)] backdrop-blur-xl"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">
+                  {metric.label}
+                </span>
+              </div>
+              <p className="mt-5 text-2xl font-semibold text-white">{metric.value}</p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-400">{metric.context}</p>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function QuickRecruiterSummary() {
+  const primaryRoleTargets = contactProfile.roleTargets.slice(0, 3);
+  const strongestProofs = [
+    `${proofMetrics[0]?.value} removed from recurring reporting work`,
+    `${proofMetrics[1]?.value} in modeled savings tied to predictive analytics`,
+    `${proofMetrics[2]?.value} revenue signal surfaced through commercial analysis`,
+    "B.S. in Business Analytics expected June 2026",
+  ];
+
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4 py-10">
+      <div className="rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/8 via-black/40 to-slate-950/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl md:p-8">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-5">
+            <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
+              Quick recruiter summary
+            </Badge>
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                BI builder with operator instincts and measurable automation leverage.
+              </h2>
+              <p className="max-w-3xl text-base leading-relaxed text-zinc-300 md:text-lg">
+                Michael is strongest in business intelligence, analytics, and automation work that turns
+                vague stakeholder asks into reporting systems, cleaner KPI logic, and decision-ready outputs.
+              </p>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              {strongestProofs.map((proof) => (
+                <div
+                  key={proof}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200"
+                >
+                  <div className="flex items-start gap-3">
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+                    <span>{proof}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button asChild className="bg-cyan-400 text-slate-950 hover:bg-cyan-300">
+                <a href="#projects">View projects</a>
+              </Button>
+              <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
+                <a
+                  href="#contact"
+                  onClick={handleTrackedNavigation("contact_click", "quick-summary-contact", "#contact", "quick-summary")}
+                >
+                  Contact Michael
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
+                <a
+                  href="/resume/michael-panico-resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={handleTrackedNavigation("resume_download", "quick-summary-resume", "/resume/michael-panico-resume.pdf", "quick-summary")}
+                >
+                  Download one-page resume
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
+                <a
+                  href="/cv"
+                  onClick={handleTrackedNavigation("print_cv_open", "quick-summary-cv", "/cv", "quick-summary")}
+                >
+                  Open web CV
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <SpiralSignal
+              title="Operator pressure turned into analytics judgment."
+              subtitle="The portfolio is built around the same pattern that shows up across Michael's work: absorb ambiguity fast, translate it into a cleaner system, then hand back something stakeholders can actually use."
+              labels={["hospitality", "analytics", "automation", "storytelling"]}
+            />
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                  <BriefcaseBusiness className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Best-fit roles</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{primaryRoleTargets.join(" · ")}</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Current status</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    B.S. Business Analytics, expected June 2026
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                  <MapPin className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Location</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{contactProfile.location}</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Portfolio posture</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    Portfolio first, PDF resume second
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ArtifactGallery() {
+  return (
+    <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="artifacts">
+      <div className="mb-12 max-w-3xl space-y-4">
+        <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
+        <h2 className="text-4xl font-bold tracking-tight text-white">Sanitized proof slots ready for media.</h2>
+        <p className="text-lg text-zinc-400">
+          The structure is in place for walkthrough videos, dashboard screenshots, methodology briefs,
+          and downloadable templates. Public-safe assets can drop into these slots without redesign.
+        </p>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        {artifacts.map((artifact) => (
+          <div
+            key={artifact.id}
+            id={artifact.id}
+            className="scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/20 shadow-[0_0_40px_rgba(15,23,42,0.35)] spotlight-border"
+          >
+            <div className="relative h-56 w-full">
+              <Image
+                src={artifact.thumbnail}
+                alt={artifact.title}
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_34%)]" />
+              <div className="absolute left-4 top-4">
+                <Badge className="border-white/10 bg-black/40 text-zinc-100">{artifact.badge}</Badge>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent shadow-[0_0_18px_rgba(34,211,238,0.3)]" />
+            </div>
+
+            <div className="scanlines relative space-y-4 p-6">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/60">{artifact.type}</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">{artifact.title}</h3>
+              </div>
+              <p className="text-sm leading-relaxed text-zinc-300">{artifact.summary}</p>
+              <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-3 text-sm text-zinc-400">
+                {artifact.note}
+              </div>
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
+                <span>{artifact.ctaLabel}</span>
+                <span className="text-[10px] uppercase tracking-[0.24em] text-cyan-100/65">slot armed</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  return (
+    <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="contact">
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="scanlines relative rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/10 via-black/35 to-black/50 p-8 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent shadow-[0_0_18px_rgba(34,211,238,0.3)]" />
+          <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">Contact funnel</Badge>
+          <h2 className="mt-5 text-4xl font-bold tracking-tight text-white">{contactProfile.headline}</h2>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-zinc-300">
+            {contactProfile.availability}
+          </p>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-zinc-400">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+              <MapPin className="h-4 w-4 text-cyan-200" />
+              {contactProfile.location}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+              <ShieldCheck className="h-4 w-4 text-cyan-200" />
+              Sanitized proof friendly
+            </span>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild className="bg-cyan-400 text-slate-950 hover:bg-cyan-300">
+              <a
+                href={contactProfile.links.find((link) => link.label === "Resume PDF")?.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={handleTrackedNavigation("resume_download", "contact-hero-resume", "/resume/michael-panico-resume.pdf", "contact")}
+              >
+                Download one-page resume
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
+              <a
+                href={contactProfile.links.find((link) => link.label === "Direct Email")?.href}
+                onClick={handleTrackedNavigation("contact_click", "contact-hero-email", "mailto:michael_s_panico@outlook.com", "contact")}
+              >
+                Email Michael
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-2">
+            {contactProfile.roleTargets.map((role) => (
+              <Badge key={role} variant="secondary" className="border-white/10 bg-white/5 text-zinc-100">
+                {role}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          {contactProfile.links.map((link) => {
+            const Icon = link.icon;
+            const isExternal = Boolean(link.href?.startsWith("http"));
+            const cardContent = (
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-cyan-100">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">{link.label}</p>
+                    <p className="text-sm text-zinc-400">{link.helperText}</p>
+                  </div>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-cyan-100">
+                  <ArrowUpRight className="h-4 w-4" />
+                </div>
+              </div>
+            );
+
+            if (!link.href) {
+              return (
+                <div
+                  key={link.label}
+                  className="rounded-[1.5rem] border border-dashed border-white/15 bg-black/20 p-5 backdrop-blur-xl"
+                >
+                  {cardContent}
+                </div>
+              );
+            }
+
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer" : undefined}
+                download={link.href.endsWith(".pdf") ? true : undefined}
+                onClick={handleTrackedNavigation(
+                  link.label === "Resume PDF" ? "resume_download" : "contact_click",
+                  `contact-card-${link.label.toLowerCase().replace(/\s+/g, "-")}`,
+                  link.href,
+                  "contact"
+                )}
+                className="group relative overflow-hidden rounded-[1.5rem] border border-dashed border-white/15 bg-black/20 p-5 backdrop-blur-xl transition-colors hover:border-cyan-400/30 hover:bg-white/5"
+              >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_30%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                {cardContent}
+              </a>
+            );
+          })}
+
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                <Download className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-semibold text-white">Asset drop-in notes</p>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-400">{contactProfile.note}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function PortfolioHome() {
+  return (
+    <div id="home" className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background">
+      <Header />
+
+      <ScrollExpandMedia
+        mediaType={heroContent.mediaType}
+        mediaSrc={heroContent.mediaSrc}
+        posterSrc={heroContent.posterSrc}
+        bgImageSrc={heroContent.bgImageSrc}
+        eyebrow={heroContent.eyebrow}
+        title={heroContent.title}
+        subtitle={heroContent.subtitle}
+        date={heroContent.dateLabel}
+        scrollToExpand={heroContent.scrollLabel}
+        textBlend
+      >
+        <TerminalWindow>
+          <main className="relative z-10 grow bg-transparent">
+            <ProofStrip />
+            <QuickRecruiterSummary />
+
+            <section className="w-full relative z-20" id="roi-calculator">
+              <ROICalculator />
+            </section>
+
+            <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="projects">
+              <div className="mb-16 max-w-3xl space-y-4">
+                <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
+                  Command Center
+                </Badge>
+                <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
+                  Case studies that connect business problems to operating leverage.
+                </h2>
+                <p className="text-lg leading-relaxed text-zinc-400">
+                  Each project is framed around the business question, the analytical method,
+                  and the proof a recruiter actually needs to see.
+                </p>
+              </div>
+
+              <div className="mb-12">
+                <LiveDataChart />
+              </div>
+
+              <BentoGrid items={projectCards} />
+            </section>
+
+            <section className="section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20" id="skills">
+              <div className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+              <div className="relative z-10">
+                <div className="mb-12 text-center space-y-4">
+                  <Badge className="border-white/10 bg-white/5 text-zinc-100">Technical arsenal</Badge>
+                  <h2 className="text-4xl font-bold tracking-tight text-white">Capabilities that bridge operators and analysts.</h2>
+                  <p className="mx-auto max-w-3xl text-lg text-zinc-400">
+                    The stack spans BI, modeling, workflow automation, and the communication discipline
+                    needed to move work across teams.
+                  </p>
+                </div>
+                <SkillsMatrix groups={skillsGroups} />
+              </div>
+            </section>
+
+            <ArtifactGallery />
+
+            <section className="section-glow relative w-full border-y border-border bg-black/30" id="advantage">
+              <HospitalityStory />
+            </section>
+
+            <section className="section-glow grid-noise relative w-full bg-black/50 py-20" id="experience">
+              <div className="mx-auto max-w-6xl px-4">
+                <div className="mb-16 max-w-3xl space-y-4">
+                  <Badge className="border-white/10 bg-white/5 text-zinc-100">Experience graph</Badge>
+                  <h2 className="text-4xl font-bold tracking-tight text-white">A career arc built around pressure, translation, and systems thinking.</h2>
+                  <p className="text-lg text-zinc-400">
+                    The shift from hospitality leadership to analytics and automation is not a pivot away from execution.
+                    It is the reason the technical work stays practical.
+                  </p>
+                </div>
+                <div className="mb-10">
+                  <ExperienceGlobe />
+                </div>
+                <RadialOrbitalTimeline timelineData={careerNodes} />
+              </div>
+            </section>
+
+            <section className="w-full py-20" id="recommendations">
+              <div className="mb-12 text-center space-y-4">
+                <Badge className="border-white/10 bg-white/5 text-zinc-100">Social proof</Badge>
+                <h2 className="text-4xl font-bold tracking-tight text-white">What leaders noticed first.</h2>
+                <p className="mx-auto max-w-3xl text-lg text-zinc-400">
+                  The throughline is consistent: strong judgment under pressure, fast ramp-up, and work that leaves the system better than before.
+                </p>
+              </div>
+              <RecommendationsCarousel recommendations={recommendations} />
+            </section>
+
+            <ContactSection />
+          </main>
+        </TerminalWindow>
+      </ScrollExpandMedia>
+
+      <FloatingAiAssistant />
+    </div>
+  );
+}

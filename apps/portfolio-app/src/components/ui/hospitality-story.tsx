@@ -2,44 +2,45 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Wine, Database, ArrowRight, Activity, Users, Layers, Cpu, SplitSquareHorizontal } from 'lucide-react';
+import { Wine, Database, Activity, Users, Layers, Cpu, SplitSquareHorizontal } from 'lucide-react';
 import { InteractiveGlobe } from './globe';
 
 export const HospitalityStory = () => {
   return (
-    <div className="w-full max-w-6xl mx-auto py-16 px-4">
-      
+    <div className="mx-auto w-full max-w-6xl px-4 py-16">
       <div className="mb-16 text-center space-y-4">
-        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-2">
+        <div className="mb-2 inline-flex items-center justify-center rounded-full border border-cyan-300/15 bg-primary/10 p-3 shadow-[0_0_20px_rgba(34,211,238,0.08)]">
           <SplitSquareHorizontal className="w-6 h-6 text-primary" />
         </div>
         <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
           The Non-Traditional Advantage
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          The same grit required to manage a packed bar on a Friday night is exactly what powers my approach to scalable data architecture.
+          The same judgment required to protect margins, lead teams, and keep service moving under pressure now shows up in my analytics and automation work.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-        
-        {/* Animated connecting line for Desktop */}
-        <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 items-center justify-center w-48 h-48">
+      <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-cyan-300/18 to-transparent md:block" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/10 blur-3xl md:block" />
+
+        <div className="absolute top-1/2 left-1/2 z-10 hidden h-48 w-48 -translate-x-1/2 -translate-y-1/2 items-center justify-center md:flex">
           <InteractiveGlobe />
         </div>
 
-        {/* LEFT SIDE: Hospitality */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-card/50 backdrop-blur-sm border border-border p-8 rounded-3xl relative overflow-hidden group"
+          className="group relative overflow-hidden rounded-3xl border border-amber-300/15 bg-gradient-to-br from-amber-500/10 via-black/70 to-slate-950/90 p-8 backdrop-blur-sm"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-[50px] pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_26px] opacity-[0.08]" />
+          <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-500/10 blur-[50px] opacity-50 transition-opacity group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-amber-200/60 to-transparent" />
           
           <div className="flex items-center gap-4 mb-8 relative z-10">
-            <div className="p-4 bg-amber-500/20 rounded-2xl">
+            <div className="rounded-2xl bg-amber-500/20 p-4 shadow-[0_0_24px_rgba(245,158,11,0.12)]">
               <Wine className="w-8 h-8 text-amber-500" />
             </div>
             <div>
@@ -50,34 +51,40 @@ export const HospitalityStory = () => {
 
           <ul className="space-y-6 relative z-10">
             <li className="flex items-start gap-4">
-              <div className="mt-1 bg-amber-500/10 p-2 rounded-lg"><Users className="w-4 h-4 text-amber-500" /></div>
+              <div className="mt-1 rounded-lg bg-amber-500/10 p-2"><Users className="w-4 h-4 text-amber-500" /></div>
               <div>
                 <h4 className="font-bold text-foreground">People & Crisis Management</h4>
-                <p className="text-sm text-muted-foreground mt-1">Resolving complex guest issues in real-time and managing cross-functional teams under extreme pressure.</p>
+                <p className="text-sm text-muted-foreground mt-1">Led high-volume operations and coached 15+ employees while resolving guest and operational issues in real time.</p>
               </div>
             </li>
             <li className="flex items-start gap-4">
-              <div className="mt-1 bg-amber-500/10 p-2 rounded-lg"><Activity className="w-4 h-4 text-amber-500" /></div>
+              <div className="mt-1 rounded-lg bg-amber-500/10 p-2"><Activity className="w-4 h-4 text-amber-500" /></div>
               <div>
-                <h4 className="font-bold text-foreground">Rapid Throughput</h4>
-                <p className="text-sm text-muted-foreground mt-1">Executing hundreds of transactions per hour with absolute precision and zero margin for error.</p>
+                <h4 className="font-bold text-foreground">Profit and Process Ownership</h4>
+                <p className="text-sm text-muted-foreground mt-1">Drove 35% YoY net profit growth and roughly 18% bar profit improvement through inventory, labor, and service-process discipline.</p>
               </div>
             </li>
           </ul>
+
+          <div className="relative z-10 mt-8 rounded-2xl border border-amber-300/10 bg-black/25 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-[0.24em] text-amber-200/65">Transferable edge</p>
+            <p className="mt-2 text-sm text-zinc-200">Margin awareness, prioritization under pressure, and the ability to keep teams aligned while things are moving fast.</p>
+          </div>
         </motion.div>
 
-        {/* RIGHT SIDE: Analytics */}
         <motion.div 
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-primary/5 backdrop-blur-sm border border-primary/30 p-8 rounded-3xl relative overflow-hidden group shadow-[0_0_30px_rgba(var(--primary),0.05)]"
+          className="group relative overflow-hidden rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-black/70 to-slate-950/90 p-8 shadow-[0_0_30px_rgba(34,211,238,0.05)] backdrop-blur-sm"
         >
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/20 rounded-full blur-[60px] pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_26px] opacity-[0.08]" />
+          <div className="pointer-events-none absolute bottom-0 left-0 h-40 w-40 rounded-full bg-primary/20 blur-[60px] opacity-50 transition-opacity group-hover:opacity-100"></div>
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
           
           <div className="flex items-center gap-4 mb-8 relative z-10">
-            <div className="p-4 bg-primary/20 rounded-2xl">
+            <div className="rounded-2xl bg-primary/20 p-4 shadow-[0_0_24px_rgba(34,211,238,0.12)]">
               <Database className="w-8 h-8 text-primary" />
             </div>
             <div>
@@ -88,22 +95,26 @@ export const HospitalityStory = () => {
 
           <ul className="space-y-6 relative z-10">
             <li className="flex items-start gap-4">
-              <div className="mt-1 bg-primary/10 p-2 rounded-lg"><Layers className="w-4 h-4 text-primary" /></div>
+              <div className="mt-1 rounded-lg bg-primary/10 p-2"><Layers className="w-4 h-4 text-primary" /></div>
               <div>
                 <h4 className="font-bold text-foreground">Stakeholder Translation</h4>
-                <p className="text-sm text-muted-foreground mt-1">Translating messy, ambiguous human needs into structured, scalable Power BI data models.</p>
+                <p className="text-sm text-muted-foreground mt-1">Translated messy stakeholder asks into structured Power BI models, KPI layers, and reporting outputs people could actually use.</p>
               </div>
             </li>
             <li className="flex items-start gap-4">
-              <div className="mt-1 bg-primary/10 p-2 rounded-lg"><Cpu className="w-4 h-4 text-primary" /></div>
+              <div className="mt-1 rounded-lg bg-primary/10 p-2"><Cpu className="w-4 h-4 text-primary" /></div>
               <div>
                 <h4 className="font-bold text-foreground">Automated Throughput</h4>
-                <p className="text-sm text-muted-foreground mt-1">Processing 5M+ rows of data and automating 20+ hours of manual workflows via Python & DAX.</p>
+                <p className="text-sm text-muted-foreground mt-1">Automated recurring reporting, added QA checks, and connected predictive Python work to business-facing Power BI outputs.</p>
               </div>
             </li>
           </ul>
-        </motion.div>
 
+          <div className="relative z-10 mt-8 rounded-2xl border border-primary/20 bg-black/25 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/65">Current leverage</p>
+            <p className="mt-2 text-sm text-zinc-200">BI systems, analytics, and automation that turn operational ambiguity into cleaner reporting cadence and better decisions.</p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

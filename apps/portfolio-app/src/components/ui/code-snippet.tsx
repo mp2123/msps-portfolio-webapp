@@ -16,7 +16,7 @@ export const CodeSnippet = ({ code }: { code: string }) => {
       <div className="p-4 text-sm font-mono text-emerald-300">
         <TypeAnimation
           sequence={[code, 5000]}
-          wrapper="pre"
+          wrapper="div"
           speed={70}
           repeat={Infinity}
           cursor={true}

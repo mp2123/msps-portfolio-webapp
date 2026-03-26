@@ -34,3 +34,17 @@ model Score {
   correct   Int
   timestamp DateTime @default(now())
 }
+
+model PortfolioEvent {
+  id        String   @id @default(cuid())
+  eventType String
+  label     String?
+  href      String?
+  section   String?
+  sessionId String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([sessionId, createdAt])
+}

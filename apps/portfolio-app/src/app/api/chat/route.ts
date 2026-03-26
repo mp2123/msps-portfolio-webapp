@@ -1,44 +1,77 @@
-import { createOpenAI } from '@ai-sdk/openai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { convertToModelMessages, streamText, type UIMessage } from 'ai';
+import { getPortfolioSystemPrompt } from '@/content/portfolio';
+import {
+  buildAssistantContextBlock,
+  getAssistantAnswerGuidance,
+  getAssistantUnavailableReply,
+} from '@/content/portfolio-assistant';
 
 export const maxDuration = 30;
 
-const SYSTEM_PROMPT = `
-You are Michael-Bot, the personalized AI assistant for Michael Panico's professional portfolio.
-Your goal is to help recruiters, hiring managers, and visitors learn more about Michael's experience, skills, and projects.
+type ChatRequestBody = {
+  messages?: UIMessage[];
+};
 
-Background Info:
-- Michael is a Business Analytics student at Oregon State University (BS expected 06/2026).
-- He bridges high-volume hospitality management (former Bar Manager/Supervisor) with scalable business operations and data analytics.
-- Key Skills: Power BI (DAX/Power Query), SQL, Python, Workflow Automation, Machine Learning (Regression, Classification).
-- Recent Experience: Business Analyst Intern at Avnet (May 2024 - Jan 2026), where he built automated BI systems and predictive models for a global sales command center.
-- Key Projects: Spotify Popularity Prediction, TJIX Net Sales Drivers, Ticket Reassignment Prediction (Adidas IT).
+const resolveModel = () => {
+  const openAiKey = process.env.OPENAI_API_KEY?.trim();
+  const googleKey =
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim() ||
+    process.env.GEMINI_API_KEY?.trim() ||
+    process.env.GOOGLE_API_KEY?.trim();
 
-Always be professional, confident, and highlight how Michael's unique background makes him highly adaptable and results-driven.
-`;
+  if (openAiKey) {
+    return createOpenAI({ apiKey: openAiKey })('gpt-4o-mini');
+  }
+
+  if (googleKey) {
+    return createGoogleGenerativeAI({ apiKey: googleKey })('gemini-1.5-flash');
+  }
+
+  return null;
+};
+
+const getMessageText = (message: UIMessage | undefined) => {
+  if (!message) return '';
+
+  return message.parts
+    .map((part) => (part.type === 'text' && typeof part.text === 'string' ? part.text : ''))
+    .join(' ')
+    .trim();
+};
+
+const buildAssistantSystemPrompt = (query: string) => {
+  const { contextBlock } = buildAssistantContextBlock(query);
+
+  return [
+    getPortfolioSystemPrompt(),
+    'Retrieved portfolio context:',
+    contextBlock,
+    '',
+    getAssistantAnswerGuidance(),
+  ].join('\n');
+};
 
 export async function POST(req: Request) {
-  const { messages, apiKey, provider } = await req.json();
+  const body = (await req.json()) as ChatRequestBody;
+  const messages = body.messages ?? [];
+  const latestUserMessage = [...messages].reverse().find((message) => message.role === 'user');
+  const latestQuery = getMessageText(latestUserMessage);
+  const model = resolveModel();
 
-  // Initialize the correct provider with the optionally provided API key
-  let model;
-  if (provider === 'google') {
-    const google = createGoogleGenerativeAI({
-      apiKey: apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+  if (!model) {
+    return new Response(getAssistantUnavailableReply(), {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
     });
-    model = google('gemini-1.5-flash');
-  } else {
-    const openai = createOpenAI({
-      apiKey: apiKey || process.env.OPENAI_API_KEY,
-    });
-    model = openai('gpt-4o-mini');
   }
 
   const result = await streamText({
     model,
-    system: SYSTEM_PROMPT,
-    messages,
+    system: buildAssistantSystemPrompt(latestQuery),
+    messages: await convertToModelMessages(messages),
   });
 
   return result.toTextStreamResponse();

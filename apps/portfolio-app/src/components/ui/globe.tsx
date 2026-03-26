@@ -3,9 +3,10 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial } from '@react-three/drei';
+import type { Mesh } from 'three';
 
 function GlobeVisual() {
-  const meshRef = useRef<any>();
+  const meshRef = useRef<Mesh>(null);
 
   useFrame(() => {
     if (meshRef.current) {

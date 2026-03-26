@@ -4,7 +4,6 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
 import { useScroll } from '@/components/ui/use-scroll';
-import { createPortal } from 'react-dom';
 import { SearchCommand } from '@/components/ui/search-command';
 
 export function Header() {
@@ -13,8 +12,11 @@ export function Header() {
 
 	const links = [
 		{ label: 'Projects', href: '#projects' },
+		{ label: 'Skills', href: '#skills' },
+		{ label: 'Artifacts', href: '#artifacts' },
+		{ label: 'Advantage', href: '#advantage' },
 		{ label: 'Experience', href: '#experience' },
-		{ label: 'Connect', href: '#contact' },
+		{ label: 'Contact', href: '#contact' },
 	];
 
 	React.useEffect(() => {
@@ -26,7 +28,7 @@ export function Header() {
 	return (
 		<header className={cn('sticky top-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-sm', scrolled && 'border-border bg-background/95')}>
 			<nav className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4">
-				<a href="#home" className="hover:bg-accent rounded-md p-2 transition-colors">
+				<a href="#home" className="hover:bg-accent rounded-md p-2 transition-colors" aria-label="Jump to top of portfolio">
 					<WordmarkIcon className="h-4" />
 				</a>
 				<div className="flex-1 flex justify-center md:justify-start md:pl-4">
@@ -39,7 +41,9 @@ export function Header() {
 						</a>
 					))}
 					<div className="w-px h-6 bg-border mx-2"/>
-					<a href="#contact"><Button>Contact Me</Button></a>
+					<Button asChild>
+						<a href="#projects">Explore Work</a>
+					</Button>
 				</div>
 				<div className="md:hidden">
                     <Button size="icon" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-menu" aria-label="Toggle menu">
@@ -57,7 +61,9 @@ export function Header() {
 						))}
 					</div>
                     <div className='p-4 border-t space-y-2'>
-					    <a href="#contact" onClick={() => setOpen(false)}><Button className="w-full">Contact Me</Button></a>
+					    <Button asChild className="w-full">
+							<a href="#projects" onClick={() => setOpen(false)}>Explore Work</a>
+						</Button>
                     </div>
 				</div>
 			)}

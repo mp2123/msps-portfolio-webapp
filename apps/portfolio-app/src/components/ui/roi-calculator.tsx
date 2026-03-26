@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, Clock, DollarSign } from 'lucide-react';
 
@@ -10,18 +10,10 @@ export const ROICalculator = () => {
   
   // Michael's Avnet Metric: Automated a 4-5 hr process down to 30 mins (approx 85% reduction)
   const automationEfficiency = 0.85; 
-  
-  const [savedHoursYearly, setSavedHoursYearly] = useState(0);
-  const [savedCostYearly, setSavedCostYearly] = useState(0);
-
-  useEffect(() => {
-    // 52 weeks in a year
-    const totalCurrentHoursYearly = hoursPerWeek * 52;
-    const automatedHoursSaved = totalCurrentHoursYearly * automationEfficiency;
-    
-    setSavedHoursYearly(Math.round(automatedHoursSaved));
-    setSavedCostYearly(Math.round(automatedHoursSaved * hourlyRate));
-  }, [hoursPerWeek, hourlyRate]);
+  const totalCurrentHoursYearly = hoursPerWeek * 52;
+  const automatedHoursSaved = totalCurrentHoursYearly * automationEfficiency;
+  const savedHoursYearly = Math.round(automatedHoursSaved);
+  const savedCostYearly = Math.round(automatedHoursSaved * hourlyRate);
 
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-4">
@@ -80,7 +72,7 @@ export const ROICalculator = () => {
           {/* Output Section */}
           <div className="flex flex-col justify-center gap-6 relative z-10">
             <motion.div 
-              key={savedHoursYearly}
+              key={`hours-${savedHoursYearly}`}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="bg-background/80 border border-border p-6 rounded-2xl flex items-center justify-between"
@@ -95,7 +87,7 @@ export const ROICalculator = () => {
             </motion.div>
 
             <motion.div 
-              key={savedCostYearly}
+              key={`cost-${savedCostYearly}`}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}

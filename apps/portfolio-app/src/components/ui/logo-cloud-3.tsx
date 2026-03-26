@@ -23,6 +23,8 @@ export function LogoCloud({ className, logos, ...props }: LogoCloudProps) {
     >
       <InfiniteSlider gap={42} reverse duration={25} durationOnHover={15}>
         {logos.map((logo) => (
+          // Decorative logo marks may come from arbitrary third-party hosts, so this stays as img instead of next/image.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             alt={logo.alt}
             className="pointer-events-none h-4 select-none md:h-5 dark:brightness-0 dark:invert"

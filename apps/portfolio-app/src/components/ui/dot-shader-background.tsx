@@ -1,6 +1,7 @@
 'use client'
+/* eslint-disable react-hooks/immutability */
 
-import { useMemo, useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Canvas, ThreeEvent, useFrame, useThree } from '@react-three/fiber'
 import { shaderMaterial, useTrailTexture } from '@react-three/drei'
 import { useTheme } from 'next-themes'
@@ -141,16 +142,13 @@ function Scene() {
     }
   })
 
-  const dotMaterial = useMemo(() => {
-    // @ts-ignore
-    return new DotMaterial()
-  }, [])
+  const dotMaterial = useMemo(() => new DotMaterial(), [])
 
   useEffect(() => {
     dotMaterial.uniforms.dotColor.value.setHex(themeColors.dotColor.replace('#', '0x'))
     dotMaterial.uniforms.bgColor.value.setHex(themeColors.bgColor.replace('#', '0x'))
     dotMaterial.uniforms.dotOpacity.value = themeColors.dotOpacity
-  }, [theme, dotMaterial, themeColors])
+  }, [theme, themeColors, dotMaterial])
 
   useFrame((state) => {
     dotMaterial.uniforms.time.value = state.clock.elapsedTime
@@ -178,13 +176,6 @@ function Scene() {
 }
 
 export const DotScreenShader = () => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return <div className="w-full h-full bg-[#121212]" />;
-
   return (
     <Canvas
       gl={{
@@ -197,3 +188,4 @@ export const DotScreenShader = () => {
     </Canvas>
   )
 }
+/* eslint-enable react-hooks/immutability */

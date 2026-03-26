@@ -1,0 +1,152 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+
+import { Badge } from '@/components/ui/badge';
+
+type SpiralSignalProps = {
+  title: string;
+  subtitle: string;
+  labels: string[];
+};
+
+export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const state = { progress: 0, pulse: 0 };
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    const setSize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+
+      width = parent.clientWidth;
+      height = parent.clientHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      const centerX = width * 0.52;
+      const centerY = height * 0.52;
+      const maxRadius = Math.min(width, height) * 0.34;
+
+      const glow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxRadius * 1.9);
+      glow.addColorStop(0, 'rgba(34, 211, 238, 0.16)');
+      glow.addColorStop(0.35, 'rgba(59, 130, 246, 0.10)');
+      glow.addColorStop(1, 'rgba(2, 6, 23, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+
+      const turns = 5.8;
+      const steps = 170;
+
+      for (let i = 0; i < steps; i += 1) {
+        const t = i / (steps - 1);
+        const eased = Math.min((t + state.progress) % 1, 1);
+        const angle = turns * Math.PI * 2 * eased;
+        const radius = eased * maxRadius;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius * 0.78;
+        const size = 1.1 + eased * 2.1 + state.pulse * 0.4;
+        const alpha = 0.15 + eased * 0.7;
+
+        ctx.fillStyle = i % 7 === 0 ? `rgba(103, 232, 249, ${alpha})` : `rgba(255, 255, 255, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = 'rgba(103, 232, 249, 0.18)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+
+      for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        const eased = Math.min((t + state.progress * 0.7) % 1, 1);
+        const angle = turns * Math.PI * 2 * eased;
+        const radius = eased * maxRadius;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius * 0.78;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+
+      ctx.stroke();
+    };
+
+    setSize();
+    draw();
+
+    const motion = gsap
+      .timeline({ repeat: -1, defaults: { ease: 'none' } })
+      .to(state, { progress: 1, duration: 9, onUpdate: draw }, 0)
+      .to(state, { pulse: 1, duration: 2.2, yoyo: true, repeat: -1, ease: 'sine.inOut', onUpdate: draw }, 0);
+
+    const resizeObserver = new ResizeObserver(() => {
+      setSize();
+      draw();
+    });
+
+    resizeObserver.observe(canvas.parentElement ?? canvas);
+
+    return () => {
+      resizeObserver.disconnect();
+      motion.kill();
+    };
+  }, []);
+
+  return (
+    <div className="relative overflow-hidden rounded-[1.8rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-500/10 via-slate-950/90 to-black/95 p-5 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_28px] opacity-[0.12]" />
+      <div className="grid gap-5 md:grid-cols-[0.95fr_1.05fr]">
+        <div className="relative h-56 overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/30 md:h-full">
+          <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent" />
+          <div className="absolute left-4 top-4">
+            <Badge className="border-cyan-300/20 bg-cyan-300/10 text-cyan-100">Signal path</Badge>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex flex-col justify-center gap-4">
+          <div className="space-y-3">
+            <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/65">Trajectory snapshot</p>
+            <h3 className="text-2xl font-semibold tracking-tight text-white">{title}</h3>
+            <p className="text-sm leading-relaxed text-zinc-300">{subtitle}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {labels.map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-200"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
