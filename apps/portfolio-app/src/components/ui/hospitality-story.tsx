@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Wine, Database, ArrowRight, Activity, Users, Layers, Cpu, SplitSquareHorizontal } from 'lucide-react';
+import { InteractiveGlobe } from './globe';
 
 export const HospitalityStory = () => {
   return (
@@ -23,8 +24,8 @@ export const HospitalityStory = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
         
         {/* Animated connecting line for Desktop */}
-        <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 bg-background border-2 border-primary rounded-full shadow-[0_0_20px_rgba(var(--primary),0.3)]">
-          <ArrowRight className="text-primary w-6 h-6" />
+        <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 items-center justify-center w-48 h-48">
+          <InteractiveGlobe />
         </div>
 
         {/* LEFT SIDE: Hospitality */}
