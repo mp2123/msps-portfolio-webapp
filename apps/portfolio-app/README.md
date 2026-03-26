@@ -1,61 +1,40 @@
-# 🏥 Life Insurance AZ 2026 Study Engine
+# 📊 Michael Panico: Professional CV & Analytics Portfolio
 
-A high-performance, AI-powered web application designed to help students master the Arizona 2026 Life Insurance licensing exam.
-
----
-
-## ✨ Features & Technical Highlights
-
-### 🚀 High-Performance Visuals
-- **120Hz Card Scanner:** Optimized `CardScanner` component using Framer Motion's `useAnimationFrame` and `useMotionValue` for sub-pixel smooth motion, perfectly synced with high-refresh-rate displays.
-- **Gaia Theme:** A professional, calm aesthetic designed for focused study, using a soft palette and modern typography.
-- **Interactive Scroller:** Rapid content review via a hardware-accelerated scroller interface.
-
-### 📚 Data-Driven Mastery
-- **307 Verified Questions:** A comprehensive database of state-specific exam questions, seeded and ready for practice.
-- **Interactive Practice Exams:** Simulate real testing environments with real-time feedback and progress tracking.
-
-### 🤖 AI Study Assistant (BYOK)
-- **Vercel AI SDK v6:** Integrated context-aware tutoring for deep dives into insurance concepts.
-- **Privacy First:** Bring Your Own Key (BYOK) model stores API keys locally in the browser, ensuring cost-free hosting and maximum privacy.
+This application is an interactive, "sales-worthy" professional portfolio designed to showcase Michael Panico's unique background in both high-volume hospitality management and high-impact data analytics.
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Core Features
 
-- **Framework:** Next.js 15+ (App Router, Server Actions)
-- **Styling:** Tailwind CSS 4, Framer Motion, Radix UI (Shadcn/UI)
-- **Database:** Supabase (PostgreSQL), Prisma ORM
-- **AI Integration:** Vercel AI SDK v6 (Streaming)
+- **Interactive ROI Calculator:** An engaging tool that allows recruiters to estimate the time and cost savings Michael can bring to their team, based on his real-world automation metrics from Avnet.
+- **Live Data Dashboard:** A mock "Command Center" built with `recharts` that visualizes the financial impact of his key projects, turning abstract metrics into tangible, interactive data points.
+- **The "Hospitality to Quant" Story Map:** A dedicated visual narrative that bridges the gap between his operational experience in hospitality and his technical skills in data science, highlighting the unique advantages this dual background provides.
+- **AI Recruiter Assistant (Michael-Bot):** An enhanced AI chatbot trained on his resume and projects, featuring guided prompt suggestions to help visitors quickly find his most impressive accomplishments.
+- **Dark Analytics Theme:** A custom, high-contrast dark theme with neon cyan accents, designed to evoke a modern, data-centric aesthetic.
+- **Framer Motion Animations:** Fluid, 120Hz-ready animations on all interactive elements, from the Experience Timeline to the Project Showcase cards.
 
----
+## 🤔 Why a Web App, Not a Website?
+
+A standard, static website is like a digital brochure—it presents information. This project, however, is an **interactive experience** designed to *demonstrate* skill, not just list it. We chose a Web App architecture for several key reasons:
+
+1.  **Interactivity:** Features like the ROI Calculator, the live Recharts dashboard, and the AI chatbot require a stateful, client-side application structure that a static HTML/CSS site cannot support.
+2.  **Dynamic Content:** While the content is currently hard-coded, the architecture is built to easily pull data from a CMS or a database (like our Supabase instances) in the future.
+3.  **Performance & Animations:** Using Next.js and Framer Motion allows for complex, hardware-accelerated animations and page transitions that create a premium, "buttery-smooth" user experience.
+4.  **Scalability:** As a full-fledged application within our monorepo, it can share components, types, and logic with the other apps, making future feature development (like a blog or more complex case studies) much more efficient.
+
+In short, this isn't just a resume—it's a product, and the product is Michael's expertise.
 
 ## 🚀 Getting Started
 
-### 1. Install Dependencies
-```bash
-npm install
-```
-
-### 2. Environment Setup
-Create a `.env` file with your `DATABASE_URL` (Port 5432 for Prisma), `DIRECT_URL`, and AI provider keys.
-
-### 3. Database Sync & Seeding
-```bash
-# Sync schema
-npx prisma db push
-
-# Generate Prisma client
-npx prisma generate
-
-# Seed 307 questions (via scripts)
-node prisma/scripts/seed-questions.js
-```
-
-### 4. Run Development Server
-```bash
-npm run dev
-```
-
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+2.  **Environment Setup:**
+    Create a `.env` file and populate it with your Supabase and AI provider keys (see `.env.template`).
+3.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
 ---
 *Part of the Michael Panico Web-App Ecosystem*

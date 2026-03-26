@@ -39,8 +39,7 @@ export function Header() {
 						</a>
 					))}
 					<div className="w-px h-6 bg-border mx-2"/>
-					<Button variant="outline">Sign In</Button>
-					<a href="#guide"><Button>Get Started</Button></a>
+					<a href="#contact"><Button>Contact Me</Button></a>
 				</div>
 				<div className="md:hidden">
                     <Button size="icon" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-menu" aria-label="Toggle menu">
@@ -58,8 +57,7 @@ export function Header() {
 						))}
 					</div>
                     <div className='p-4 border-t space-y-2'>
-                        <Button variant="outline" className="w-full">Sign In</Button>
-					    <a href="#guide" onClick={() => setOpen(false)}><Button className="w-full">Get Started</Button></a>
+					    <a href="#contact" onClick={() => setOpen(false)}><Button className="w-full">Contact Me</Button></a>
                     </div>
 				</div>
 			)}

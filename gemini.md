@@ -20,8 +20,9 @@
 4.  **AI BYOK:** Ensure the "Settings" button in the chatbot is used to save personal Gemini/OpenAI keys to `localStorage`.
 
 ## 🚀 Technical Status & Milestones
-- **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` featuring a custom "Dark Analytics" theme.
+- **[x] Portfolio App Polished:** Replaced placeholder logo with "MP" monogram, removed unnecessary "Sign In" buttons, and added a "Contact Me" CTA.
 - **[x] Portfolio Phase 2 (Salesworthy):** Integrated interactive ROI calculators, Recharts live-data visualizations, and enhanced the Michael-Bot AI with guided recruiter prompts.
+- **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` featuring a custom "Dark Analytics" theme.
 - **[x] Documentation Overhaul:** Comprehensive root, app-level, and directory-specific READMEs implemented.
 - **[x] Insurance Database Live:** 307 verified questions successfully seeded to Supabase.
 - **[x] Butter-Smooth Scroll:** Optimized `card-scanner.tsx` with `useAnimationFrame` for 120Hz smooth motion.
@@ -29,9 +30,8 @@
 - **[x] Vercel Deployments:** Both apps connected to GitHub and hosted on Vercel.
 
 ## 📍 Where We Left Off (Next Steps)
-1.  **Bartender Database Setup:**
+1.  **Portfolio Contact Form:** Build a dedicated "Contact Me" section with a functional form that could (eventually) send an email or log to a database.
+2.  **Bartender Database Setup:**
     - Run `npx prisma db push` using the new Bartender Supabase URL.
     - Run `node prisma/seed-bartender.js` to upload initial cocktail recipes.
-2.  **Video Integration:** Embed personal bartending tutorial videos into the `apps/mixology-app` landing page.
-3.  **Affiliate Shop:** Add curated bar tool links to the `Product` table in Supabase.
-4.  **Practice Exam Logic:** Build the interactive testing UI for the Insurance app using the live `Question` table.
+3.  **Practice Exam Logic:** Build the interactive testing UI for the Insurance app using the live `Question` table.
