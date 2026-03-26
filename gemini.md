@@ -20,7 +20,8 @@
 4.  **AI BYOK:** Ensure the "Settings" button in the chatbot is used to save personal Gemini/OpenAI keys to `localStorage`.
 
 ## 🚀 Technical Status & Milestones
-- **[x] Portfolio App Scaffolded:** New Next.js app created in `apps/portfolio-app` for CV/Analytics portfolio.
+- **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` featuring a custom "Dark Analytics" theme.
+- **[x] Portfolio Phase 2 (Salesworthy):** Integrated interactive ROI calculators, Recharts live-data visualizations, and enhanced the Michael-Bot AI with guided recruiter prompts.
 - **[x] Documentation Overhaul:** Comprehensive root, app-level, and directory-specific READMEs implemented.
 - **[x] Insurance Database Live:** 307 verified questions successfully seeded to Supabase.
 - **[x] Butter-Smooth Scroll:** Optimized `card-scanner.tsx` with `useAnimationFrame` for 120Hz smooth motion.
