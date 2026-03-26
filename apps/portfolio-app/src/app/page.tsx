@@ -87,7 +87,7 @@ function handleTrackedNavigation(
 
 function ProofStrip() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-12" id="home">
+    <section className="mx-auto w-full max-w-6xl px-4 py-12" id="proof-strip">
       <div className="mb-10 max-w-3xl space-y-4">
         <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
           Recruiter-first briefing

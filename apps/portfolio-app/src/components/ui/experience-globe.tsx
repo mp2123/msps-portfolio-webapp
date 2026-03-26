@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import createGlobe from 'cobe';
 import { ArrowRight, MapPin } from 'lucide-react';
 
@@ -65,9 +65,28 @@ const arcs: GlobeArc[] = [
 
 export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!containerRef.current || hasEnteredViewport) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setHasEnteredViewport(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [hasEnteredViewport]);
+
+  useEffect(() => {
+    if (!hasEnteredViewport || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     let phi = 5.1;
@@ -112,17 +131,20 @@ export function ExperienceGlobe() {
     return () => {
       globe.destroy();
     };
-  }, []);
+  }, [hasEnteredViewport]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
+      <div ref={containerRef} className="relative overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_52%)]" />
         <div className="relative mx-auto aspect-square max-w-[22rem]">
           <canvas
             ref={canvasRef}
             className="h-full w-full opacity-0 transition-opacity duration-1000"
           />
+          {!hasEnteredViewport ? (
+            <div className="absolute inset-0 rounded-full border border-cyan-300/10 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.16),transparent_55%)]" />
+          ) : null}
         </div>
         <div className="relative mt-4 flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.24em] text-cyan-100/65">
           <MapPin className="h-3.5 w-3.5" />

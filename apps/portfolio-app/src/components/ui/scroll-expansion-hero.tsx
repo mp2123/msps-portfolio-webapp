@@ -73,7 +73,7 @@ const ScrollExpandMedia = ({
   }, []);
 
   const frameScale = 0.68 + scrollProgress * (isMobileState ? 0.46 : 0.76);
-  const frameHeight = 360 + scrollProgress * (isMobileState ? 200 : 280);
+  const frameHeight = isMobileState ? 360 : 520;
   const frameTranslateY = 56 - scrollProgress * 120;
   const frameRotateX = 16 - scrollProgress * 16;
   const frameRotateY = -11 + scrollProgress * 11;

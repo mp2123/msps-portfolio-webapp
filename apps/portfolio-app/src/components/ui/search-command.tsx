@@ -24,6 +24,15 @@ const portfolioSections = [
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
 
+  const scrollToSection = React.useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (!element) return;
+
+    const headerOffset = 88;
+    const targetTop = element.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
+  }, []);
+
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -58,8 +67,7 @@ export function SearchCommand() {
                   key={section.name}
                   onSelect={() => {
                     setOpen(false);
-                    const element = document.getElementById(section.id);
-                    if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    scrollToSection(section.id);
                   }}
                 >
                   <span>{section.name}</span>
@@ -71,8 +79,7 @@ export function SearchCommand() {
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  const element = document.getElementById('projects');
-                  if (element) element.scrollIntoView({ behavior: 'smooth' });
+                  scrollToSection('projects');
                 }}
               >
                 <span>Jump to featured work</span>

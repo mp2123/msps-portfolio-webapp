@@ -26,8 +26,6 @@ type AmbientParticle = {
   phase: number;
 };
 
-const PARTICLE_DENSITY = 0.00006;
-const AMBIENT_DENSITY = 0.000028;
 const MOUSE_RADIUS = 160;
 const RETURN_SPEED = 0.022;
 const DAMPING = 0.94;
@@ -41,6 +39,9 @@ export function HeroParticleField({ className }: { className?: string }) {
   const ambientRef = useRef<AmbientParticle[]>([]);
   const pointerRef = useRef({ x: -1000, y: -1000, active: false });
   const reducedMotionRef = useRef(false);
+  const isVisibleRef = useRef(true);
+  const isDesktopRef = useRef(true);
+  const isAnimatingRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -53,6 +54,9 @@ export function HeroParticleField({ className }: { className?: string }) {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const shouldAnimate = () =>
+      !reducedMotionRef.current && isDesktopRef.current && isVisibleRef.current;
 
     const initParticles = () => {
       const rect = container.getBoundingClientRect();
@@ -67,8 +71,10 @@ export function HeroParticleField({ className }: { className?: string }) {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const particleCount = Math.floor(width * height * PARTICLE_DENSITY);
-      const ambientCount = Math.floor(width * height * AMBIENT_DENSITY);
+      isDesktopRef.current = width >= 1024;
+
+      const particleCount = Math.floor(width * height * (isDesktopRef.current ? 0.000035 : 0.000012));
+      const ambientCount = Math.floor(width * height * (isDesktopRef.current ? 0.000016 : 0.000008));
 
       particlesRef.current = Array.from({ length: particleCount }, () => {
         const x = Math.random() * width;
@@ -138,8 +144,8 @@ export function HeroParticleField({ className }: { className?: string }) {
         const dy = pointerRef.current.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (!reducedMotionRef.current && pointerRef.current.active && distance < MOUSE_RADIUS) {
-          const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
+      if (shouldAnimate() && pointerRef.current.active && distance < MOUSE_RADIUS) {
+        const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
           const directionX = distance > 0 ? dx / distance : 0;
           const directionY = distance > 0 ? dy / distance : 0;
 
@@ -166,12 +172,32 @@ export function HeroParticleField({ className }: { className?: string }) {
         ctx.fill();
       }
 
-      if (!reducedMotionRef.current) {
+      if (shouldAnimate()) {
         frameRef.current = window.requestAnimationFrame(render);
+        isAnimatingRef.current = true;
+      } else {
+        frameRef.current = null;
+        isAnimatingRef.current = false;
       }
     };
 
+    const startAnimation = () => {
+      if (isAnimatingRef.current) return;
+      frameRef.current = window.requestAnimationFrame(render);
+      isAnimatingRef.current = true;
+    };
+
+    const stopAnimation = () => {
+      if (frameRef.current) {
+        window.cancelAnimationFrame(frameRef.current);
+      }
+      frameRef.current = null;
+      isAnimatingRef.current = false;
+      render(0);
+    };
+
     const updatePointer = (event: PointerEvent) => {
+      if (!shouldAnimate()) return;
       const rect = container.getBoundingClientRect();
       pointerRef.current = {
         x: event.clientX - rect.left,
@@ -185,31 +211,47 @@ export function HeroParticleField({ className }: { className?: string }) {
     };
 
     initParticles();
-
-    if (reducedMotionRef.current) {
-      render(0);
-    } else {
-      frameRef.current = window.requestAnimationFrame(render);
-    }
+    render(0);
 
     const resizeObserver = new ResizeObserver(() => {
       initParticles();
+      if (shouldAnimate()) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
     });
 
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = Boolean(entry?.isIntersecting);
+        if (shouldAnimate()) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
     resizeObserver.observe(container);
+    visibilityObserver.observe(container);
     window.addEventListener('pointermove', updatePointer, { passive: true });
     window.addEventListener('pointerleave', clearPointer);
     window.addEventListener('blur', clearPointer);
 
+    if (shouldAnimate()) {
+      startAnimation();
+    }
+
     return () => {
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
       window.removeEventListener('pointermove', updatePointer);
       window.removeEventListener('pointerleave', clearPointer);
       window.removeEventListener('blur', clearPointer);
 
-      if (frameRef.current) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
+      stopAnimation();
     };
   }, []);
 

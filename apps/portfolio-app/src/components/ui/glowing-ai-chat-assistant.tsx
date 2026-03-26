@@ -50,6 +50,7 @@ export const FloatingAiAssistant = () => {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
+  const messageViewportRef = useRef<HTMLDivElement | null>(null);
   const hasOpenedRef = useRef(false);
   const [transport] = useState(
     new TextStreamChatTransport({
@@ -64,8 +65,8 @@ export const FloatingAiAssistant = () => {
 
   const isLoading = status === 'streaming' || status === 'submitted';
   const assistantErrorMessage = (() => {
-    const rawMessage = error?.message?.toLowerCase();
-    if (!rawMessage) return null;
+    if (!error) return null;
+    const rawMessage = error.message?.toLowerCase() ?? '';
 
     if (
       rawMessage.includes('429') ||
@@ -197,6 +198,18 @@ export const FloatingAiAssistant = () => {
       });
     }
   }, [isChatOpen]);
+
+  useEffect(() => {
+    if (!isChatOpen) return;
+
+    const viewport = chatRef.current?.querySelector<HTMLDivElement>('[data-slot="scroll-area-viewport"]');
+    if (!viewport) return;
+
+    messageViewportRef.current = viewport;
+    requestAnimationFrame(() => {
+      viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+    });
+  }, [assistantErrorMessage, isChatOpen, isLoading, messages.length]);
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -334,15 +347,17 @@ export const FloatingAiAssistant = () => {
                   </motion.div>
                 ) : (
                   <div className="space-y-4 pb-4">
-                    {messages.map((m) => (
+                    {messages.map((m, index) => (
                       <motion.div
                         key={m.id}
+                        data-role={m.role}
                         initial={{ opacity: 0, x: m.role === 'user' ? 20 : -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className={cn(
                           'flex items-start gap-3 text-sm',
                           m.role === 'user' ? 'flex-row-reverse' : 'flex-row'
                         )}
+                        ref={index === messages.length - 1 ? (node) => node?.scrollIntoView({ block: 'end' }) : undefined}
                       >
                         <div
                           className={cn(
