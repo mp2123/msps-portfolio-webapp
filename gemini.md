@@ -20,18 +20,22 @@
 4.  **AI BYOK:** Ensure the "Settings" button in the chatbot is used to save personal Gemini/OpenAI keys to `localStorage`.
 
 ## 🚀 Technical Status & Milestones
-- **[x] Portfolio App Polished:** Replaced placeholder logo with "MP" monogram, removed unnecessary "Sign In" buttons, and added a "Contact Me" CTA.
-- **[x] Portfolio Phase 2 (Salesworthy):** Integrated interactive ROI calculators, Recharts live-data visualizations, and enhanced the Michael-Bot AI with guided recruiter prompts.
-- **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` featuring a custom "Dark Analytics" theme.
-- **[x] Documentation Overhaul:** Comprehensive root, app-level, and directory-specific READMEs implemented.
+- **[x] Portfolio "Final Polish" Complete:** Upgraded the project showcase to a `BentoGrid`, replaced the chatbot with a `GlowingAiAssistant`, and integrated a `SpotlightCard` mouse-follow effect.
+- **[x] Portfolio "Immersive Experience" Upgrade:** Implemented a `Scroll-Expanding Hero`, a "Glass Terminal" UI, and a generative `DotShader` background.
+- **[x] Portfolio "Salesworthy" Features:** Built and integrated an interactive `ROI Calculator` and a `Recharts` live data dashboard.
+- **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` with a custom "Dark Analytics" theme and all build errors resolved.
+- **[x] Comprehensive Documentation:** Created and updated READMEs for the root, all three apps, and key subdirectories, explaining architecture, features, and project goals.
 - **[x] Insurance Database Live:** 307 verified questions successfully seeded to Supabase.
-- **[x] Butter-Smooth Scroll:** Optimized `card-scanner.tsx` with `useAnimationFrame` for 120Hz smooth motion.
 - **[x] Bartender App Cloned:** Architecture duplicated and themed for Mixology.
-- **[x] Vercel Deployments:** Both apps connected to GitHub and hosted on Vercel.
+- **[x] Vercel Deployments:** All three apps connected to GitHub and hosted on Vercel.
 
 ## 📍 Where We Left Off (Next Steps)
-1.  **Portfolio Contact Form:** Build a dedicated "Contact Me" section with a functional form that could (eventually) send an email or log to a database.
-2.  **Bartender Database Setup:**
+1.  **Bartender App Development:**
     - Run `npx prisma db push` using the new Bartender Supabase URL.
     - Run `node prisma/seed-bartender.js` to upload initial cocktail recipes.
-3.  **Practice Exam Logic:** Build the interactive testing UI for the Insurance app using the live `Question` table.
+    - Embed personal bartending tutorial videos into the landing page.
+2.  **Insurance App Development:**
+    - Build the interactive testing UI for the Practice Exam feature, using the live `Question` table.
+3.  **Portfolio App (Minor Polish):**
+    - Build a dedicated "Contact Me" form.
+    - Integrate the created `CodeSnippet` and `InteractiveGlobe` components into project detail views (when built).
