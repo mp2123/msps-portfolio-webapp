@@ -14,6 +14,8 @@ import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import { ROICalculator } from "@/components/ui/roi-calculator";
 import { LiveDataChart } from "@/components/ui/live-data-chart";
 import { HospitalityStory } from "@/components/ui/hospitality-story";
+import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
+import { TerminalWindow } from "@/components/ui/terminal-window";
 
 const experienceData = [
   {
@@ -53,133 +55,115 @@ const experienceData = [
 
 export default function PortfolioHome() {
   useEffect(() => {
-    // This renders the liquid canvas background
-    renderCanvas();
+    // renderCanvas(); // Deprecated by the new hero
   }, []);
 
   return (
     <div className="flex w-full flex-col relative bg-background overflow-x-hidden min-h-screen">
-      
-      {/* Interactive Canvas Background for Hero */}
-      <canvas
-        className="bg-skin-base pointer-events-none absolute inset-0 mx-auto z-0 opacity-20"
-        id="canvas"
-      ></canvas>
-
       <Header />
 
-      <main className="grow relative z-10">
-        
-        {/* HERO SECTION */}
-        <section id="home" className="w-full flex items-center justify-center min-h-[70vh] pt-20">
-          <div className="text-center space-y-6 max-w-4xl px-4">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground">
-              Michael Panico
-            </h1>
-            <p className="text-xl md:text-3xl font-light text-muted-foreground">
-              Bridging <span className="text-primary font-semibold">High-Volume Operations</span> with <span className="text-primary font-semibold">Scalable Data Analytics</span>.
-            </p>
-            <div className="flex justify-center gap-4 pt-8">
-              <a href="#experience" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20">
-                View Experience
-              </a>
-              <a href="#projects" className="bg-muted text-foreground border border-border px-8 py-3 rounded-full font-bold hover:bg-muted/80 transition-all">
-                Project Command Center
-              </a>
-            </div>
-          </div>
-        </section>
+      <ScrollExpandMedia
+        mediaType="video"
+        mediaSrc="https://videos.pexels.com/video-files/3214439/3214439-hd.mp4" // Abstract data network video
+        bgImageSrc="https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg" // Dark, abstract background
+        title="From Operations to Analytics"
+        date="Michael Panico"
+        scrollToExpand="Scroll to Explore"
+        textBlend
+      >
+        <TerminalWindow>
+          <main className="grow relative z-10 bg-transparent">
+            {/* THE SALES HOOK: ROI CALCULATOR */}
+            <section className="w-full relative z-20" id="roi-calculator">
+              <ROICalculator />
+            </section>
 
-        {/* THE SALES HOOK: ROI CALCULATOR */}
-        <section className="w-full relative z-20 -mt-10" id="roi-calculator">
-          <ROICalculator />
-        </section>
+            {/* THE COMMAND CENTER (PROJECTS) */}
+            <section className="mx-auto w-full max-w-6xl px-4 py-20" id="projects">
+                <div className="mb-16 text-center space-y-4">
+                  <h2 className="text-4xl font-bold">The Command Center</h2>
+                  <p className="text-muted-foreground text-lg">Scalable reporting, predictive modeling, and workflow automation.</p>
+                </div>
+                
+                <div className="mb-12">
+                  <LiveDataChart />
+                </div>
 
-        {/* THE COMMAND CENTER (PROJECTS) */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-20" id="projects">
-            <div className="mb-16 text-center space-y-4">
-              <h2 className="text-4xl font-bold">The Command Center</h2>
-              <p className="text-muted-foreground text-lg">Scalable reporting, predictive modeling, and workflow automation.</p>
-            </div>
-            
-            <div className="mb-12">
-              <LiveDataChart />
-            </div>
+                <ul className="grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-2 lg:gap-4 xl:max-h-[34rem]">
+                    <GridItem
+                        area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/7]"
+                        icon={<Cpu className="h-5 w-5 text-cyan-400" />}
+                        title="Agentic AI Orchestration"
+                        description="CLI-based orchestration framework for multi-agent AI workflows with durable context and validation gates."
+                    />
+                    <GridItem
+                        area="md:[grid-area:1/7/2/13] xl:[grid-area:1/7/2/13]"
+                        icon={<Database className="h-5 w-5 text-blue-400" />}
+                        title="Avnet BI Infrastructure"
+                        description="Co-led expansion of 'Command Center' analytics hub. Built Power BI models (DAX/M) adopted across global sales."
+                    />
+                    <GridItem
+                        area="md:[grid-area:2/1/3/7] xl:[grid-area:2/1/3/5]"
+                        icon={<LineChart className="h-5 w-5 text-emerald-400" />}
+                        title="Adidas IT Prediction"
+                        description="Spearheaded a Gradient Boosting model to predict IT ticket reassignment, estimating $280K in annual savings."
+                    />
+                    <GridItem
+                        area="md:[grid-area:2/7/3/13] xl:[grid-area:2/5/3/9]"
+                        icon={<Code2 className="h-5 w-5 text-indigo-400" />}
+                        title="Spotify ML Model"
+                        description="Regression modeling with k-fold cross-validation to predict song popularity from audio features."
+                    />
+                    <GridItem
+                        area="md:[grid-area:3/1/4/13] xl:[grid-area:2/9/3/13]"
+                        icon={<Sparkles className="h-5 w-5 text-violet-400" />}
+                        title="Sentiment Analysis Pipeline"
+                        description="TF-IDF and Logistic Regression pipeline to classify Yelp review sentiments and predict ratings."
+                    />
+                </ul>
+            </section>
 
-            <ul className="grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-2 lg:gap-4 xl:max-h-[34rem]">
-                <GridItem
-                    area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/7]"
-                    icon={<Cpu className="h-5 w-5 text-cyan-400" />}
-                    title="Agentic AI Orchestration"
-                    description="CLI-based orchestration framework for multi-agent AI workflows with durable context and validation gates."
-                />
-                <GridItem
-                    area="md:[grid-area:1/7/2/13] xl:[grid-area:1/7/2/13]"
-                    icon={<Database className="h-5 w-5 text-blue-400" />}
-                    title="Avnet BI Infrastructure"
-                    description="Co-led expansion of 'Command Center' analytics hub. Built Power BI models (DAX/M) adopted across global sales."
-                />
-                <GridItem
-                    area="md:[grid-area:2/1/3/7] xl:[grid-area:2/1/3/5]"
-                    icon={<LineChart className="h-5 w-5 text-emerald-400" />}
-                    title="Adidas IT Prediction"
-                    description="Spearheaded a Gradient Boosting model to predict IT ticket reassignment, estimating $280K in annual savings."
-                />
-                <GridItem
-                    area="md:[grid-area:2/7/3/13] xl:[grid-area:2/5/3/9]"
-                    icon={<Code2 className="h-5 w-5 text-indigo-400" />}
-                    title="Spotify ML Model"
-                    description="Regression modeling with k-fold cross-validation to predict song popularity from audio features."
-                />
-                <GridItem
-                    area="md:[grid-area:3/1/4/13] xl:[grid-area:2/9/3/13]"
-                    icon={<Sparkles className="h-5 w-5 text-violet-400" />}
-                    title="Sentiment Analysis Pipeline"
-                    description="TF-IDF and Logistic Regression pipeline to classify Yelp review sentiments and predict ratings."
-                />
-            </ul>
-        </section>
+            {/* SKILLS MATRIX */}
+            <section className="w-full bg-background/50 py-20 relative overflow-hidden" id="skills">
+              {/* Subtle Background Elements */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+              
+              <div className="relative z-10">
+                <div className="mb-12 text-center space-y-4">
+                  <h2 className="text-4xl font-bold tracking-tight">Technical Arsenal</h2>
+                  <p className="text-muted-foreground text-lg">Tools and languages driving my analytics workflows.</p>
+                </div>
+                <SkillsMatrix />
+              </div>
+            </section>
 
-        {/* SKILLS MATRIX */}
-        <section className="w-full bg-background py-20 relative overflow-hidden" id="skills">
-          {/* Subtle Background Elements */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
-          
-          <div className="relative z-10">
-            <div className="mb-12 text-center space-y-4">
-              <h2 className="text-4xl font-bold tracking-tight">Technical Arsenal</h2>
-              <p className="text-muted-foreground text-lg">Tools and languages driving my analytics workflows.</p>
-            </div>
-            <SkillsMatrix />
-          </div>
-        </section>
+            {/* THE HOSPITALITY ADVANTAGE */}
+            <section className="w-full bg-black/30 border-y border-border" id="advantage">
+              <HospitalityStory />
+            </section>
 
-        {/* THE HOSPITALITY ADVANTAGE */}
-        <section className="w-full bg-black/30 border-t border-border" id="advantage">
-          <HospitalityStory />
-        </section>
+            {/* EXPERIENCE TIMELINE */}
+            <section className="w-full bg-black/50 py-20" id="experience">
+              <div className="max-w-5xl mx-auto px-4">
+                <div className="mb-16 text-center space-y-4">
+                  <h2 className="text-4xl font-bold">Experience</h2>
+                  <p className="text-muted-foreground text-lg">My professional journey so far.</p>
+                </div>
+                <ExperienceTimeline experiences={experienceData} />
+              </div>
+            </section>
 
-        {/* EXPERIENCE TIMELINE */}
-        <section className="w-full bg-black/50 py-20 border-t border-border" id="experience">
-          <div className="max-w-5xl mx-auto px-4">
-            <div className="mb-16 text-center space-y-4">
-              <h2 className="text-4xl font-bold">Experience</h2>
-              <p className="text-muted-foreground text-lg">My professional journey so far.</p>
-            </div>
-            <ExperienceTimeline experiences={experienceData} />
-          </div>
-        </section>
-
-        {/* RECOMMENDATIONS */}
-        <section className="w-full bg-background py-20 border-t border-border" id="recommendations">
-          <div className="mb-12 text-center space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight">What Leaders Say</h2>
-            <p className="text-muted-foreground text-lg">Feedback from managers who have overseen my impact.</p>
-          </div>
-          <RecommendationsCarousel />
-        </section>
-
-      </main>
+            {/* RECOMMENDATIONS */}
+            <section className="w-full py-20" id="recommendations">
+              <div className="mb-12 text-center space-y-4">
+                <h2 className="text-4xl font-bold tracking-tight">What Leaders Say</h2>
+                <p className="text-muted-foreground text-lg">Feedback from managers who have overseen my impact.</p>
+              </div>
+              <RecommendationsCarousel />
+            </section>
+          </main>
+        </TerminalWindow>
+      </ScrollExpandMedia>
 
       <Chatbot />
     </div>
