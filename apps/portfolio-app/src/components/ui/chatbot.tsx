@@ -90,7 +90,7 @@ export function Chatbot() {
                     <Bot className="h-6 w-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-bold tracking-tight">AI Study Guide</CardTitle>
+                    <CardTitle className="text-sm font-bold tracking-tight">Michael-Bot</CardTitle>
                     <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                       {provider === 'google' ? 'Gemini AI' : 'OpenAI'}
@@ -180,12 +180,36 @@ export function Chatbot() {
                     <motion.div 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="flex h-[400px] flex-col items-center justify-center text-center px-10"
+                      className="flex h-[300px] flex-col items-center justify-center text-center px-6"
                     >
-                      <Bot className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                      <p className="text-sm text-muted-foreground">
-                        Hi! I'm your Arizona 2026 Insurance Assistant. How can I help you study today?
+                      <Bot className="h-12 w-12 text-primary/40 mb-4" />
+                      <p className="text-sm text-foreground font-semibold mb-2">
+                        Hi! I'm Michael-Bot.
                       </p>
+                      <p className="text-xs text-muted-foreground mb-6">
+                        I am an AI trained on Michael's resume, projects, and work experience. Ask me anything!
+                      </p>
+                      
+                      <div className="flex flex-col gap-2 w-full">
+                        <button 
+                          onClick={() => setInput("How did Michael save 20 hours/week at Avnet?")}
+                          className="text-xs text-left bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border/50 rounded-lg p-2.5 transition-colors"
+                        >
+                          "How did Michael save 20 hours/week at Avnet?"
+                        </button>
+                        <button 
+                          onClick={() => setInput("What is his strongest programming language?")}
+                          className="text-xs text-left bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border/50 rounded-lg p-2.5 transition-colors"
+                        >
+                          "What is his strongest programming language?"
+                        </button>
+                        <button 
+                          onClick={() => setInput("How does his hospitality background help his analytics work?")}
+                          className="text-xs text-left bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border/50 rounded-lg p-2.5 transition-colors"
+                        >
+                          "How does his hospitality background help?"
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                   <div className="space-y-6">
@@ -235,7 +259,7 @@ export function Chatbot() {
               <CardFooter className="border-t border-border/40 bg-muted/20 p-4">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-3">
                   <Input
-                    placeholder="Ask about MIB, Term, Universal Life..."
+                    placeholder="Ask about Michael's skills, experience..."
                     value={input}
                     onChange={handleInputChange}
                     className="flex-1 rounded-full border-border/50 bg-background/50 focus-visible:ring-primary/20"

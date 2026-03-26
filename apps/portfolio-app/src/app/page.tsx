@@ -11,6 +11,9 @@ import { cn } from "@/lib/utils";
 import { ExperienceTimeline } from "@/components/ui/experience-timeline";
 import { SkillsMatrix } from "@/components/ui/skills-matrix";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
+import { ROICalculator } from "@/components/ui/roi-calculator";
+import { LiveDataChart } from "@/components/ui/live-data-chart";
+import { HospitalityStory } from "@/components/ui/hospitality-story";
 
 const experienceData = [
   {
@@ -77,23 +80,32 @@ export default function PortfolioHome() {
               Bridging <span className="text-primary font-semibold">High-Volume Operations</span> with <span className="text-primary font-semibold">Scalable Data Analytics</span>.
             </p>
             <div className="flex justify-center gap-4 pt-8">
-              <button className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+              <a href="#experience" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20">
                 View Experience
-              </button>
-              <button className="bg-muted text-foreground border border-border px-8 py-3 rounded-full font-bold hover:bg-muted/80 transition-all">
+              </a>
+              <a href="#projects" className="bg-muted text-foreground border border-border px-8 py-3 rounded-full font-bold hover:bg-muted/80 transition-all">
                 Project Command Center
-              </button>
+              </a>
             </div>
           </div>
         </section>
 
+        {/* THE SALES HOOK: ROI CALCULATOR */}
+        <section className="w-full relative z-20 -mt-10" id="roi-calculator">
+          <ROICalculator />
+        </section>
+
         {/* THE COMMAND CENTER (PROJECTS) */}
-        <section className="mx-auto w-full max-w-5xl px-4 py-20" id="projects">
+        <section className="mx-auto w-full max-w-6xl px-4 py-20" id="projects">
             <div className="mb-16 text-center space-y-4">
               <h2 className="text-4xl font-bold">The Command Center</h2>
               <p className="text-muted-foreground text-lg">Scalable reporting, predictive modeling, and workflow automation.</p>
             </div>
             
+            <div className="mb-12">
+              <LiveDataChart />
+            </div>
+
             <ul className="grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-2 lg:gap-4 xl:max-h-[34rem]">
                 <GridItem
                     area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/7]"
@@ -140,6 +152,11 @@ export default function PortfolioHome() {
             </div>
             <SkillsMatrix />
           </div>
+        </section>
+
+        {/* THE HOSPITALITY ADVANTAGE */}
+        <section className="w-full bg-black/30 border-t border-border" id="advantage">
+          <HospitalityStory />
         </section>
 
         {/* EXPERIENCE TIMELINE */}
