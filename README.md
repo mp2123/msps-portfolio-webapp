@@ -18,6 +18,14 @@ This ecosystem is designed to push the boundaries of modern web development by c
 
 ## 🚀 Active Applications
 
+### 📊 [Professional CV & Analytics Portfolio](./apps/portfolio-app)
+A high-tech, interactive portfolio web app bridging hospitality management with advanced data analytics and automation.
+- **Status:** Development (Phase 1).
+- **Key Features:**
+  - **"Dark Analytics" Theme:** A clean, deep-charcoal aesthetic with vibrant cyan data-stream accents.
+  - **Command Center Showcase:** Interactive, Framer Motion-powered cards highlighting ML/regression models and workflow automations.
+  - **AI Recruiter Assistant:** "Michael-Bot" agent trained on Michael's resume and experiences.
+
 ### 📋 [Life Insurance AZ 2026 Study Platform](./apps/insurance-app)
 A high-performance study engine designed to master the Arizona 2026 Life Insurance Exam.
 - **Status:** Production-Ready & Deployed.

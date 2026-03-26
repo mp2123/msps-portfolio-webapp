@@ -14,11 +14,13 @@
 1.  **Monorepo Management:** 
     - `apps/insurance-app/` contains the Insurance App.
     - `apps/mixology-app/` contains the Mixology Portfolio.
+    - `apps/portfolio-app/` contains the Professional CV & Analytics Portfolio.
 2.  **Database Connection:** Use the **Session Pooler (Port 5432)** for all Prisma CLI operations (`db push`, `generate`) to avoid IPv6/Transaction pooling hangs.
 3.  **Visual Standards:** Use "Gaia" theme for Insurance and "Neutral/Amber" glassmorphism for Bartending.
 4.  **AI BYOK:** Ensure the "Settings" button in the chatbot is used to save personal Gemini/OpenAI keys to `localStorage`.
 
 ## 🚀 Technical Status & Milestones
+- **[x] Portfolio App Scaffolded:** New Next.js app created in `apps/portfolio-app` for CV/Analytics portfolio.
 - **[x] Documentation Overhaul:** Comprehensive root, app-level, and directory-specific READMEs implemented.
 - **[x] Insurance Database Live:** 307 verified questions successfully seeded to Supabase.
 - **[x] Butter-Smooth Scroll:** Optimized `card-scanner.tsx` with `useAnimationFrame` for 120Hz smooth motion.

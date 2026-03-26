@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  scores    Score[]
+  createdAt DateTime @default(now())
+}
+
+model Question {
+  id          Int      @id @default(autoincrement())
+  text        String
+  options     String[] // Array of strings for the multiple choice options
+  answer      String   // The correct option text
+  explanation String?
+  category    String?
+}
+
+model Score {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: id)
+  total     Int
+  correct   Int
+  timestamp DateTime @default(now())
+}
