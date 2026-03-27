@@ -26,6 +26,11 @@ Why it behaves like a web app:
 - `/twitter-image`
   Dynamic social image route for Twitter/X previews.
 
+## Internal Diagnostics Routes
+
+- `/internal/assistant-debug`
+  Read-only diagnostics surface for assistant cache health and analytics counts. This route can be protected with `PORTFOLIO_DEBUG_TOKEN`.
+
 ## Major Component Groups
 
 ### Shell and page composition
@@ -124,6 +129,7 @@ Python is not part of the public site runtime. It only appears in external proje
 - `NEXT_PUBLIC_SITE_URL`
 - `VERCEL_PROJECT_PRODUCTION_URL`
 - `VERCEL_URL`
+- `PORTFOLIO_DEBUG_TOKEN` (optional gate for `/internal/assistant-debug`)
 
 ### AI providers
 

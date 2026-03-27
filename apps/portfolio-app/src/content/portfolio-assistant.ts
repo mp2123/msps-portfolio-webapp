@@ -152,7 +152,13 @@ const buildHeroDoc = (): PortfolioKnowledgeDoc => ({
 const buildPromptDocs = (): PortfolioKnowledgeDoc[] => {
   const promptLinkMap: Record<string, string[]> = {
     "hours-saved": ["project-avnet-command-center", "proof-manual-work-removed"],
-    "role-fit": ["contact-overview", "career-avnet-expanded"],
+    "role-fit": [
+      "contact-overview",
+      "career-avnet-expanded",
+      "skill-analytics",
+      "skill-programming",
+      "skill-automation",
+    ],
     "best-example": ["project-avnet-command-center", "project-ticket-routing-prediction", "project-agentic-automation"],
     "cross-functional": ["career-hospitality-foundation", "career-avnet-internship", "career-avnet-expanded"],
   };
@@ -281,10 +287,12 @@ export function getAssistantUnavailableReply() {
 
 export function getAssistantAnswerGuidance() {
   return [
-    "Answer directly first.",
-    "Then give 2 to 4 concrete proof points drawn from the retrieved portfolio context.",
-    "Keep the tone recruiter-facing and concise.",
+    "Lead with a direct one-sentence answer.",
+    "Then give 2 to 4 short proof points drawn from the retrieved portfolio context.",
+    "Prefer quantified impact, tools used, and stakeholder outcomes over generic adjectives.",
+    "If the user asks about role fit, name the most relevant role titles first and explain why they fit.",
     "If the user asks something not covered in the retrieved context, say it is not yet published or it is sanitized.",
+    "Keep the tone recruiter-facing, concise, and business-oriented.",
     "Optionally end with one short follow-up question.",
   ].join(" ");
 }

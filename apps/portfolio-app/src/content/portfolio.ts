@@ -441,22 +441,22 @@ export const recruiterPrompts: RecruiterPrompt[] = [
   {
     id: "hours-saved",
     label: "Hours saved",
-    question: "How did Michael save 20+ hours per week through automation?",
+    question: "How did Michael save 20+ hours per week through automation and reporting cleanup?",
   },
   {
     id: "role-fit",
     label: "Best-fit roles",
-    question: "What roles is Michael strongest for right now?",
+    question: "Which BI, analytics, or automation roles is Michael strongest for right now?",
   },
   {
     id: "best-example",
-    label: "Best automation example",
-    question: "Show me Michael's strongest automation or systems-thinking example.",
+    label: "Best automation proof",
+    question: "What is Michael's strongest automation or systems-thinking example with measurable business value?",
   },
   {
     id: "cross-functional",
     label: "Cross-functional proof",
-    question: "What proves Michael can work cross-functionally with operators and stakeholders?",
+    question: "What proves Michael can translate between operators, stakeholders, and analytics work?",
   },
 ];
 
