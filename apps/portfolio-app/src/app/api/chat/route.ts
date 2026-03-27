@@ -1,35 +1,28 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
-import {
-  generateText,
-  type LanguageModel,
-  type ModelMessage,
-} from 'ai';
+import { generateText, type LanguageModel, type ModelMessage } from 'ai';
 import { getPortfolioSystemPrompt } from '@/content/portfolio';
 import {
   buildAssistantContextBlock,
   getAssistantAnswerGuidance,
   getAssistantUnavailableReply,
 } from '@/content/portfolio-assistant';
+import {
+  ASSISTANT_CACHE_VERSION,
+  ASSISTANT_DATABASE_CACHE_TTL_MS,
+  ASSISTANT_MEMORY_CACHE_TTL_MS,
+  type AssistantCacheLookup,
+  type AssistantCacheMessage,
+  type AssistantCacheStrategy,
+  buildAssistantCacheLookup,
+} from '@/lib/assistant-cache';
+import { getPrismaClient } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 type ChatRequestBody = {
   messages?: InboundMessage[];
-};
-
-type ResolvedModel = {
-  provider: 'google' | 'openai';
-  modelId: string;
-  model: LanguageModel;
-};
-
-type CachedAssistantResponse = {
-  provider: 'google' | 'openai';
-  modelId: string;
-  text: string;
-  createdAt: number;
 };
 
 type InboundMessage = {
@@ -41,25 +34,62 @@ type InboundMessage = {
   }>;
 };
 
+type ResolvedModel = {
+  provider: 'google' | 'openai';
+  modelId: string;
+  model: LanguageModel;
+};
+
+type CacheSource = 'client' | 'memory' | 'database' | 'miss';
+
+type CachedAssistantResponse = {
+  provider: 'google' | 'openai';
+  modelId: string;
+  text: string;
+  createdAt: number;
+};
+
+type CacheCandidate = {
+  cacheKey: string;
+  strategy: AssistantCacheStrategy;
+  intent: AssistantCacheLookup['intent'] | null;
+  normalizedQuestion: string | null;
+};
+
+type LiveAssistantResult = {
+  provider: 'google' | 'openai';
+  modelId: string;
+  text: string;
+};
+
 const responseHeaders = {
   'Content-Type': 'text/plain; charset=utf-8',
   'Cache-Control': 'no-store',
 };
 
-const TRANSIENT_STATUS_PATTERNS = ['429', '503', 'rate limit', 'too many requests', 'resource exhausted', 'overloaded'];
+const TRANSIENT_STATUS_PATTERNS = [
+  '429',
+  '503',
+  'rate limit',
+  'too many requests',
+  'resource exhausted',
+  'overloaded',
+];
 const RETRYABLE_FAILURE_KINDS = new Set(['rate_limited']);
 const MAX_PROVIDER_RETRIES = 2;
 const BASE_RETRY_DELAY_MS = 1200;
-const RESPONSE_CACHE_TTL_MS = 1000 * 60 * 5;
-const MAX_RESPONSE_CACHE_ENTRIES = 48;
 const responseCache = new Map<string, CachedAssistantResponse>();
+const inflightResponseMap = new Map<string, Promise<LiveAssistantResult>>();
+let assistantCacheTableEnsured = false;
 
 const withAssistantHeaders = (
   headers: HeadersInit,
-  mode: 'live' | 'degraded' | 'offline'
+  mode: 'live' | 'degraded' | 'offline',
+  cacheSource: CacheSource = 'miss'
 ) => ({
   ...responseHeaders,
   'X-Portfolio-Assistant-Mode': mode,
+  'X-Portfolio-Assistant-Cache': cacheSource,
   ...headers,
 });
 
@@ -114,7 +144,12 @@ const getMessageText = (message: InboundMessage | undefined) => {
           return part;
         }
 
-        if (part && typeof part === 'object' && 'text' in part && typeof part.text === 'string') {
+        if (
+          part &&
+          typeof part === 'object' &&
+          'text' in part &&
+          typeof part.text === 'string'
+        ) {
           return part.text;
         }
 
@@ -129,7 +164,9 @@ const getMessageText = (message: InboundMessage | undefined) => {
   }
 
   return message.parts
-    .map((part) => (part.type === 'text' && typeof part.text === 'string' ? part.text : ''))
+    .map((part) =>
+      part.type === 'text' && typeof part.text === 'string' ? part.text : ''
+    )
     .join(' ')
     .trim();
 };
@@ -143,22 +180,13 @@ const toModelMessages = (messages: InboundMessage[]) => {
 
     switch (message.role) {
       case 'system':
-        normalizedMessages.push({
-          role: 'system',
-          content: text,
-        });
+        normalizedMessages.push({ role: 'system', content: text });
         break;
       case 'user':
-        normalizedMessages.push({
-          role: 'user',
-          content: text,
-        });
+        normalizedMessages.push({ role: 'user', content: text });
         break;
       case 'assistant':
-        normalizedMessages.push({
-          role: 'assistant',
-          content: text,
-        });
+        normalizedMessages.push({ role: 'assistant', content: text });
         break;
       default:
         break;
@@ -167,6 +195,16 @@ const toModelMessages = (messages: InboundMessage[]) => {
 
   return normalizedMessages;
 };
+
+const toAssistantCacheMessages = (
+  messages: ModelMessage[]
+): AssistantCacheMessage[] =>
+  messages
+    .map((message) => ({
+      role: message.role,
+      content: typeof message.content === 'string' ? message.content : '',
+    }))
+    .filter((message) => message.content.trim().length > 0);
 
 const buildAssistantSystemPrompt = (query: string) => {
   const { contextBlock } = buildAssistantContextBlock(query);
@@ -197,66 +235,128 @@ const buildDeterministicFallbackReply = (query: string) => {
   ].join('\n');
 };
 
-const stableStringify = (value: unknown): string => {
-  if (value === null || typeof value !== 'object') {
-    return JSON.stringify(value);
+const buildCacheCandidates = (messages: ModelMessage[]) => {
+  const lookup = buildAssistantCacheLookup(toAssistantCacheMessages(messages));
+  const transcriptCandidate: CacheCandidate = {
+    cacheKey: lookup.transcriptKey,
+    strategy: 'exact_transcript',
+    intent: lookup.isSingleTurn ? lookup.intent : null,
+    normalizedQuestion: lookup.normalizedQuestion || null,
+  };
+  const candidates = [transcriptCandidate];
+
+  if (lookup.isSingleTurn && lookup.intentKey && lookup.normalizedQuestion) {
+    candidates.push({
+      cacheKey: lookup.intentKey,
+      strategy: 'intent_single_turn',
+      intent: lookup.intent,
+      normalizedQuestion: lookup.normalizedQuestion,
+    });
   }
 
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
-  }
-
-  const entries = Object.entries(value as Record<string, unknown>).sort(([left], [right]) =>
-    left.localeCompare(right)
-  );
-
-  return `{${entries
-    .map(([key, nestedValue]) => `${JSON.stringify(key)}:${stableStringify(nestedValue)}`)
-    .join(',')}}`;
+  return {
+    lookup,
+    candidates: candidates.filter(
+      (candidate, index, collection) =>
+        collection.findIndex(
+          (item) => item.cacheKey === candidate.cacheKey
+        ) === index
+    ),
+  };
 };
-
-const buildConversationCacheKey = (messages: ModelMessage[]) =>
-  messages.length > 0 ? stableStringify(messages) : '__empty__';
 
 const pruneResponseCache = () => {
   const now = Date.now();
 
   for (const [key, entry] of responseCache.entries()) {
-    if (now - entry.createdAt > RESPONSE_CACHE_TTL_MS) {
+    if (now - entry.createdAt > ASSISTANT_MEMORY_CACHE_TTL_MS) {
       responseCache.delete(key);
     }
   }
-
-  while (responseCache.size > MAX_RESPONSE_CACHE_ENTRIES) {
-    const oldestKey = responseCache.keys().next().value;
-    if (!oldestKey) break;
-    responseCache.delete(oldestKey);
-  }
 };
 
-const getCachedResponse = (cacheKey: string) => {
+const getMemoryCachedResponse = (candidates: CacheCandidate[]) => {
   pruneResponseCache();
-  const entry = responseCache.get(cacheKey);
 
-  if (!entry) return null;
+  for (const candidate of candidates) {
+    const entry = responseCache.get(candidate.cacheKey);
+    if (!entry) continue;
 
-  if (Date.now() - entry.createdAt > RESPONSE_CACHE_TTL_MS) {
-    responseCache.delete(cacheKey);
-    return null;
+    if (Date.now() - entry.createdAt > ASSISTANT_MEMORY_CACHE_TTL_MS) {
+      responseCache.delete(candidate.cacheKey);
+      continue;
+    }
+
+    return entry;
   }
 
-  return entry;
+  return null;
 };
 
-const setCachedResponse = (
-  cacheKey: string,
+const setMemoryCachedResponses = (
+  candidates: CacheCandidate[],
   response: Omit<CachedAssistantResponse, 'createdAt'>
 ) => {
   pruneResponseCache();
-  responseCache.set(cacheKey, {
-    ...response,
-    createdAt: Date.now(),
+  const createdAt = Date.now();
+
+  candidates.forEach((candidate) => {
+    responseCache.set(candidate.cacheKey, {
+      ...response,
+      createdAt,
+    });
   });
+};
+
+const hasDatabaseConnection = () =>
+  Boolean(
+    process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim()
+  );
+
+const ensureAssistantCacheTable = async () => {
+  if (assistantCacheTableEnsured || !hasDatabaseConnection()) {
+    return;
+  }
+
+  const prisma = getPrismaClient();
+  if (!prisma) {
+    return;
+  }
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "AssistantCacheEntry" (
+      "id" text PRIMARY KEY,
+      "cacheKey" text NOT NULL UNIQUE,
+      "strategy" text NOT NULL,
+      "intent" text,
+      "normalizedQuestion" text,
+      "responseText" text NOT NULL,
+      "provider" text NOT NULL,
+      "modelId" text NOT NULL,
+      "contentVersion" text NOT NULL,
+      "hitCount" integer NOT NULL DEFAULT 0,
+      "createdAt" timestamptz NOT NULL DEFAULT NOW(),
+      "expiresAt" timestamptz NOT NULL,
+      "lastHitAt" timestamptz NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "AssistantCacheEntry_expiresAt_idx"
+    ON "AssistantCacheEntry" ("expiresAt")
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "AssistantCacheEntry_intent_expiresAt_idx"
+    ON "AssistantCacheEntry" ("intent", "expiresAt")
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "AssistantCacheEntry_createdAt_idx"
+    ON "AssistantCacheEntry" ("createdAt")
+  `);
+
+  assistantCacheTableEnsured = true;
 };
 
 const errorDetails = (error: unknown) => {
@@ -302,13 +402,23 @@ const classifyAssistantError = (error: unknown) => {
 
   if (
     normalizedMessage.includes('model') &&
-    (normalizedMessage.includes('not found') || normalizedMessage.includes('unsupported'))
+    (normalizedMessage.includes('not found') ||
+      normalizedMessage.includes('unsupported'))
   ) {
     return 'model_access';
   }
 
   if (normalizedMessage.includes('empty text response')) {
     return 'empty_response';
+  }
+
+  if (
+    normalizedMessage.includes('assistantcacheentry') &&
+    (normalizedMessage.includes('does not exist') ||
+      normalizedMessage.includes('relation') ||
+      normalizedMessage.includes('table'))
+  ) {
+    return 'table_missing';
   }
 
   return 'unknown';
@@ -322,7 +432,9 @@ const shouldRetryAssistantError = (error: unknown) => {
 
   const { message } = errorDetails(error);
   const normalizedMessage = message.toLowerCase();
-  return TRANSIENT_STATUS_PATTERNS.some((pattern) => normalizedMessage.includes(pattern));
+  return TRANSIENT_STATUS_PATTERNS.some((pattern) =>
+    normalizedMessage.includes(pattern)
+  );
 };
 
 const delay = (ms: number) =>
@@ -334,47 +446,145 @@ const logAssistantEvent = (event: string, details: Record<string, unknown>) => {
   console.info(event, details);
 };
 
-const logAssistantError = (event: string, error: unknown, details: Record<string, unknown>) => {
+const logAssistantError = (
+  event: string,
+  error: unknown,
+  details: Record<string, unknown>
+) => {
   console.error(event, {
     ...details,
     ...errorDetails(error),
   });
 };
 
-const buildLiveResponse = async ({
+const getDatabaseCachedResponse = async (candidates: CacheCandidate[]) => {
+  if (!hasDatabaseConnection()) {
+    return null;
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    if (!prisma) {
+      return null;
+    }
+
+    await ensureAssistantCacheTable();
+
+    const entries = await prisma.assistantCacheEntry.findMany({
+      where: {
+        cacheKey: { in: candidates.map((candidate) => candidate.cacheKey) },
+        contentVersion: ASSISTANT_CACHE_VERSION,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (entries.length === 0) {
+      return null;
+    }
+
+    const entriesByKey = new Map(entries.map((entry) => [entry.cacheKey, entry]));
+    const matchedEntry = candidates
+      .map((candidate) => entriesByKey.get(candidate.cacheKey))
+      .find((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
+    if (!matchedEntry) {
+      return null;
+    }
+
+    void prisma.assistantCacheEntry
+      .update({
+        where: { cacheKey: matchedEntry.cacheKey },
+        data: {
+          hitCount: { increment: 1 },
+          lastHitAt: new Date(),
+        },
+      })
+      .catch((error) => {
+        logAssistantError('assistant_database_cache_hit_update_failed', error, {
+          cacheKey: matchedEntry.cacheKey,
+        });
+      });
+
+    return {
+      provider: matchedEntry.provider === 'openai' ? 'openai' : 'google',
+      modelId: matchedEntry.modelId,
+      text: matchedEntry.responseText,
+    } satisfies LiveAssistantResult;
+  } catch (error) {
+    logAssistantError('assistant_database_cache_read_failed', error, {
+      candidateCount: candidates.length,
+      failureKind: classifyAssistantError(error),
+    });
+    return null;
+  }
+};
+
+const persistDatabaseCache = async (
+  candidates: CacheCandidate[],
+  result: LiveAssistantResult
+) => {
+  if (!hasDatabaseConnection() || result.provider !== 'google') {
+    return;
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    if (!prisma) {
+      return;
+    }
+
+    await ensureAssistantCacheTable();
+
+    const expiresAt = new Date(Date.now() + ASSISTANT_DATABASE_CACHE_TTL_MS);
+
+    await prisma.$transaction(
+      candidates.map((candidate) =>
+        prisma.assistantCacheEntry.upsert({
+          where: {
+            cacheKey: candidate.cacheKey,
+          },
+          update: {
+            strategy: candidate.strategy,
+            intent: candidate.intent,
+            normalizedQuestion: candidate.normalizedQuestion,
+            responseText: result.text,
+            provider: result.provider,
+            modelId: result.modelId,
+            contentVersion: ASSISTANT_CACHE_VERSION,
+            expiresAt,
+          },
+          create: {
+            cacheKey: candidate.cacheKey,
+            strategy: candidate.strategy,
+            intent: candidate.intent,
+            normalizedQuestion: candidate.normalizedQuestion,
+            responseText: result.text,
+            provider: result.provider,
+            modelId: result.modelId,
+            contentVersion: ASSISTANT_CACHE_VERSION,
+            expiresAt,
+          },
+        })
+      )
+    );
+  } catch (error) {
+    logAssistantError('assistant_database_cache_write_failed', error, {
+      candidateCount: candidates.length,
+      failureKind: classifyAssistantError(error),
+    });
+  }
+};
+
+const generateLiveTextWithRetry = async ({
   provider,
   modelId,
   model,
   messages,
   latestQuery,
-  cacheKey,
 }: ResolvedModel & {
   messages: ModelMessage[];
   latestQuery: string;
-  cacheKey: string;
 }) => {
-  const cached = getCachedResponse(cacheKey);
-
-  if (cached) {
-    logAssistantEvent('assistant_cache_hit', {
-      provider: cached.provider,
-      modelId: cached.modelId,
-      latestQueryLength: latestQuery.length,
-      cacheAgeMs: Date.now() - cached.createdAt,
-    });
-
-    return new Response(cached.text, {
-      headers: withAssistantHeaders(
-        {
-          'X-Portfolio-Assistant-Provider': cached.provider,
-          'X-Portfolio-Assistant-Model': cached.modelId,
-          'X-Portfolio-Assistant-Cache': 'hit',
-        },
-        'live'
-      ),
-    });
-  }
-
   let attempt = 0;
   let lastError: unknown = null;
 
@@ -394,12 +604,6 @@ const buildLiveResponse = async ({
         throw new Error('Provider returned an empty text response.');
       }
 
-      setCachedResponse(cacheKey, {
-        provider,
-        modelId,
-        text,
-      });
-
       logAssistantEvent('assistant_provider_success', {
         provider,
         modelId,
@@ -410,16 +614,11 @@ const buildLiveResponse = async ({
         retryAttempt: attempt,
       });
 
-      return new Response(text, {
-        headers: withAssistantHeaders(
-          {
-            'X-Portfolio-Assistant-Provider': provider,
-            'X-Portfolio-Assistant-Model': modelId,
-            'X-Portfolio-Assistant-Cache': 'miss',
-          },
-          'live'
-        ),
-      });
+      return {
+        provider,
+        modelId,
+        text,
+      } satisfies LiveAssistantResult;
     } catch (error) {
       lastError = error;
       const retryable = shouldRetryAssistantError(error);
@@ -458,24 +657,133 @@ const buildLiveResponse = async ({
   throw lastError ?? new Error('Provider failed without a recoverable response.');
 };
 
+const buildResponse = (
+  result: LiveAssistantResult,
+  cacheSource: Exclude<CacheSource, 'client'>
+) =>
+  new Response(result.text, {
+    headers: withAssistantHeaders(
+      {
+        'X-Portfolio-Assistant-Provider': result.provider,
+        'X-Portfolio-Assistant-Model': result.modelId,
+      },
+      'live',
+      cacheSource
+    ),
+  });
+
+const buildLiveResponse = async ({
+  provider,
+  modelId,
+  model,
+  messages,
+  latestQuery,
+  cacheLookup,
+  candidates,
+}: ResolvedModel & {
+  messages: ModelMessage[];
+  latestQuery: string;
+  cacheLookup: AssistantCacheLookup;
+  candidates: CacheCandidate[];
+}) => {
+  const memoryCached = getMemoryCachedResponse(candidates);
+
+  if (memoryCached) {
+    logAssistantEvent('assistant_memory_cache_hit', {
+      provider: memoryCached.provider,
+      modelId: memoryCached.modelId,
+      latestQueryLength: latestQuery.length,
+      cacheAgeMs: Date.now() - memoryCached.createdAt,
+      transcriptFingerprint: cacheLookup.transcriptFingerprint,
+    });
+
+    return buildResponse(memoryCached, 'memory');
+  }
+
+  const databaseCached = await getDatabaseCachedResponse(candidates);
+
+  if (databaseCached) {
+    setMemoryCachedResponses(candidates, databaseCached);
+
+    logAssistantEvent('assistant_database_cache_hit', {
+      provider: databaseCached.provider,
+      modelId: databaseCached.modelId,
+      latestQueryLength: latestQuery.length,
+      transcriptFingerprint: cacheLookup.transcriptFingerprint,
+      isSingleTurn: cacheLookup.isSingleTurn,
+      intent: cacheLookup.intent,
+    });
+
+    return buildResponse(databaseCached, 'database');
+  }
+
+  const inflightRequest = inflightResponseMap.get(cacheLookup.transcriptKey);
+
+  if (inflightRequest) {
+    const dedupedResult = await inflightRequest;
+    setMemoryCachedResponses(candidates, dedupedResult);
+
+    logAssistantEvent('assistant_inflight_request_deduped', {
+      provider: dedupedResult.provider,
+      modelId: dedupedResult.modelId,
+      latestQueryLength: latestQuery.length,
+      transcriptFingerprint: cacheLookup.transcriptFingerprint,
+    });
+
+    return buildResponse(dedupedResult, 'memory');
+  }
+
+  const generationPromise = (async () => {
+    const liveResult = await generateLiveTextWithRetry({
+      provider,
+      modelId,
+      model,
+      messages,
+      latestQuery,
+    });
+
+    setMemoryCachedResponses(candidates, liveResult);
+    await persistDatabaseCache(candidates, liveResult);
+
+    return liveResult;
+  })();
+
+  inflightResponseMap.set(cacheLookup.transcriptKey, generationPromise);
+
+  try {
+    const liveResult = await generationPromise;
+    return buildResponse(liveResult, 'miss');
+  } finally {
+    if (inflightResponseMap.get(cacheLookup.transcriptKey) === generationPromise) {
+      inflightResponseMap.delete(cacheLookup.transcriptKey);
+    }
+  }
+};
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as ChatRequestBody;
     const messages = body.messages ?? [];
     const modelMessages = toModelMessages(messages);
-    const latestUserMessage = [...messages].reverse().find((message) => message.role === 'user');
+    const latestUserMessage = [...messages]
+      .reverse()
+      .find((message) => message.role === 'user');
     const latestQuery = getMessageText(latestUserMessage);
-    const cacheKey = buildConversationCacheKey(modelMessages);
+    const { lookup: cacheLookup, candidates } = buildCacheCandidates(modelMessages);
     const { models, googleKeyPresent, openAiKeyPresent } = resolveModels();
 
     logAssistantEvent('assistant_request_received', {
       messageCount: messages.length,
       latestQueryLength: latestQuery.length,
       normalizedMessageCount: modelMessages.length,
-      cacheable: modelMessages.length > 0,
       googleKeyPresent,
       openAiKeyPresent,
       providerCount: models.length,
+      hasDatabaseConnection: hasDatabaseConnection(),
+      cacheVersion: ASSISTANT_CACHE_VERSION,
+      transcriptFingerprint: cacheLookup.transcriptFingerprint,
+      isSingleTurn: cacheLookup.isSingleTurn,
+      intent: cacheLookup.intent,
     });
 
     if (models.length === 0) {
@@ -483,7 +791,7 @@ export async function POST(req: Request) {
         latestQueryLength: latestQuery.length,
       });
       return new Response(getAssistantUnavailableReply(), {
-        headers: withAssistantHeaders({}, 'offline'),
+        headers: withAssistantHeaders({}, 'offline', 'miss'),
       });
     }
 
@@ -499,6 +807,7 @@ export async function POST(req: Request) {
           latestQueryLength: latestQuery.length,
           attempt: index + 1,
           totalAttempts: models.length,
+          transcriptFingerprint: cacheLookup.transcriptFingerprint,
         });
 
         return await buildLiveResponse({
@@ -507,7 +816,8 @@ export async function POST(req: Request) {
           model: candidate.model,
           messages: modelMessages,
           latestQuery,
-          cacheKey,
+          cacheLookup,
+          candidates,
         });
       } catch (error) {
         lastError = error;
@@ -518,6 +828,7 @@ export async function POST(req: Request) {
           attempt: index + 1,
           totalAttempts: models.length,
           failureKind: classifyAssistantError(error),
+          transcriptFingerprint: cacheLookup.transcriptFingerprint,
         });
       }
     }
@@ -527,18 +838,19 @@ export async function POST(req: Request) {
         latestQueryLength: latestQuery.length,
         providerCount: models.length,
         failureKind: classifyAssistantError(lastError),
+        transcriptFingerprint: cacheLookup.transcriptFingerprint,
       });
     }
 
     return new Response(buildDeterministicFallbackReply(latestQuery), {
-      headers: withAssistantHeaders({}, 'degraded'),
+      headers: withAssistantHeaders({}, 'degraded', 'miss'),
     });
   } catch (error) {
     logAssistantError('assistant_route_error', error, {
       latestQueryLength: 0,
     });
     return new Response(getAssistantUnavailableReply(), {
-      headers: withAssistantHeaders({}, 'offline'),
+      headers: withAssistantHeaders({}, 'offline', 'miss'),
     });
   }
 }

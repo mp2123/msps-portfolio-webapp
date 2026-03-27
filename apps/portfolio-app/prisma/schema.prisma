@@ -48,3 +48,23 @@ model PortfolioEvent {
   @@index([eventType, createdAt])
   @@index([sessionId, createdAt])
 }
+
+model AssistantCacheEntry {
+  id                 String   @id @default(cuid())
+  cacheKey           String   @unique
+  strategy           String
+  intent             String?
+  normalizedQuestion String?
+  responseText       String
+  provider           String
+  modelId            String
+  contentVersion     String
+  hitCount           Int      @default(0)
+  createdAt          DateTime @default(now())
+  expiresAt          DateTime
+  lastHitAt          DateTime @default(now())
+
+  @@index([expiresAt])
+  @@index([intent, expiresAt])
+  @@index([createdAt])
+}

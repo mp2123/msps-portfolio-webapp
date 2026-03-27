@@ -9,16 +9,29 @@ import { Bot, ChevronDown, Send, Sparkles, User, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { recruiterPrompts } from '@/content/portfolio';
+import {
+  ASSISTANT_CLIENT_CACHE_TTL_MS,
+  type AssistantCacheMessage,
+  buildAssistantCacheLookup,
+} from '@/lib/assistant-cache';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { cn } from '@/lib/utils';
 
 const FALLBACK_RESPONSE_PREFIX = "I'm having trouble reaching the live model right now";
 const UNAVAILABLE_RESPONSE_PREFIX = 'The portfolio assistant is temporarily unavailable right now.';
+const CLIENT_CACHE_PREFIX = 'portfolio-assistant-client-cache:';
 
 type AssistantMode = 'unknown' | 'live' | 'degraded' | 'offline';
 
 type AssistantRuntimeState = {
   mode: AssistantMode;
+  provider: string | null;
+  model: string | null;
+};
+
+type ClientAssistantCacheEntry = {
+  text: string;
+  createdAt: number;
   provider: string | null;
   model: string | null;
 };
@@ -64,6 +77,72 @@ const getMessageText = (message: {
   return '';
 };
 
+const buildClientCacheKeyFromBody = (body: unknown) => {
+  if (!body || typeof body !== 'object' || !('messages' in body)) {
+    return null;
+  }
+
+  const rawMessages = Array.isArray(body.messages)
+    ? (body.messages as Array<{
+        role?: string;
+        content?: unknown;
+        parts?: Array<{ type?: string; text?: string }>;
+      }>)
+    : [];
+
+  const messages: AssistantCacheMessage[] = rawMessages
+    .map((message) => ({
+      role: message.role ?? 'user',
+      content: getMessageText(message),
+    }))
+    .filter((message) => message.content.trim().length > 0);
+
+  if (messages.length === 0) {
+    return null;
+  }
+
+  return buildAssistantCacheLookup(messages).transcriptKey;
+};
+
+const readClientCachedResponse = (cacheKey: string) => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(`${CLIENT_CACHE_PREFIX}${cacheKey}`);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as ClientAssistantCacheEntry;
+    if (Date.now() - parsed.createdAt > ASSISTANT_CLIENT_CACHE_TTL_MS) {
+      window.sessionStorage.removeItem(`${CLIENT_CACHE_PREFIX}${cacheKey}`);
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const writeClientCachedResponse = (
+  cacheKey: string,
+  value: ClientAssistantCacheEntry
+) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      `${CLIENT_CACHE_PREFIX}${cacheKey}`,
+      JSON.stringify(value)
+    );
+  } catch {
+    // Session cache is opportunistic only.
+  }
+};
+
 export const FloatingAiAssistant = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -80,9 +159,41 @@ export const FloatingAiAssistant = () => {
   const transport = useMemo(
     () =>
       new TextStreamChatTransport({
-      api: '/api/chat',
-      body: { source: 'portfolio-app' },
+        api: '/api/chat',
+        body: { source: 'portfolio-app' },
         fetch: async (input, init) => {
+          let clientCacheKey: string | null = null;
+
+          try {
+            const parsedBody =
+              typeof init?.body === 'string' ? JSON.parse(init.body) : null;
+            clientCacheKey = buildClientCacheKeyFromBody(parsedBody);
+
+            if (clientCacheKey) {
+              const cached = readClientCachedResponse(clientCacheKey);
+
+              if (cached) {
+                setAssistantRuntime({
+                  mode: 'live',
+                  provider: cached.provider,
+                  model: cached.model,
+                });
+
+                return new Response(cached.text, {
+                  headers: {
+                    'Content-Type': 'text/plain; charset=utf-8',
+                    'X-Portfolio-Assistant-Mode': 'live',
+                    'X-Portfolio-Assistant-Provider': cached.provider ?? '',
+                    'X-Portfolio-Assistant-Model': cached.model ?? '',
+                    'X-Portfolio-Assistant-Cache': 'client',
+                  },
+                });
+              }
+            }
+          } catch {
+            clientCacheKey = null;
+          }
+
           try {
             const response = await fetch(input, init);
             const modeHeader = response.headers.get('x-portfolio-assistant-mode');
@@ -95,6 +206,31 @@ export const FloatingAiAssistant = () => {
               provider: response.headers.get('x-portfolio-assistant-provider'),
               model: response.headers.get('x-portfolio-assistant-model'),
             });
+
+            if (clientCacheKey && modeHeader === 'live') {
+              const provider = response.headers.get(
+                'x-portfolio-assistant-provider'
+              );
+              const model = response.headers.get('x-portfolio-assistant-model');
+
+              void response
+                .clone()
+                .text()
+                .then((text) => {
+                  const normalized = text.trim();
+                  if (!normalized) return;
+
+                  writeClientCachedResponse(clientCacheKey!, {
+                    text: normalized,
+                    createdAt: Date.now(),
+                    provider,
+                    model,
+                  });
+                })
+                .catch(() => {
+                  // Non-blocking client cache population.
+                });
+            }
 
             return response;
           } catch (fetchError) {
