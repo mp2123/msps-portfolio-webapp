@@ -110,8 +110,8 @@ const ScrollExpandMedia = ({
   const showParticleField = !prefersReducedMotion && !isMobileState;
   const showAmbientMotion = !prefersReducedMotion && !isMobileState;
   const heroTrackHeight = isMobileState
-    ? 'clamp(1480px, 184svh, 1940px)'
-    : 'clamp(1680px, 156svh, 2140px)';
+    ? 'clamp(1420px, 176svh, 1880px)'
+    : 'clamp(1600px, 150svh, 2040px)';
   const frameHeight = isMobileState ? 360 : 520;
   const firstLine = titleLines?.[0] ?? title ?? '';
   const secondLine = titleLines?.[1] ?? '';
@@ -134,7 +134,7 @@ const ScrollExpandMedia = ({
   const frameRotateX = useTransform(progress, [0, 0.9, 1], [16, 2, 0]);
   const frameRotateY = useTransform(progress, [0, 0.9, 1], [-11, -1.5, 0]);
   const mediaOverlayOpacity = useTransform(progress, [0, 1], [0.56, 0.34]);
-  const contentOpacity = useTransform(progress, [0, 0.62, 0.84, 1], [0, 0.05, 0.8, 1]);
+  const contentOpacity = useTransform(progress, [0, 0.56, 0.78, 1], [0, 0.06, 0.84, 1]);
   const shadowCyan = useTransform(progress, [0, 1], [0.18, 0.3]);
   const shadowSlate = useTransform(progress, [0, 1], [0.58, 0.68]);
   const mediaShadow = useMotionTemplate`0 42px 120px rgba(14, 165, 233, ${shadowCyan}), 0 10px 60px rgba(2, 6, 23, ${shadowSlate})`;
@@ -341,7 +341,7 @@ const ScrollExpandMedia = ({
       </section>
 
       <motion.section
-        className="relative z-10 -mt-[8vh] flex w-full flex-col px-4 py-10 md:-mt-[16vh] md:px-10 lg:-mt-[24vh] lg:px-16 lg:py-16"
+        className="relative z-10 -mt-[18vh] flex w-full flex-col px-4 py-10 md:-mt-[30vh] md:px-10 lg:-mt-[40vh] lg:px-16 lg:py-16"
         style={{ opacity: contentOpacity }}
       >
         {children}

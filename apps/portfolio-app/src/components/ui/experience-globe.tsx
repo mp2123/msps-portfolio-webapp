@@ -93,13 +93,16 @@ export function ExperienceGlobe() {
     if (!isGlobeVisible || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
+    const initialWidth = canvas.offsetWidth;
+    if (!initialWidth) return;
+
     let phi = 5.1;
-    let width = 0;
+    let width = initialWidth;
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.6),
-      width: width * 2,
-      height: width * 2,
+      width: initialWidth * 2,
+      height: initialWidth * 2,
       phi,
       theta: 0.35,
       dark: 1,

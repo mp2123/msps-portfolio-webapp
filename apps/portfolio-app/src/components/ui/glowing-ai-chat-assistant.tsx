@@ -339,25 +339,45 @@ export const FloatingAiAssistant = () => {
       return;
     }
 
-    const distanceFromBottom =
-      viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop;
     const previousMessageCount = previousMessageCountRef.current;
     const latestMessageRole = messages[messages.length - 1]?.role;
-    const shouldAutoScroll =
-      previousMessageCount === 0 ||
-      (messages.length > previousMessageCount &&
-        (latestMessageRole === 'user' || distanceFromBottom < 96));
+    const latestMessageId = messages[messages.length - 1]?.id;
+    const hasNewMessage = messages.length > previousMessageCount;
 
     previousMessageCountRef.current = messages.length;
 
-    if (!shouldAutoScroll) {
+    if (previousMessageCount === 0) {
+      requestAnimationFrame(() => {
+        viewport.scrollTo({
+          top: viewport.scrollHeight,
+          behavior: 'auto',
+        });
+      });
+      return;
+    }
+
+    if (!hasNewMessage) {
       return;
     }
 
     requestAnimationFrame(() => {
+      if (latestMessageRole === 'assistant' && latestMessageId) {
+        const latestAssistantBubble = chatRef.current?.querySelector<HTMLElement>(
+          `[data-message-id="${latestMessageId}"]`
+        );
+
+        if (latestAssistantBubble) {
+          viewport.scrollTo({
+            top: Math.max(0, latestAssistantBubble.offsetTop - 12),
+            behavior: 'smooth',
+          });
+          return;
+        }
+      }
+
       viewport.scrollTo({
         top: viewport.scrollHeight,
-        behavior: previousMessageCount > 0 ? 'smooth' : 'auto',
+        behavior: 'smooth',
       });
     });
   }, [isChatOpen, messages]);
@@ -546,6 +566,7 @@ export const FloatingAiAssistant = () => {
                     {messages.map((m) => (
                       <motion.div
                         key={m.id}
+                        data-message-id={m.id}
                         data-role={m.role}
                         initial={{ opacity: 0, x: m.role === 'user' ? 20 : -20 }}
                         animate={{ opacity: 1, x: 0 }}
