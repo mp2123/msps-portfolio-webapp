@@ -131,6 +131,18 @@ export interface SkillsGroup {
   items: string[];
 }
 
+export interface ArtifactScannerSignal {
+  id: string;
+  artifactId: string;
+  scannerId: string;
+  rawLabel: string;
+  title: string;
+  meta: string;
+  proofLabel: string;
+  outcome: string;
+  rawFragments: string[];
+}
+
 export const heroContent: HeroContent = {
   eyebrow: "Business Analytics / BI",
   title: "Turn messy data into decision-ready reporting systems.",
@@ -476,6 +488,73 @@ export const skillsGroups: SkillsGroup[] = [
   {
     category: "Operator Strengths",
     items: ["Stakeholder Translation", "Leadership", "Prioritization", "Crisis Management", "High-Volume Ops", "Team Coaching"],
+  },
+];
+
+export const artifactScannerSignals: ArtifactScannerSignal[] = [
+  {
+    id: "scanner-command-center",
+    artifactId: "artifact-dashboard",
+    scannerId: "SCAN-2026-PROOF-1001",
+    rawLabel: "Raw stakeholder ask",
+    title: "Command Center dashboard walkthrough",
+    meta: "Power BI / KPI translation",
+    proofLabel: "Executive visibility surface",
+    outcome: "Fragmented opportunity reporting becomes a recruiter-ready walkthrough of KPI logic, adoption flow, and operating visibility.",
+    rawFragments: [
+      "// STAKEHOLDER_ASK: show pipeline clarity by region, owner, and segment",
+      "DEFINE KPI.win_rate = DIVIDE([wins],[opportunities])",
+      "GROUP BY fiscal_week, account_owner, motion",
+      "REQUIRED_OUTPUT = executive trend view + self-serve drill path",
+    ],
+  },
+  {
+    id: "scanner-automation-demo",
+    artifactId: "artifact-video",
+    scannerId: "SCAN-2026-PROOF-1002",
+    rawLabel: "Manual workflow logic",
+    title: "Automation demo reel",
+    meta: "Workflow compression",
+    proofLabel: "Repeatable system proof",
+    outcome: "Manual refreshes, QA checks, and handoff friction compress into a short demo that shows how repetitive reporting becomes a durable workflow.",
+    rawFragments: [
+      "INPUT.manual_refresh_hours = 20_per_week",
+      "RUN qa_checkpoint('source parity', 'row totals', 'stakeholder labels')",
+      "SCHEDULE workflow = recurring_reporting_cleanup",
+      "RETURN output = decision_ready_packet",
+    ],
+  },
+  {
+    id: "scanner-template",
+    artifactId: "artifact-template",
+    scannerId: "SCAN-2026-PROOF-1003",
+    rawLabel: "Operator handoff format",
+    title: "Reporting template handoff",
+    meta: "Scorecard / repeatable ops tool",
+    proofLabel: "Download-ready artifact",
+    outcome: "Loose spreadsheet logic turns into a polished template that an operator or manager could actually reuse without needing the backstory.",
+    rawFragments: [
+      "SOURCE = scorecard_columns, owner_flags, labor_notes",
+      "STANDARDIZE header_naming, status_bands, date_logic",
+      "LOCK formula_cells = true",
+      "EXPORT handoff = public_safe_template",
+    ],
+  },
+  {
+    id: "scanner-methodology",
+    artifactId: "artifact-methodology",
+    scannerId: "SCAN-2026-PROOF-1004",
+    rawLabel: "Analysis notes",
+    title: "Methodology brief",
+    meta: "Analytical rigor for recruiters",
+    proofLabel: "Business-readable brief",
+    outcome: "Model notes, QA choices, and business framing resolve into a short proof brief that explains what was built and why it mattered.",
+    rawFragments: [
+      "MODEL = gradient_boosting_classifier",
+      "METRICS = accuracy, recall, f1_score",
+      "QA = validation_split + stakeholder narrative alignment",
+      "DELIVERABLE = one_to_two_page_methodology_brief",
+    ],
   },
 ];
 

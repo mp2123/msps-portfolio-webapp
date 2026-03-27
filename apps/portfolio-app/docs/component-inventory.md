@@ -24,6 +24,9 @@ This inventory maps the homepage experience to its implementation and notes whet
 - `Skills`
   - `src/components/ui/skills-matrix.tsx`
   - Classification: reusable presentation component
+- `Translation layer`
+  - `src/components/portfolio/sections/artifact-scanner.tsx`
+  - Classification: portfolio-only section composition adapted from an internal sibling-app pattern
 - `Artifacts`
   - `src/app/page.tsx` (`ArtifactGallery`)
   - Classification: portfolio-only section composition

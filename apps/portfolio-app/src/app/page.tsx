@@ -24,6 +24,7 @@ import { SkillsMatrix } from "@/components/ui/skills-matrix";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
+import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
@@ -601,6 +602,7 @@ export default function PortfolioHome() {
               </div>
             </section>
 
+            <ArtifactScanner />
             <ArtifactGallery />
 
             <section
