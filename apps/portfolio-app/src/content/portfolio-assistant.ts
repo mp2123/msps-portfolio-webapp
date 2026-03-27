@@ -111,11 +111,11 @@ const buildProofDocs = (): PortfolioKnowledgeDoc[] => {
 
 const buildRecommendationDocs = (): PortfolioKnowledgeDoc[] => {
   return recommendations.map((item) => ({
-    id: `recommendation-${normalizeText(item.author).replace(/\s+/g, "-")}`,
+    id: `recommendation-${normalizeText(item.publicName).replace(/\s+/g, "-")}`,
     kind: "recommendation",
-    title: `${item.author}, ${item.role}`,
+    title: `${item.publicName}, ${item.role}`,
     content: `"${item.quote}"`,
-    keywords: joinKeywords(item.author, item.role, item.company, item.trustLevel),
+    keywords: joinKeywords(item.publicName, item.role, item.company, item.trustLevel),
     linkedIds: [],
   }));
 };

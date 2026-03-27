@@ -2,6 +2,8 @@
 
 This folder is the intake system for all future portfolio-proof upgrades.
 
+Everything in this intake system should be treated as local-only by default unless it is intentionally promoted into a public-safe website asset later.
+
 Use it as the single staging area for:
 - raw project evidence
 - sanitized public-safe exports
@@ -21,6 +23,11 @@ Working order:
 4. Move the best likely portfolio candidates into `03-selected-assets`.
 5. Use `04-notes` to explain what each asset proves.
 
+Safety default:
+- do not publish directly from `source-material`
+- do not treat raw resumes, raw project files, or recommendation source docs as GitHub-ready or website-ready
+- promotion into the live portfolio should happen only after review and sanitization
+
 Start with:
 - `_intake-template.md`
 - `_asset-sanitization-guide.md`
@@ -29,4 +36,3 @@ Start with:
 Companion docs:
 - `../docs/source-material-map.md`
 - `../docs/architecture-map.md`
-

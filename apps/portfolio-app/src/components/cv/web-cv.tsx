@@ -148,10 +148,10 @@ export function WebCv() {
             <h3 className="text-xl font-semibold text-white">Recommendations</h3>
             <div className="mt-4 space-y-4">
               {recommendations.map((rec) => (
-                <blockquote key={rec.author} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <blockquote key={`${rec.publicName}-${rec.company}`} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <p className="text-sm leading-relaxed text-zinc-300">{rec.quote}</p>
                   <footer className="mt-4 text-sm">
-                    <p className="font-semibold text-white">{rec.author}</p>
+                    <p className="font-semibold text-white">{rec.publicName}</p>
                     <p className="text-zinc-400">{rec.role} · {rec.company}</p>
                   </footer>
                 </blockquote>

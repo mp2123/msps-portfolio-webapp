@@ -9,7 +9,7 @@ export const RecommendationsCarousel = ({ recommendations }: { recommendations: 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {recommendations.map((rec, index) => (
           <motion.div
-            key={`${rec.author}-${rec.company}`}
+            key={`${rec.publicName}-${rec.company}`}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -31,7 +31,7 @@ export const RecommendationsCarousel = ({ recommendations }: { recommendations: 
                 &quot;{rec.quote}&quot;
               </p>
               <div className="relative z-10 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4">
-                <h4 className="font-bold text-foreground">{rec.author}</h4>
+                <h4 className="font-bold text-foreground">{rec.publicName}</h4>
                 <p className="text-primary text-sm font-medium">{rec.role}</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">{rec.company}</p>
               </div>

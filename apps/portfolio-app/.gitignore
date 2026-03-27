@@ -41,3 +41,16 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+.env*.local
+
+# source-material intake stays local by default
+/source-material/_incoming/*
+!/source-material/_incoming/README.md
+/source-material/**/01-raw/**
+!/source-material/**/01-raw/.gitkeep
+/source-material/**/02-sanitized/**
+!/source-material/**/02-sanitized/.gitkeep
+/source-material/**/03-selected-assets/**
+!/source-material/**/03-selected-assets/.gitkeep
+/source-material/**/04-notes/**
+!/source-material/**/04-notes/.gitkeep
