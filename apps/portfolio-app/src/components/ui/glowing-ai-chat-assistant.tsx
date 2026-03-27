@@ -331,6 +331,18 @@ export const FloatingAiAssistant = () => {
     sendMessage({ text: prompt });
   };
 
+  const handleLauncherToggle = () => {
+    setIsChatOpen((open) => {
+      const nextOpen = !open;
+      trackPortfolioEvent({
+        eventType: nextOpen ? 'assistant_open' : 'assistant_close',
+        label: nextOpen ? 'assistant-launcher-open' : 'assistant-launcher-close',
+        section: 'assistant',
+      });
+      return nextOpen;
+    });
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -530,7 +542,7 @@ export const FloatingAiAssistant = () => {
         className={`floating-ai-button relative flex h-16 w-16 items-center justify-center rounded-full transition-all duration-500 transform ${
           isChatOpen ? 'rotate-90' : 'rotate-0'
         }`}
-        onClick={() => setIsChatOpen((open) => !open)}
+        onClick={handleLauncherToggle}
         style={{
           background:
             'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 35%), linear-gradient(135deg, rgba(34,211,238,0.92) 0%, rgba(59,130,246,0.92) 45%, rgba(37,99,235,0.96) 100%)',
@@ -626,7 +638,14 @@ export const FloatingAiAssistant = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsChatOpen(false)}
+                  onClick={() => {
+                    trackPortfolioEvent({
+                      eventType: 'assistant_close',
+                      label: 'assistant-panel-close',
+                      section: 'assistant',
+                    });
+                    setIsChatOpen(false);
+                  }}
                   className="rounded-full p-2 transition-colors hover:bg-white/5"
                   aria-label="Close assistant panel"
                 >

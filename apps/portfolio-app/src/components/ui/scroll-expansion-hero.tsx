@@ -111,7 +111,7 @@ const ScrollExpandMedia = ({
   const showAmbientMotion = !prefersReducedMotion && !isMobileState;
   const heroTrackHeight = isMobileState
     ? 'clamp(1420px, 176svh, 1880px)'
-    : 'clamp(1600px, 150svh, 2040px)';
+    : 'clamp(1660px, 156svh, 2100px)';
   const frameHeight = isMobileState ? 360 : 520;
   const firstLine = titleLines?.[0] ?? title ?? '';
   const secondLine = titleLines?.[1] ?? '';
@@ -174,32 +174,32 @@ const ScrollExpandMedia = ({
           </div>
 
           <div className="relative z-10 flex h-full items-center justify-center px-4">
-            <div className="container mx-auto flex h-full max-w-7xl flex-col items-center justify-center">
+            <div className="container mx-auto flex h-full max-w-7xl flex-col items-center justify-start px-0 pb-8 pt-8 md:pb-10 md:pt-12 lg:pb-12 lg:pt-16 xl:justify-center xl:pt-0">
               <motion.div
-                className={`pointer-events-none relative z-20 mb-8 flex w-full max-w-5xl flex-col items-center justify-center gap-4 text-center ${
+                className={`pointer-events-none relative z-20 mb-8 flex w-full max-w-5xl flex-col items-center justify-center gap-4 px-1 text-center md:mb-10 ${
                   textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
                 }`}
                 style={{ y: headingTranslateY }}
               >
                 {eyebrow ? (
                   <motion.p
-                    className="rounded-full border border-cyan-200/20 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.45em] text-cyan-100/80 shadow-[0_0_30px_rgba(34,211,238,0.08)] backdrop-blur-xl md:text-xs"
+                    className="max-w-[calc(100vw-2rem)] rounded-full border border-cyan-200/20 bg-white/5 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-cyan-100/80 shadow-[0_0_30px_rgba(34,211,238,0.08)] backdrop-blur-xl md:text-[11px] md:tracking-[0.45em]"
                     style={{ opacity: eyebrowOpacity }}
                   >
                     {eyebrow}
                   </motion.p>
                 ) : null}
 
-                <div className="space-y-2">
+                <div className="space-y-2 md:space-y-3">
                   <motion.h2
-                    className="text-4xl font-bold text-blue-100 md:text-6xl lg:text-7xl"
+                    className="text-[clamp(3.1rem,7vw,6.2rem)] font-bold leading-[0.92] text-blue-100"
                     style={{ x: leftTitleX }}
                   >
                     {firstLine}
                   </motion.h2>
                   {secondLine ? (
                     <motion.h2
-                      className="text-4xl font-bold text-cyan-100 md:text-6xl lg:text-7xl"
+                      className="text-[clamp(3.1rem,7vw,6.2rem)] font-bold leading-[0.92] text-cyan-100"
                       style={{ x: rightTitleX }}
                     >
                       {secondLine}
@@ -209,7 +209,7 @@ const ScrollExpandMedia = ({
 
                 {subtitle ? (
                   <motion.p
-                    className="mx-auto max-w-3xl px-4 text-sm leading-relaxed text-blue-100/85 md:text-base lg:text-lg"
+                    className="mx-auto max-w-3xl px-2 text-sm leading-relaxed text-blue-100/85 md:px-4 md:text-base lg:text-lg"
                     style={{ opacity: subtitleOpacity }}
                   >
                     {subtitle}

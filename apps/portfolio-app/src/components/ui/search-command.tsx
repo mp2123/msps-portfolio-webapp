@@ -10,6 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
 
 const portfolioSections = [
@@ -39,14 +40,21 @@ export function SearchCommand() {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
-        className="flex h-10 w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm text-zinc-400 transition-colors hover:border-cyan-300/20 hover:bg-white/[0.08]"
+        onClick={() => {
+          setOpen(true);
+          trackPortfolioEvent({
+            eventType: 'search_open',
+            label: 'header-search-open',
+            section: 'header',
+          });
+        }}
+        className="flex h-10 w-full min-w-0 items-center justify-between gap-3 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm text-zinc-400 transition-colors hover:border-cyan-300/20 hover:bg-white/[0.08]"
       >
         <span className="flex min-w-0 items-center gap-2">
           <Search className="h-3.5 w-3.5 shrink-0 text-cyan-100/70" />
           <span className="truncate">Search sections...</span>
         </span>
-        <kbd className="pointer-events-none inline-flex h-6 shrink-0 select-none items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 font-mono text-[10px] font-medium text-zinc-500">
+        <kbd className="pointer-events-none hidden h-6 shrink-0 select-none items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 font-mono text-[10px] font-medium text-zinc-500 xl:inline-flex">
           <span className="text-xs text-zinc-400">⌘</span>K
         </kbd>
       </button>
@@ -62,6 +70,15 @@ export function SearchCommand() {
                   onSelect={() => {
                     setOpen(false);
                     scrollToPortfolioSection(section.id);
+                    trackPortfolioEvent({
+                      eventType: 'search_select',
+                      label: section.name,
+                      href: `#${section.id}`,
+                      section: 'header-search',
+                      metadata: {
+                        category: section.category,
+                      },
+                    });
                   }}
                 >
                   <span>{section.name}</span>
@@ -74,6 +91,12 @@ export function SearchCommand() {
                 onSelect={() => {
                   setOpen(false);
                   scrollToPortfolioSection('projects');
+                  trackPortfolioEvent({
+                    eventType: 'search_select',
+                    label: 'Jump to featured work',
+                    href: '#projects',
+                    section: 'header-search',
+                  });
                 }}
               >
                 <span>Jump to featured work</span>

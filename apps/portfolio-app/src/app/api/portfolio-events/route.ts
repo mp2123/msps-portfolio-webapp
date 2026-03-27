@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
@@ -12,8 +13,14 @@ type PortfolioEventRequest = PortfolioEventPayload & {
 const ALLOWED_EVENT_TYPES = new Set<PortfolioEventType>([
   "resume_download",
   "contact_click",
+  "section_navigation",
   "assistant_prompt_click",
   "assistant_message_submit",
+  "assistant_open",
+  "assistant_close",
+  "search_open",
+  "search_select",
+  "globe_stage_select",
   "print_cv_open",
 ]);
 
@@ -50,6 +57,22 @@ function createEventId() {
   }
 
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function buildRequestMetadata(req: Request) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const realIp = req.headers.get("x-real-ip");
+  const ip = forwardedFor?.split(",")[0]?.trim() || realIp?.trim() || "";
+  const visitorHash = ip
+    ? createHash("sha256").update(ip).digest("hex").slice(0, 16)
+    : null;
+
+  return {
+    requestCountry: req.headers.get("x-vercel-ip-country") ?? null,
+    requestRegion: req.headers.get("x-vercel-ip-country-region") ?? null,
+    requestCity: req.headers.get("x-vercel-ip-city") ?? null,
+    visitorHash,
+  };
 }
 
 async function ensurePortfolioEventsTable() {
@@ -91,6 +114,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
+    const metadata =
+      body.metadata && typeof body.metadata === "object" && !Array.isArray(body.metadata)
+        ? {
+            ...body.metadata,
+            ...buildRequestMetadata(req),
+          }
+        : buildRequestMetadata(req);
+
     await ensurePortfolioEventsTable();
 
     await getPool().query(
@@ -105,7 +136,7 @@ export async function POST(req: Request) {
         body.href ?? null,
         body.section ?? null,
         body.sessionId,
-        body.metadata ? JSON.stringify(body.metadata) : null,
+        metadata ? JSON.stringify(metadata) : null,
       ]
     );
 

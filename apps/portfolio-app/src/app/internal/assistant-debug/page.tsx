@@ -35,7 +35,12 @@ type AssistantCacheSummary = {
 type PortfolioAnalyticsSummary = {
   totalEvents: number;
   recentEvents: number;
+  uniqueSessions: number;
   byEventType: Array<{ label: string; count: number }>;
+  bySection: Array<{ label: string; count: number }>;
+  byPath: Array<{ label: string; count: number }>;
+  byBrowser: Array<{ label: string; count: number }>;
+  byCity: Array<{ label: string; count: number }>;
   recentRows: Array<{
     id: string;
     eventType: string;
@@ -44,6 +49,7 @@ type PortfolioAnalyticsSummary = {
     section: string | null;
     sessionId: string;
     createdAt: Date;
+    metadata: Record<string, unknown> | null;
   }>;
 };
 
@@ -71,7 +77,12 @@ const DEFAULT_ASSISTANT_CACHE_SUMMARY: AssistantCacheSummary = {
 const DEFAULT_ANALYTICS_SUMMARY: PortfolioAnalyticsSummary = {
   totalEvents: 0,
   recentEvents: 0,
+  uniqueSessions: 0,
   byEventType: [],
+  bySection: [],
+  byPath: [],
+  byBrowser: [],
+  byCity: [],
   recentRows: [],
 };
 
@@ -104,6 +115,43 @@ const formatPercent = (numerator: number, denominator: number) => {
   }
 
   return `${Math.round((numerator / denominator) * 100)}%`;
+};
+
+const countTopValues = (
+  values: Array<string | null | undefined>,
+  limit = 6
+): Array<{ label: string; count: number }> =>
+  Array.from(
+    values.reduce((map, value) => {
+      const normalized = value?.trim();
+      if (!normalized) return map;
+
+      map.set(normalized, (map.get(normalized) ?? 0) + 1);
+      return map;
+    }, new Map<string, number>())
+  )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+
+const readMetadataString = (
+  metadata: Record<string, unknown> | null | undefined,
+  key: string
+) => {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+    return null;
+  }
+
+  const value = metadata[key];
+  return typeof value === 'string' && value.trim() ? value : null;
+};
+
+const normalizeMetadata = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
 };
 
 const ensureDebugTables = async () => {
@@ -185,8 +233,7 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       recentEntries,
       totalEvents,
       recentEvents,
-      eventTypeCounts,
-      recentEventRows,
+      analyticsRows,
     ] = await Promise.all([
       prisma.assistantCacheEntry.count(),
       prisma.assistantCacheEntry.count({
@@ -236,17 +283,10 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       prisma.portfolioEvent.count({
         where: { createdAt: { gte: sevenDaysAgo } },
       }),
-      prisma.portfolioEvent.groupBy({
-        by: ['eventType'],
-        where: { createdAt: { gte: sevenDaysAgo } },
-        _count: { _all: true },
-        orderBy: {
-          _count: { eventType: 'desc' },
-        },
-      }),
       prisma.portfolioEvent.findMany({
+        where: { createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'desc' },
-        take: 12,
+        take: 500,
         select: {
           id: true,
           eventType: true,
@@ -255,14 +295,41 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
           section: true,
           sessionId: true,
           createdAt: true,
+          metadata: true,
         },
       }),
     ]);
 
     const totalHits = cacheHits._sum.hitCount ?? 0;
 
+    const uniqueSessions = new Set(analyticsRows.map((row) => row.sessionId)).size;
+    const byEventType = countTopValues(analyticsRows.map((row) => row.eventType));
+    const bySection = countTopValues(analyticsRows.map((row) => row.section));
+    const byPath = countTopValues(
+      analyticsRows.map((row) =>
+        readMetadataString(row.metadata as Record<string, unknown> | null, 'path')
+      )
+    );
+    const byBrowser = countTopValues(
+      analyticsRows.map((row) =>
+        readMetadataString(row.metadata as Record<string, unknown> | null, 'browser')
+      )
+    );
+    const byCity = countTopValues(
+      analyticsRows.map((row) => {
+        const metadata = row.metadata as Record<string, unknown> | null;
+        const city = readMetadataString(metadata, 'requestCity');
+        const region = readMetadataString(metadata, 'requestRegion');
+        if (city && region) return `${city}, ${region}`;
+        return city ?? region ?? readMetadataString(metadata, 'requestCountry');
+      })
+    );
+
     notes.push(
       'Recent assistant rows omit response bodies on purpose. This page is meant for cache and analytics health only.'
+    );
+    notes.push(
+      'Analytics store privacy-safer context such as path, device, browser, viewport, referrer, and Vercel geo headers. Raw IP addresses are not persisted.'
     );
 
     return {
@@ -289,11 +356,16 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       analytics: {
         totalEvents,
         recentEvents,
-        byEventType: eventTypeCounts.map((entry) => ({
-          label: entry.eventType,
-          count: entry._count._all,
+        uniqueSessions,
+        byEventType,
+        bySection,
+        byPath,
+        byBrowser,
+        byCity,
+        recentRows: analyticsRows.slice(0, 12).map((row) => ({
+          ...row,
+          metadata: normalizeMetadata(row.metadata),
         })),
-        recentRows: recentEventRows,
       },
       notes,
     };
@@ -382,7 +454,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
           </div>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <StatCard
             label="Assistant cache"
             value={snapshot.assistantCache.totalEntries.toLocaleString('en-US')}
@@ -402,6 +474,11 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             label="Analytics events"
             value={snapshot.analytics.totalEvents.toLocaleString('en-US')}
             helper={`${snapshot.analytics.recentEvents.toLocaleString('en-US')} in the last 7 days`}
+          />
+          <StatCard
+            label="Tracked sessions"
+            value={snapshot.analytics.uniqueSessions.toLocaleString('en-US')}
+            helper="Unique browser sessions seen in the last 7 days"
           />
         </section>
 
@@ -464,26 +541,45 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
               Portfolio Analytics
             </p>
-            <h2 className="mt-2 text-xl font-semibold">Recent event types</h2>
-            <div className="mt-6 space-y-3">
-              {snapshot.analytics.byEventType.length === 0 ? (
-                <p className="text-sm text-white/50">No analytics rows recorded in the last 7 days.</p>
-              ) : (
-                snapshot.analytics.byEventType.map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
-                  >
-                    <span className="text-sm text-white/80">{item.label}</span>
-                    <span className="text-sm font-medium text-cyan-200">{item.count}</span>
-                  </div>
-                ))
-              )}
+            <h2 className="mt-2 text-xl font-semibold">Recent event types and sections</h2>
+            <div className="mt-6 grid gap-6 lg:grid-cols-2">
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-white/80">By event type</h3>
+                {snapshot.analytics.byEventType.length === 0 ? (
+                  <p className="text-sm text-white/50">No analytics rows recorded in the last 7 days.</p>
+                ) : (
+                  snapshot.analytics.byEventType.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                    >
+                      <span className="text-sm text-white/80">{item.label}</span>
+                      <span className="text-sm font-medium text-cyan-200">{item.count}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-white/80">By section</h3>
+                {snapshot.analytics.bySection.length === 0 ? (
+                  <p className="text-sm text-white/50">No section labels recorded yet.</p>
+                ) : (
+                  snapshot.analytics.bySection.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                    >
+                      <span className="text-sm text-white/80">{item.label}</span>
+                      <span className="text-sm font-medium text-cyan-200">{item.count}</span>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-2">
+        <section className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
           <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
               Recent Cache Rows
@@ -539,11 +635,59 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
               Recent Analytics
             </p>
             <h2 className="mt-2 text-xl font-semibold">Latest tracked recruiter actions</h2>
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Top paths</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byPath.length === 0 ? (
+                    <p className="text-white/50">No path metadata yet.</p>
+                  ) : (
+                    snapshot.analytics.byPath.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{truncate(item.label, 28)}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Browsers</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byBrowser.length === 0 ? (
+                    <p className="text-white/50">No browser metadata yet.</p>
+                  ) : (
+                    snapshot.analytics.byBrowser.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{item.label}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Locations</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byCity.length === 0 ? (
+                    <p className="text-white/50">No Vercel geo headers recorded yet.</p>
+                  ) : (
+                    snapshot.analytics.byCity.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{truncate(item.label, 24)}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-              <div className="grid grid-cols-[0.8fr,1fr,0.8fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
+              <div className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
                 <span>Event</span>
                 <span>Label</span>
                 <span>Section</span>
+                <span>Context</span>
                 <span>When</span>
               </div>
               <div className="divide-y divide-white/10">
@@ -553,7 +697,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                   snapshot.analytics.recentRows.map((entry) => (
                     <div
                       key={entry.id}
-                      className="grid grid-cols-[0.8fr,1fr,0.8fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
+                      className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
                     >
                       <div>
                         <p>{entry.eventType}</p>
@@ -566,6 +710,12 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                         <p className="mt-1 text-xs text-white/45">{truncate(entry.href, 36)}</p>
                       </div>
                       <div>{entry.section ?? 'n/a'}</div>
+                      <div className="text-xs text-white/55">
+                        <p>{readMetadataString(entry.metadata, 'browser') ?? 'browser n/a'}</p>
+                        <p className="mt-1">
+                          {truncate(readMetadataString(entry.metadata, 'path'), 26)}
+                        </p>
+                      </div>
                       <div>{formatTimestamp(entry.createdAt)}</div>
                     </div>
                   ))

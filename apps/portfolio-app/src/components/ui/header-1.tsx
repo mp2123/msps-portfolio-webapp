@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
 import { useScroll } from '@/components/ui/use-scroll';
 import { SearchCommand } from '@/components/ui/search-command';
+import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
 
 export function Header() {
@@ -20,6 +21,15 @@ export function Header() {
 				setOpen(false);
 			}
 			scrollToPortfolioSection(sectionId);
+			trackPortfolioEvent({
+				eventType: 'section_navigation',
+				label: `header-${sectionId}`,
+				href,
+				section: 'header',
+				metadata: {
+					closeMenu,
+				},
+			});
 		},
 		[]
 	);
@@ -51,7 +61,7 @@ export function Header() {
 
 	return (
 		<header className={cn('fixed top-0 left-0 right-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-xl transition-colors', scrolled && 'border-white/10 bg-background/92')}>
-			<nav className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-6 lg:px-8">
+			<nav className="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-4 md:px-6 lg:px-8">
 				<a
 					href="#home"
 					className="group flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 transition-colors hover:border-cyan-300/25 hover:bg-white/[0.08]"
@@ -61,17 +71,17 @@ export function Header() {
 					<span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-400/12 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-100">
 						MP
 					</span>
-					<span className="hidden min-w-0 flex-col leading-none sm:flex">
+					<span className="hidden min-w-0 flex-col leading-none md:flex">
 						<span className="text-[10px] font-medium uppercase tracking-[0.26em] text-cyan-100/65">
 							Michael
 						</span>
 						<span className="text-sm font-semibold text-white">Panico</span>
 					</span>
 				</a>
-				<div className="hidden min-w-0 max-w-[22rem] flex-1 md:flex lg:max-w-[25rem]">
+				<div className="hidden min-w-0 flex-1 lg:flex lg:max-w-[18rem] xl:max-w-[22rem] 2xl:max-w-[25rem]">
 					<SearchCommand />
 				</div>
-				<div className="ml-auto hidden items-center gap-1 md:flex lg:gap-2">
+				<div className="ml-auto hidden items-center gap-1 min-[1220px]:flex lg:gap-2">
 					{links.map((link) => (
 						<a
 							key={link.label}
@@ -89,14 +99,14 @@ export function Header() {
 						</a>
 					</Button>
 				</div>
-				<div className="ml-auto md:hidden">
+				<div className="ml-auto min-[1220px]:hidden">
                     <Button size="icon" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-menu" aria-label="Toggle menu">
                         <MenuToggleIcon open={open} className="size-5" />
                     </Button>
                 </div>
 			</nav>
 			{open && (
-				<div id="mobile-menu" className={cn('fixed top-14 right-0 bottom-0 left-0 z-40 md:hidden', 'bg-background/95 backdrop-blur-lg border-t')}>
+				<div id="mobile-menu" className={cn('fixed top-14 right-0 bottom-0 left-0 z-40 min-[1220px]:hidden', 'bg-background/95 backdrop-blur-lg border-t')}>
 					<div className="space-y-4 p-4">
 						<SearchCommand />
 						<div className="space-y-2">
