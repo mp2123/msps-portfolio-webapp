@@ -1,8 +1,8 @@
-import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
 import type { PortfolioEventPayload, PortfolioEventType } from "@/lib/portfolio-analytics";
+import { buildRequestMetadata } from "@/lib/request-context";
 
 export const runtime = "nodejs";
 
@@ -14,6 +14,8 @@ const ALLOWED_EVENT_TYPES = new Set<PortfolioEventType>([
   "resume_download",
   "contact_click",
   "section_navigation",
+  "section_impression",
+  "section_active",
   "assistant_prompt_click",
   "assistant_message_submit",
   "assistant_open",
@@ -21,6 +23,11 @@ const ALLOWED_EVENT_TYPES = new Set<PortfolioEventType>([
   "search_open",
   "search_select",
   "globe_stage_select",
+  "globe_drag",
+  "project_action_click",
+  "wall_open",
+  "wall_submit",
+  "wall_reveal",
   "print_cv_open",
 ]);
 
@@ -28,7 +35,7 @@ let pool: Pool | null = null;
 let tableEnsured = false;
 
 function getConnectionString() {
-  return process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || "";
+  return process.env.DATABASE_URL?.trim() || process.env.DIRECT_URL?.trim() || "";
 }
 
 function getPool() {
@@ -57,22 +64,6 @@ function createEventId() {
   }
 
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function buildRequestMetadata(req: Request) {
-  const forwardedFor = req.headers.get("x-forwarded-for");
-  const realIp = req.headers.get("x-real-ip");
-  const ip = forwardedFor?.split(",")[0]?.trim() || realIp?.trim() || "";
-  const visitorHash = ip
-    ? createHash("sha256").update(ip).digest("hex").slice(0, 16)
-    : null;
-
-  return {
-    requestCountry: req.headers.get("x-vercel-ip-country") ?? null,
-    requestRegion: req.headers.get("x-vercel-ip-country-region") ?? null,
-    requestCity: req.headers.get("x-vercel-ip-city") ?? null,
-    visitorHash,
-  };
 }
 
 async function ensurePortfolioEventsTable() {

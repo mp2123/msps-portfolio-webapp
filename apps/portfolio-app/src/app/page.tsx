@@ -17,15 +17,17 @@ import { Header } from "@/components/ui/header-1";
 import { ROICalculator } from "@/components/ui/roi-calculator";
 import { LiveDataChart } from "@/components/ui/live-data-chart";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
-import { HospitalityStory } from "@/components/ui/hospitality-story";
+import { HospitalityStory } from "@/components/portfolio/sections/hospitality-story";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { TerminalWindow } from "@/components/ui/terminal-window";
 import { SkillsMatrix } from "@/components/ui/skills-matrix";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
-import { SpiralSignal } from "@/components/ui/spiral-signal";
+import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
+import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import {
@@ -49,7 +51,10 @@ const FloatingAiAssistant = dynamic(
 );
 
 const ExperienceGlobe = dynamic(
-  () => import("@/components/ui/experience-globe").then((mod) => mod.ExperienceGlobe),
+  () =>
+    import("@/components/portfolio/graphics/experience-globe").then(
+      (mod) => mod.ExperienceGlobe
+    ),
   {
     ssr: false,
     loading: () => (
@@ -137,7 +142,11 @@ function handleTrackedSectionNavigation(
 
 function ProofStrip() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-12" id="proof-strip">
+    <section
+      className="portfolio-section-anchor mx-auto w-full max-w-6xl px-4 py-12"
+      id="proof-strip"
+      data-portfolio-section="true"
+    >
       <div className="mb-10 max-w-3xl space-y-4">
         <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
           Recruiter-first briefing
@@ -321,7 +330,11 @@ function QuickRecruiterSummary() {
 
 function ArtifactGallery() {
   return (
-    <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="artifacts">
+    <section
+      className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
+      id="artifacts"
+      data-portfolio-section="true"
+    >
       <div className="mb-12 max-w-3xl space-y-4">
         <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
         <h2 className="text-4xl font-bold tracking-tight text-white">Sanitized proof slots ready for media.</h2>
@@ -377,7 +390,11 @@ function ArtifactGallery() {
 
 function ContactSection() {
   return (
-    <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="contact">
+    <section
+      className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
+      id="contact"
+      data-portfolio-section="true"
+    >
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="scanlines relative rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/10 via-black/35 to-black/50 p-8 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
           <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent shadow-[0_0_18px_rgba(34,211,238,0.3)]" />
@@ -427,6 +444,13 @@ function ContactSection() {
                 {role}
               </Badge>
             ))}
+          </div>
+
+          <div className="mt-8 flex items-center justify-between gap-3 border-t border-white/10 pt-5">
+            <p className="text-xs uppercase tracking-[0.22em] text-white/35">
+              Hidden in plain sight
+            </p>
+            <InvisibleInkWall />
           </div>
         </div>
 
@@ -521,14 +545,23 @@ export default function PortfolioHome() {
       >
         <TerminalWindow>
           <main className="relative z-10 grow bg-transparent">
+            <SectionAnalyticsTracker />
             <ProofStrip />
             <QuickRecruiterSummary />
 
-            <section className="portfolio-section-anchor relative z-20 w-full" id="roi-calculator">
+            <section
+              className="portfolio-section-anchor relative z-20 w-full"
+              id="roi-calculator"
+              data-portfolio-section="true"
+            >
               <ROICalculator />
             </section>
 
-            <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="projects">
+            <section
+              className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
+              id="projects"
+              data-portfolio-section="true"
+            >
               <div className="mb-16 max-w-3xl space-y-4">
                 <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
                   Command Center
@@ -549,7 +582,11 @@ export default function PortfolioHome() {
               <BentoGrid items={projectCards} />
             </section>
 
-            <section className="portfolio-section-anchor section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20" id="skills">
+            <section
+              className="portfolio-section-anchor section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20"
+              id="skills"
+              data-portfolio-section="true"
+            >
               <div className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
               <div className="relative z-10">
                 <div className="mb-12 text-center space-y-4">
@@ -566,11 +603,19 @@ export default function PortfolioHome() {
 
             <ArtifactGallery />
 
-            <section className="portfolio-section-anchor section-glow relative w-full border-y border-border bg-black/30" id="advantage">
+            <section
+              className="portfolio-section-anchor section-glow relative w-full border-y border-border bg-black/30"
+              id="advantage"
+              data-portfolio-section="true"
+            >
               <HospitalityStory />
             </section>
 
-            <section className="portfolio-section-anchor section-glow grid-noise relative w-full bg-black/50 py-20" id="experience">
+            <section
+              className="portfolio-section-anchor section-glow grid-noise relative w-full bg-black/50 py-20"
+              id="experience"
+              data-portfolio-section="true"
+            >
               <div className="mx-auto max-w-6xl px-4">
                 <div className="mb-16 max-w-3xl space-y-4">
                   <Badge className="border-white/10 bg-white/5 text-zinc-100">Experience graph</Badge>
@@ -587,7 +632,11 @@ export default function PortfolioHome() {
               </div>
             </section>
 
-            <section className="portfolio-section-anchor w-full py-20" id="recommendations">
+            <section
+              className="portfolio-section-anchor w-full py-20"
+              id="recommendations"
+              data-portfolio-section="true"
+            >
               <div className="mb-12 text-center space-y-4">
                 <Badge className="border-white/10 bg-white/5 text-zinc-100">Social proof</Badge>
                 <h2 className="text-4xl font-bold tracking-tight text-white">What leaders noticed first.</h2>

@@ -8,7 +8,7 @@ const globalForPrisma = global as unknown as {
 };
 
 const getConnectionString = () =>
-  process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || '';
+  process.env.DATABASE_URL?.trim() || process.env.DIRECT_URL?.trim() || '';
 
 export const getPrismaClient = () => {
   const connectionString = getConnectionString();

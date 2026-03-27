@@ -68,3 +68,19 @@ model AssistantCacheEntry {
   @@index([intent, expiresAt])
   @@index([createdAt])
 }
+
+model InvisibleInkMessage {
+  id                 String   @id @default(cuid())
+  sessionId          String
+  visitorHash        String?
+  alias              String?
+  message            String
+  createdFromCity    String?
+  createdFromRegion  String?
+  createdFromCountry String?
+  createdAt          DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([sessionId, createdAt])
+  @@index([visitorHash, createdAt])
+}

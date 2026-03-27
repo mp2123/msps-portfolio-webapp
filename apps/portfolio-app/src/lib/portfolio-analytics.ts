@@ -2,6 +2,8 @@ export type PortfolioEventType =
   | "resume_download"
   | "contact_click"
   | "section_navigation"
+  | "section_impression"
+  | "section_active"
   | "assistant_prompt_click"
   | "assistant_message_submit"
   | "assistant_open"
@@ -9,6 +11,11 @@ export type PortfolioEventType =
   | "search_open"
   | "search_select"
   | "globe_stage_select"
+  | "globe_drag"
+  | "project_action_click"
+  | "wall_open"
+  | "wall_submit"
+  | "wall_reveal"
   | "print_cv_open";
 
 export interface PortfolioEventPayload {

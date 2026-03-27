@@ -19,6 +19,8 @@ Why it behaves like a web app:
   A web CV / printable resume route.
 - `/api/chat`
   Server route for the recruiter assistant. It calls Gemini, applies retry logic, and uses layered caching.
+- `/api/invisible-wall`
+  Server route for the hidden "Invisible Ink" wall. It lists recent messages, accepts new notes, and applies validation plus cooldown/rate limiting.
 - `/api/portfolio-events`
   Server route that receives analytics-style portfolio events such as resume downloads, contact clicks, and assistant interactions.
 - `/opengraph-image`
@@ -41,18 +43,27 @@ Why it behaves like a web app:
 
 These assemble the homepage, load major sections, and define global styling tokens and scroll behavior.
 
-### Homepage experience
+### Portfolio sections and feature composites
 
 - `src/components/ui/header-1.tsx`
 - `src/components/ui/scroll-expansion-hero.tsx`
 - `src/components/ui/roi-calculator.tsx`
 - `src/components/ui/bento-grid.tsx`
 - `src/components/ui/skills-matrix.tsx`
-- `src/components/ui/hospitality-story.tsx`
-- `src/components/ui/experience-globe.tsx`
+- `src/components/portfolio/sections/hospitality-story.tsx`
+- `src/components/portfolio/invisible-ink-wall.tsx`
+- `src/components/portfolio/section-analytics-tracker.tsx`
 - `src/components/ui/radial-orbital-timeline.tsx`
 - `src/components/ui/recommendations.tsx`
 - `src/components/ui/glowing-ai-chat-assistant.tsx`
+
+### Portfolio graphics and motion
+
+- `src/components/portfolio/graphics/spiral-signal.tsx`
+- `src/components/portfolio/graphics/interactive-orb.tsx`
+- `src/components/portfolio/graphics/experience-globe.tsx`
+
+The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-globe`, and `hospitality-story` now act as compatibility wrappers. The real implementations live under `src/components/portfolio/...`.
 
 ### CV experience
 
@@ -75,10 +86,16 @@ These assemble the homepage, load major sections, and define global styling toke
   Core portfolio content model: hero, proof metrics, projects, recruiter prompts, contact info, recommendations, and skills.
 - `src/content/portfolio-assistant.ts`
   Assistant retrieval knowledge built from the portfolio content and recruiter prompts.
+- `src/lib/request-context.ts`
+  Shared request metadata helper. It hashes visitor IP into a privacy-safer `visitorHash` and reads Vercel geo headers without storing raw IP.
 - `src/lib/portfolio-site.ts`
   Canonical site URL and metadata helpers.
 - `src/lib/portfolio-navigation.ts`
   Shared section navigation and anchor offset helpers.
+- `src/lib/portfolio-analytics.ts`
+  Browser-side analytics tracker that records session-bound recruiter interactions.
+- `src/lib/invisible-wall.ts`
+  Shared limits and sanitization helpers for the hidden wall.
 
 ## Active Features
 
@@ -87,8 +104,9 @@ These assemble the homepage, load major sections, and define global styling toke
 - ROI calculator and business-impact proof modules.
 - Project case-study grid and artifact slots.
 - Recruiter assistant backed by `/api/chat`.
+- Hidden "Invisible Ink" wall embedded discreetly in the contact section.
 - Web CV route.
-- Analytics event posting from the client for selected recruiter actions.
+- Analytics event posting from the client for recruiter actions, section impressions/activation, globe interactions, assistant usage, and wall interactions.
 
 ## Database-Backed Features
 
@@ -96,6 +114,8 @@ These assemble the homepage, load major sections, and define global styling toke
 
 - `PortfolioEvent`
   Stores analytics-style portfolio events received by `/api/portfolio-events`.
+- `InvisibleInkMessage`
+  Stores hidden wall notes, along with privacy-safe hashed visitor identity and coarse request geo context.
 
 ### Added in this phase
 
@@ -141,7 +161,7 @@ Python is not part of the public site runtime. It only appears in external proje
 ### Database
 
 - `DATABASE_URL`
-- `DIRECT_URL`
+- `DIRECT_URL` (legacy/optional in this repo; runtime prefers `DATABASE_URL`)
 
 ## Assistant Cache Layers
 
@@ -153,3 +173,10 @@ Python is not part of the public site runtime. It only appears in external proje
   Shared Postgres-backed cache through `AssistantCacheEntry`.
 
 This layered design is needed because a memory `Map` alone is not reliable on Vercel serverless. Different requests can land on different warm or cold instances.
+
+## Privacy Notes
+
+- Raw IP addresses are not stored in portfolio analytics or hidden wall rows.
+- The app derives a hashed `visitorHash` server-side for basic rate limiting and coarse analytics grouping.
+- Request geo data comes from Vercel headers such as city, region, and country and is stored only at a coarse level.
+- Assistant response bodies are intentionally excluded from analytics and the internal diagnostics page.

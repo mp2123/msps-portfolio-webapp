@@ -6,6 +6,7 @@ import { GlowCard } from "./spotlight-card";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 
 export interface BentoItem {
     title: string;
@@ -104,7 +105,21 @@ function BentoGrid({ items }: { items: BentoItem[] }) {
                                 {item.actions.map((action) =>
                                     action.href ? (
                                         <Button key={action.label} asChild variant="outline" className="justify-between border-white/10 bg-white/5 text-zinc-100 hover:border-cyan-300/25 hover:bg-white/10">
-                                            <a href={action.href}>
+                                            <a
+                                                href={action.href}
+                                                onClick={() =>
+                                                    trackPortfolioEvent({
+                                                        eventType: "project_action_click",
+                                                        label: `${item.title} · ${action.label}`,
+                                                        href: action.href,
+                                                        section: "projects",
+                                                        metadata: {
+                                                            projectTitle: item.title,
+                                                            actionLabel: action.label,
+                                                        },
+                                                    })
+                                                }
+                                            >
                                                 {action.label}
                                                 <ArrowUpRight className="h-4 w-4" />
                                             </a>

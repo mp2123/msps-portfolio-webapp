@@ -38,8 +38,11 @@ type PortfolioAnalyticsSummary = {
   uniqueSessions: number;
   byEventType: Array<{ label: string; count: number }>;
   bySection: Array<{ label: string; count: number }>;
+  byLabel: Array<{ label: string; count: number }>;
+  byHref: Array<{ label: string; count: number }>;
   byPath: Array<{ label: string; count: number }>;
   byBrowser: Array<{ label: string; count: number }>;
+  byDevice: Array<{ label: string; count: number }>;
   byCity: Array<{ label: string; count: number }>;
   recentRows: Array<{
     id: string;
@@ -53,6 +56,20 @@ type PortfolioAnalyticsSummary = {
   }>;
 };
 
+type InvisibleInkSummary = {
+  totalMessages: number;
+  recentMessages: number;
+  recentEntries: Array<{
+    id: string;
+    alias: string | null;
+    message: string;
+    createdAt: Date;
+    createdFromCity: string | null;
+    createdFromRegion: string | null;
+    createdFromCountry: string | null;
+  }>;
+};
+
 type DebugSnapshot = {
   databaseConfigured: boolean;
   databaseReachable: boolean;
@@ -61,6 +78,7 @@ type DebugSnapshot = {
   debugTokenRequired: boolean;
   assistantCache: AssistantCacheSummary;
   analytics: PortfolioAnalyticsSummary;
+  invisibleInk: InvisibleInkSummary;
   notes: string[];
 };
 
@@ -80,10 +98,19 @@ const DEFAULT_ANALYTICS_SUMMARY: PortfolioAnalyticsSummary = {
   uniqueSessions: 0,
   byEventType: [],
   bySection: [],
+  byLabel: [],
+  byHref: [],
   byPath: [],
   byBrowser: [],
+  byDevice: [],
   byCity: [],
   recentRows: [],
+};
+
+const DEFAULT_INVISIBLE_INK_SUMMARY: InvisibleInkSummary = {
+  totalMessages: 0,
+  recentMessages: 0,
+  recentEntries: [],
 };
 
 const getSingleSearchParam = (value: SearchParamValue) =>
@@ -190,6 +217,20 @@ const ensureDebugTables = async () => {
       "createdAt" timestamptz NOT NULL DEFAULT NOW()
     )
   `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "InvisibleInkMessage" (
+      "id" text PRIMARY KEY,
+      "sessionId" text NOT NULL,
+      "visitorHash" text,
+      "alias" text,
+      "message" text NOT NULL,
+      "createdFromCity" text,
+      "createdFromRegion" text,
+      "createdFromCountry" text,
+      "createdAt" timestamptz NOT NULL DEFAULT NOW()
+    )
+  `);
 };
 
 const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
@@ -213,6 +254,7 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       debugTokenRequired,
       assistantCache: DEFAULT_ASSISTANT_CACHE_SUMMARY,
       analytics: DEFAULT_ANALYTICS_SUMMARY,
+      invisibleInk: DEFAULT_INVISIBLE_INK_SUMMARY,
       notes,
     };
   }
@@ -234,6 +276,9 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       totalEvents,
       recentEvents,
       analyticsRows,
+      totalWallMessages,
+      recentWallMessages,
+      recentWallEntries,
     ] = await Promise.all([
       prisma.assistantCacheEntry.count(),
       prisma.assistantCacheEntry.count({
@@ -298,6 +343,23 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
           metadata: true,
         },
       }),
+      prisma.invisibleInkMessage.count(),
+      prisma.invisibleInkMessage.count({
+        where: { createdAt: { gte: sevenDaysAgo } },
+      }),
+      prisma.invisibleInkMessage.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        select: {
+          id: true,
+          alias: true,
+          message: true,
+          createdAt: true,
+          createdFromCity: true,
+          createdFromRegion: true,
+          createdFromCountry: true,
+        },
+      }),
     ]);
 
     const totalHits = cacheHits._sum.hitCount ?? 0;
@@ -305,6 +367,8 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
     const uniqueSessions = new Set(analyticsRows.map((row) => row.sessionId)).size;
     const byEventType = countTopValues(analyticsRows.map((row) => row.eventType));
     const bySection = countTopValues(analyticsRows.map((row) => row.section));
+    const byLabel = countTopValues(analyticsRows.map((row) => row.label));
+    const byHref = countTopValues(analyticsRows.map((row) => row.href));
     const byPath = countTopValues(
       analyticsRows.map((row) =>
         readMetadataString(row.metadata as Record<string, unknown> | null, 'path')
@@ -313,6 +377,11 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
     const byBrowser = countTopValues(
       analyticsRows.map((row) =>
         readMetadataString(row.metadata as Record<string, unknown> | null, 'browser')
+      )
+    );
+    const byDevice = countTopValues(
+      analyticsRows.map((row) =>
+        readMetadataString(row.metadata as Record<string, unknown> | null, 'device')
       )
     );
     const byCity = countTopValues(
@@ -359,13 +428,21 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
         uniqueSessions,
         byEventType,
         bySection,
+        byLabel,
+        byHref,
         byPath,
         byBrowser,
+        byDevice,
         byCity,
         recentRows: analyticsRows.slice(0, 12).map((row) => ({
           ...row,
           metadata: normalizeMetadata(row.metadata),
         })),
+      },
+      invisibleInk: {
+        totalMessages: totalWallMessages,
+        recentMessages: recentWallMessages,
+        recentEntries: recentWallEntries,
       },
       notes,
     };
@@ -381,6 +458,7 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
       debugTokenRequired,
       assistantCache: DEFAULT_ASSISTANT_CACHE_SUMMARY,
       analytics: DEFAULT_ANALYTICS_SUMMARY,
+      invisibleInk: DEFAULT_INVISIBLE_INK_SUMMARY,
       notes,
     };
   }
@@ -454,7 +532,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
           </div>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
           <StatCard
             label="Assistant cache"
             value={snapshot.assistantCache.totalEntries.toLocaleString('en-US')}
@@ -479,6 +557,11 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             label="Tracked sessions"
             value={snapshot.analytics.uniqueSessions.toLocaleString('en-US')}
             helper="Unique browser sessions seen in the last 7 days"
+          />
+          <StatCard
+            label="Wall messages"
+            value={snapshot.invisibleInk.totalMessages.toLocaleString('en-US')}
+            helper={`${snapshot.invisibleInk.recentMessages.toLocaleString('en-US')} in the last 7 days`}
           />
         </section>
 
@@ -576,6 +659,38 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                 )}
               </div>
             </div>
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Top labels</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byLabel.length === 0 ? (
+                    <p className="text-white/50">No labels recorded yet.</p>
+                  ) : (
+                    snapshot.analytics.byLabel.slice(0, 6).map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{truncate(item.label, 26)}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Outbound hrefs</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byHref.length === 0 ? (
+                    <p className="text-white/50">No outbound href metadata yet.</p>
+                  ) : (
+                    snapshot.analytics.byHref.slice(0, 6).map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{truncate(item.label, 26)}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -635,7 +750,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
               Recent Analytics
             </p>
             <h2 className="mt-2 text-xl font-semibold">Latest tracked recruiter actions</h2>
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            <div className="mt-6 grid gap-4 lg:grid-cols-4">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/50">Top paths</p>
                 <div className="mt-3 space-y-2 text-sm text-white/75">
@@ -658,6 +773,21 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                     <p className="text-white/50">No browser metadata yet.</p>
                   ) : (
                     snapshot.analytics.byBrowser.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{item.label}</span>
+                        <span className="text-cyan-200">{item.count}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/50">Devices</p>
+                <div className="mt-3 space-y-2 text-sm text-white/75">
+                  {snapshot.analytics.byDevice.length === 0 ? (
+                    <p className="text-white/50">No device metadata yet.</p>
+                  ) : (
+                    snapshot.analytics.byDevice.map((item) => (
                       <div key={item.label} className="flex items-center justify-between gap-3">
                         <span className="truncate">{item.label}</span>
                         <span className="text-cyan-200">{item.count}</span>
@@ -721,6 +851,44 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                   ))
                 )}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+          <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
+            Invisible Ink
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">Recent hidden wall messages</h2>
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
+            <div className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
+              <span>Alias</span>
+              <span>Message</span>
+              <span>Origin / time</span>
+            </div>
+            <div className="divide-y divide-white/10">
+              {snapshot.invisibleInk.recentEntries.length === 0 ? (
+                <div className="px-4 py-6 text-sm text-white/50">No invisible ink messages yet.</div>
+              ) : (
+                snapshot.invisibleInk.recentEntries.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
+                  >
+                    <div>{entry.alias ?? 'Anonymous signal'}</div>
+                    <div>{truncate(entry.message, 112)}</div>
+                    <div className="text-xs text-white/55">
+                      <p>
+                        {entry.createdFromCity ??
+                          entry.createdFromRegion ??
+                          entry.createdFromCountry ??
+                          'origin hidden'}
+                      </p>
+                      <p className="mt-1">{formatTimestamp(entry.createdAt)}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
