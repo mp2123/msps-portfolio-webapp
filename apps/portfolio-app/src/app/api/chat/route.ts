@@ -74,7 +74,7 @@ const resolveModels = () => {
 
   if (googleKey) {
     const google = createGoogleGenerativeAI({ apiKey: googleKey });
-    const googleModelIds = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+    const googleModelIds = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
     googleModelIds.forEach((modelId) => {
       models.push({
