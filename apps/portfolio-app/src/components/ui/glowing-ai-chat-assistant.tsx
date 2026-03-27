@@ -367,8 +367,13 @@ export const FloatingAiAssistant = () => {
         );
 
         if (latestAssistantBubble) {
+          const viewportRect = viewport.getBoundingClientRect();
+          const bubbleRect = latestAssistantBubble.getBoundingClientRect();
+          const bubbleTopWithinViewport =
+            bubbleRect.top - viewportRect.top + viewport.scrollTop;
+
           viewport.scrollTo({
-            top: Math.max(0, latestAssistantBubble.offsetTop - 12),
+            top: Math.max(0, bubbleTopWithinViewport - 12),
             behavior: 'smooth',
           });
           return;
