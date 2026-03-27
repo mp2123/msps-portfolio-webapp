@@ -28,7 +28,7 @@ This inventory maps the homepage experience to its implementation and notes whet
   - `src/components/portfolio/sections/artifact-scanner.tsx`
   - Classification: portfolio-only section composition adapted from an internal sibling-app pattern
 - `Artifacts`
-  - `src/app/page.tsx` (`ArtifactGallery`)
+  - `src/components/portfolio/sections/artifact-gallery.tsx`
   - Classification: portfolio-only section composition
 - `Advantage`
   - `src/components/portfolio/sections/hospitality-story.tsx`
@@ -90,3 +90,4 @@ These currently re-export portfolio-specific implementations to avoid breaking i
 - New reusable primitives go in `src/components/ui`.
 - New homepage sections or recruiter-specific composites go in `src/components/portfolio/sections`.
 - New portfolio-only graphics, canvas, or R3F pieces go in `src/components/portfolio/graphics`.
+- New content intake assets belong in `source-material/`, not `docs/` or `public/`, until they are selected and sanitized.

@@ -20,6 +20,14 @@ export type SensitivityLevel = "public" | "sanitized";
 export type ProjectStatus = "Live" | "Completed" | "In Progress";
 export type CareerTheme = "hospitality" | "analytics" | "automation";
 export type TrustLevel = "manager" | "operator" | "stakeholder";
+export type SourceMaterialFolder =
+  | "command-center-bi"
+  | "ticket-routing-prediction"
+  | "automation-workflows"
+  | "spotify-modeling"
+  | "recommendations"
+  | "resume-and-positioning"
+  | "shared-proof-assets";
 
 export interface HeroContent {
   eyebrow: string;
@@ -59,6 +67,9 @@ export interface Artifact {
   ctaLabel: string;
   href?: string;
   note?: string;
+  sourceMaterialFolder: SourceMaterialFolder;
+  plannedAssetType: string;
+  websiteDestinations: string[];
 }
 
 export interface PortfolioProject {
@@ -78,6 +89,7 @@ export interface PortfolioProject {
   artifactIds: string[];
   colSpan: 1 | 2;
   icon: LucideIcon;
+  sourceMaterialFolder: SourceMaterialFolder;
 }
 
 export interface CareerNode {
@@ -191,48 +203,60 @@ export const artifacts: Artifact[] = [
     type: "dashboard",
     title: "Command Center dashboard walkthrough",
     summary:
-      "Slot for a sanitized screen recording or screenshot sequence showing KPI tracking, adoption metrics, and executive reporting flow.",
+      "Planned public-safe dashboard surface for KPI tracking, adoption visibility, and executive reporting flow from the Command Center work.",
     thumbnail:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
     badge: "Sanitized asset slot",
     ctaLabel: "See dashboard",
-    note: "Drop in a public-safe dashboard image or Loom walkthrough.",
+    note: "Best fit: cropped Power BI screenshots or a short sanitized walkthrough from the Command Center reporting environment.",
+    sourceMaterialFolder: "command-center-bi",
+    plannedAssetType: "dashboard screenshots or short walkthrough video",
+    websiteDestinations: ["Projects", "Translation layer", "Artifact vault", "Assistant"],
   },
   {
     id: "artifact-template",
     type: "template",
     title: "Excel or reporting template",
     summary:
-      "Slot for a downloadable spreadsheet, scorecard, or process template that demonstrates practical operator-minded tooling.",
+      "Planned downloadable scorecard, spreadsheet, or operating template that proves practical systems thinking rather than just presentation polish.",
     thumbnail:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
     badge: "Download-ready slot",
     ctaLabel: "Download template",
-    note: "Add a safe-to-share XLSX, PDF, or image export.",
+    note: "Best fit: a sanitized scorecard, checklist, or reporting template that a manager could actually reuse.",
+    sourceMaterialFolder: "shared-proof-assets",
+    plannedAssetType: "downloadable template, scorecard, or PDF export",
+    websiteDestinations: ["Artifact vault", "Contact", "Assistant"],
   },
   {
     id: "artifact-video",
     type: "video",
     title: "Automation demo",
     summary:
-      "Slot for a short walkthrough of an automation flow, notebook, or reporting pipeline that compresses manual work into a repeatable system.",
+      "Planned short walkthrough of an automation flow, notebook, or reporting pipeline that turns recurring manual work into a repeatable system.",
     thumbnail:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
     badge: "Video slot",
     ctaLabel: "Watch demo",
-    note: "A 30 to 90 second clip is enough for recruiter review.",
+    note: "Best fit: a 30 to 90 second clip showing workflow compression, QA steps, and the final business-facing output.",
+    sourceMaterialFolder: "automation-workflows",
+    plannedAssetType: "short video or annotated walkthrough",
+    websiteDestinations: ["Projects", "Translation layer", "Artifact vault", "Assistant"],
   },
   {
     id: "artifact-methodology",
     type: "pdf",
     title: "Case-study methodology brief",
     summary:
-      "Slot for a short written breakdown of business problem, analytical method, QA approach, and business outcome.",
+      "Planned concise methodology brief that explains business problem, analytical method, QA thinking, and business outcome without exposing sensitive internal detail.",
     thumbnail:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     badge: "Methodology slot",
     ctaLabel: "View methodology",
-    note: "A 1 to 2 page PDF or web page is enough.",
+    note: "Best fit: a 1 to 2 page PDF or web case-study page for modeling, BI design, or workflow methodology.",
+    sourceMaterialFolder: "ticket-routing-prediction",
+    plannedAssetType: "PDF brief or web case-study page",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
   },
 ];
 
@@ -281,6 +305,7 @@ export const projects: PortfolioProject[] = [
     artifactIds: ["artifact-dashboard", "artifact-methodology"],
     colSpan: 2,
     icon: Database,
+    sourceMaterialFolder: "command-center-bi",
   },
   {
     id: "ticket-routing-prediction",
@@ -302,6 +327,7 @@ export const projects: PortfolioProject[] = [
     artifactIds: ["artifact-methodology", "artifact-video"],
     colSpan: 1,
     icon: BrainCircuit,
+    sourceMaterialFolder: "ticket-routing-prediction",
   },
   {
     id: "agentic-automation",
@@ -323,6 +349,7 @@ export const projects: PortfolioProject[] = [
     artifactIds: ["artifact-video"],
     colSpan: 1,
     icon: Bot,
+    sourceMaterialFolder: "automation-workflows",
   },
   {
     id: "spotify-popularity",
@@ -344,6 +371,7 @@ export const projects: PortfolioProject[] = [
     artifactIds: ["artifact-methodology"],
     colSpan: 2,
     icon: LineChart,
+    sourceMaterialFolder: "spotify-modeling",
   },
 ];
 
@@ -571,7 +599,7 @@ export const contactProfile: ContactProfile = {
     "Operations Intelligence",
   ],
   note:
-    "Demo videos, dashboard screenshots, notebooks, automation captures, and downloadable templates are queued for the next content pass. The layout is already wired for them.",
+    "Sanitized demos, dashboard captures, notebooks, methodology briefs, and downloadable templates can now drop into the portfolio without redesign.",
   links: [
     {
       label: "LinkedIn",
@@ -640,6 +668,10 @@ Positioning:
 
 Projects:
 ${projectSummary}
+
+Artifacts:
+- The portfolio includes a sanitized artifact vault for dashboard walkthroughs, downloadable templates, automation demos, and methodology briefs.
+- If asked for proof or examples, use the most relevant project first, then mention the artifact vault when helpful.
 
 Experience:
 ${experienceSummary}

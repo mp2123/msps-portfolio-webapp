@@ -86,6 +86,8 @@ The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-gl
   Core portfolio content model: hero, proof metrics, projects, recruiter prompts, contact info, recommendations, and skills.
 - `src/content/portfolio-assistant.ts`
   Assistant retrieval knowledge built from the portfolio content and recruiter prompts.
+- `source-material/`
+  Structured intake area for raw project evidence, sanitized exports, selected asset candidates, and publishing notes.
 - `src/lib/request-context.ts`
   Shared request metadata helper. It hashes visitor IP into a privacy-safer `visitorHash` and reads Vercel geo headers without storing raw IP.
 - `src/lib/portfolio-site.ts`
@@ -102,7 +104,7 @@ The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-gl
 - Recruiter-first homepage with explicit section navigation.
 - Scroll-based hero reveal with animated proof handoff.
 - ROI calculator and business-impact proof modules.
-- Project case-study grid and artifact slots.
+- Project case-study grid, translation-layer scanner, and artifact vault slots.
 - Recruiter assistant backed by `/api/chat`.
 - Hidden "Invisible Ink" wall embedded discreetly in the contact section.
 - Web CV route.
@@ -162,6 +164,14 @@ Python is not part of the public site runtime. It only appears in external proje
 
 - `DATABASE_URL`
 - `DIRECT_URL` (legacy/optional in this repo; runtime prefers `DATABASE_URL`)
+
+## Content Intake Workflow
+
+- `source-material/` is the staging area for all future project-proof ingestion.
+- `01-raw` keeps originals.
+- `02-sanitized` keeps public-safe copies.
+- `03-selected-assets` holds likely publishable candidates.
+- `04-notes` stores context, impact provenance, and publication guidance.
 
 ## Assistant Cache Layers
 

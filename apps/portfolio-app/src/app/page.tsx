@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -25,6 +24,7 @@ import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
 import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
+import { ArtifactGallery } from "@/components/portfolio/sections/artifact-gallery";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
@@ -32,7 +32,6 @@ import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytic
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import {
-  artifacts,
   careerNodes,
   contactProfile,
   getArtifactById,
@@ -324,66 +323,6 @@ function QuickRecruiterSummary() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function ArtifactGallery() {
-  return (
-    <section
-      className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
-      id="artifacts"
-      data-portfolio-section="true"
-    >
-      <div className="mb-12 max-w-3xl space-y-4">
-        <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
-        <h2 className="text-4xl font-bold tracking-tight text-white">Sanitized proof slots ready for media.</h2>
-        <p className="text-lg text-zinc-400">
-          The structure is in place for walkthrough videos, dashboard screenshots, methodology briefs,
-          and downloadable templates. Public-safe assets can drop into these slots without redesign.
-        </p>
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        {artifacts.map((artifact) => (
-          <div
-            key={artifact.id}
-            id={artifact.id}
-            className="portfolio-section-anchor overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/20 shadow-[0_0_40px_rgba(15,23,42,0.35)] spotlight-border"
-          >
-            <div className="relative h-56 w-full">
-              <Image
-                src={artifact.thumbnail}
-                alt={artifact.title}
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 50vw, 100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_34%)]" />
-              <div className="absolute left-4 top-4">
-                <Badge className="border-white/10 bg-black/40 text-zinc-100">{artifact.badge}</Badge>
-              </div>
-              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent shadow-[0_0_18px_rgba(34,211,238,0.3)]" />
-            </div>
-
-            <div className="scanlines relative space-y-4 p-6">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/60">{artifact.type}</p>
-                <h3 className="mt-2 text-xl font-semibold text-white">{artifact.title}</h3>
-              </div>
-              <p className="text-sm leading-relaxed text-zinc-300">{artifact.summary}</p>
-              <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-3 text-sm text-zinc-400">
-                {artifact.note}
-              </div>
-              <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
-                <span>{artifact.ctaLabel}</span>
-                <span className="text-[10px] uppercase tracking-[0.24em] text-cyan-100/65">slot armed</span>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </section>
   );

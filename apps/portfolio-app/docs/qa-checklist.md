@@ -28,6 +28,7 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 
 - ROI calculator sliders move smoothly and values update correctly.
 - Project cards, artifact CTAs, and contact links are clickable.
+- Translation-layer scanner renders between `Skills` and `Artifact vault` without clipping or dead links.
 - No horizontal overflow in projects, skills, advantage, experience, recommendations, or contact.
 - Advantage cards retain readable contrast and hover polish without jank.
 

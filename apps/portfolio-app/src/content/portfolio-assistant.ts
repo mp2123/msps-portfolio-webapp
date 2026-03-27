@@ -1,4 +1,5 @@
 import {
+  artifacts,
   careerNodes,
   contactProfile,
   heroContent,
@@ -13,6 +14,7 @@ export type PortfolioKnowledgeKind =
   | "hero"
   | "proof"
   | "project"
+  | "artifact"
   | "career"
   | "recommendation"
   | "contact"
@@ -118,6 +120,28 @@ const buildRecommendationDocs = (): PortfolioKnowledgeDoc[] => {
   }));
 };
 
+const buildArtifactDocs = (): PortfolioKnowledgeDoc[] => {
+  return artifacts.map((artifact) => ({
+    id: `artifact-${artifact.id}`,
+    kind: "artifact",
+    title: artifact.title,
+    content: [
+      artifact.summary,
+      `Planned asset: ${artifact.plannedAssetType}.`,
+      `Artifact note: ${artifact.note ?? "No additional note yet."}`,
+      `Website destinations: ${artifact.websiteDestinations.join(", ")}.`,
+    ].join(" "),
+    keywords: joinKeywords(
+      artifact.type,
+      artifact.badge,
+      artifact.ctaLabel,
+      artifact.sourceMaterialFolder,
+      artifact.websiteDestinations
+    ),
+    linkedIds: [artifact.id, artifact.sourceMaterialFolder],
+  }));
+};
+
 const buildContactDoc = (): PortfolioKnowledgeDoc => ({
   id: "contact-overview",
   kind: "contact",
@@ -188,6 +212,7 @@ export const portfolioKnowledgeDocs: PortfolioKnowledgeDoc[] = [
   buildHeroDoc(),
   ...buildProofDocs(),
   ...buildProjectDocs(),
+  ...buildArtifactDocs(),
   ...buildCareerDocs(),
   ...buildRecommendationDocs(),
   buildContactDoc(),
@@ -291,6 +316,7 @@ export function getAssistantAnswerGuidance() {
     "Then give 2 to 4 short proof points drawn from the retrieved portfolio context.",
     "Prefer quantified impact, tools used, and stakeholder outcomes over generic adjectives.",
     "If the user asks about role fit, name the most relevant role titles first and explain why they fit.",
+    "If relevant, mention published or planned sanitized proof surfaces such as dashboard walkthroughs, methodology briefs, templates, or automation demos.",
     "If the user asks something not covered in the retrieved context, say it is not yet published or it is sanitized.",
     "Keep the tone recruiter-facing, concise, and business-oriented.",
     "Optionally end with one short follow-up question.",
