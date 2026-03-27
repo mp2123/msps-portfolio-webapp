@@ -25,6 +25,13 @@ type ResolvedModel = {
   model: LanguageModel;
 };
 
+type CachedAssistantResponse = {
+  provider: 'google' | 'openai';
+  modelId: string;
+  text: string;
+  createdAt: number;
+};
+
 type InboundMessage = {
   role: 'assistant' | 'system' | 'user';
   content?: unknown;
@@ -38,6 +45,14 @@ const responseHeaders = {
   'Content-Type': 'text/plain; charset=utf-8',
   'Cache-Control': 'no-store',
 };
+
+const TRANSIENT_STATUS_PATTERNS = ['429', '503', 'rate limit', 'too many requests', 'resource exhausted', 'overloaded'];
+const RETRYABLE_FAILURE_KINDS = new Set(['rate_limited']);
+const MAX_PROVIDER_RETRIES = 2;
+const BASE_RETRY_DELAY_MS = 1200;
+const RESPONSE_CACHE_TTL_MS = 1000 * 60 * 5;
+const MAX_RESPONSE_CACHE_ENTRIES = 48;
+const responseCache = new Map<string, CachedAssistantResponse>();
 
 const withAssistantHeaders = (
   headers: HeadersInit,
@@ -59,7 +74,7 @@ const resolveModels = () => {
 
   if (googleKey) {
     const google = createGoogleGenerativeAI({ apiKey: googleKey });
-    const googleModelIds = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    const googleModelIds = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
 
     googleModelIds.forEach((modelId) => {
       models.push({
@@ -182,6 +197,68 @@ const buildDeterministicFallbackReply = (query: string) => {
   ].join('\n');
 };
 
+const stableStringify = (value: unknown): string => {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+  }
+
+  const entries = Object.entries(value as Record<string, unknown>).sort(([left], [right]) =>
+    left.localeCompare(right)
+  );
+
+  return `{${entries
+    .map(([key, nestedValue]) => `${JSON.stringify(key)}:${stableStringify(nestedValue)}`)
+    .join(',')}}`;
+};
+
+const buildConversationCacheKey = (messages: ModelMessage[]) =>
+  messages.length > 0 ? stableStringify(messages) : '__empty__';
+
+const pruneResponseCache = () => {
+  const now = Date.now();
+
+  for (const [key, entry] of responseCache.entries()) {
+    if (now - entry.createdAt > RESPONSE_CACHE_TTL_MS) {
+      responseCache.delete(key);
+    }
+  }
+
+  while (responseCache.size > MAX_RESPONSE_CACHE_ENTRIES) {
+    const oldestKey = responseCache.keys().next().value;
+    if (!oldestKey) break;
+    responseCache.delete(oldestKey);
+  }
+};
+
+const getCachedResponse = (cacheKey: string) => {
+  pruneResponseCache();
+  const entry = responseCache.get(cacheKey);
+
+  if (!entry) return null;
+
+  if (Date.now() - entry.createdAt > RESPONSE_CACHE_TTL_MS) {
+    responseCache.delete(cacheKey);
+    return null;
+  }
+
+  return entry;
+};
+
+const setCachedResponse = (
+  cacheKey: string,
+  response: Omit<CachedAssistantResponse, 'createdAt'>
+) => {
+  pruneResponseCache();
+  responseCache.set(cacheKey, {
+    ...response,
+    createdAt: Date.now(),
+  });
+};
+
 const errorDetails = (error: unknown) => {
   if (error instanceof Error) {
     return {
@@ -237,6 +314,22 @@ const classifyAssistantError = (error: unknown) => {
   return 'unknown';
 };
 
+const shouldRetryAssistantError = (error: unknown) => {
+  const failureKind = classifyAssistantError(error);
+  if (RETRYABLE_FAILURE_KINDS.has(failureKind)) {
+    return true;
+  }
+
+  const { message } = errorDetails(error);
+  const normalizedMessage = message.toLowerCase();
+  return TRANSIENT_STATUS_PATTERNS.some((pattern) => normalizedMessage.includes(pattern));
+};
+
+const delay = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 const logAssistantEvent = (event: string, details: Record<string, unknown>) => {
   console.info(event, details);
 };
@@ -254,41 +347,115 @@ const buildLiveResponse = async ({
   model,
   messages,
   latestQuery,
+  cacheKey,
 }: ResolvedModel & {
   messages: ModelMessage[];
   latestQuery: string;
+  cacheKey: string;
 }) => {
-  const startedAt = Date.now();
-  const result = await generateText({
-    model,
-    system: buildAssistantSystemPrompt(latestQuery),
-    messages,
-  });
+  const cached = getCachedResponse(cacheKey);
 
-  const text = result.text.trim();
+  if (cached) {
+    logAssistantEvent('assistant_cache_hit', {
+      provider: cached.provider,
+      modelId: cached.modelId,
+      latestQueryLength: latestQuery.length,
+      cacheAgeMs: Date.now() - cached.createdAt,
+    });
 
-  if (!text) {
-    throw new Error('Provider returned an empty text response.');
+    return new Response(cached.text, {
+      headers: withAssistantHeaders(
+        {
+          'X-Portfolio-Assistant-Provider': cached.provider,
+          'X-Portfolio-Assistant-Model': cached.modelId,
+          'X-Portfolio-Assistant-Cache': 'hit',
+        },
+        'live'
+      ),
+    });
   }
 
-  logAssistantEvent('assistant_provider_success', {
-    provider,
-    modelId,
-    latestQueryLength: latestQuery.length,
-    durationMs: Date.now() - startedAt,
-    finishReason: result.finishReason,
-    responseLength: text.length,
-  });
+  let attempt = 0;
+  let lastError: unknown = null;
 
-  return new Response(text, {
-    headers: withAssistantHeaders(
-      {
-        'X-Portfolio-Assistant-Provider': provider,
-        'X-Portfolio-Assistant-Model': modelId,
-      },
-      'live'
-    ),
-  });
+  while (attempt <= MAX_PROVIDER_RETRIES) {
+    const startedAt = Date.now();
+
+    try {
+      const result = await generateText({
+        model,
+        system: buildAssistantSystemPrompt(latestQuery),
+        messages,
+      });
+
+      const text = result.text.trim();
+
+      if (!text) {
+        throw new Error('Provider returned an empty text response.');
+      }
+
+      setCachedResponse(cacheKey, {
+        provider,
+        modelId,
+        text,
+      });
+
+      logAssistantEvent('assistant_provider_success', {
+        provider,
+        modelId,
+        latestQueryLength: latestQuery.length,
+        durationMs: Date.now() - startedAt,
+        finishReason: result.finishReason,
+        responseLength: text.length,
+        retryAttempt: attempt,
+      });
+
+      return new Response(text, {
+        headers: withAssistantHeaders(
+          {
+            'X-Portfolio-Assistant-Provider': provider,
+            'X-Portfolio-Assistant-Model': modelId,
+            'X-Portfolio-Assistant-Cache': 'miss',
+          },
+          'live'
+        ),
+      });
+    } catch (error) {
+      lastError = error;
+      const retryable = shouldRetryAssistantError(error);
+      const retryAttempt = attempt + 1;
+
+      logAssistantError('assistant_provider_attempt_failed', error, {
+        provider,
+        modelId,
+        latestQueryLength: latestQuery.length,
+        retryAttempt,
+        maxRetries: MAX_PROVIDER_RETRIES,
+        retryable,
+        failureKind: classifyAssistantError(error),
+      });
+
+      if (!retryable || attempt >= MAX_PROVIDER_RETRIES) {
+        break;
+      }
+
+      const jitterMs = Math.floor(Math.random() * 250);
+      const waitMs = BASE_RETRY_DELAY_MS * 2 ** attempt + jitterMs;
+
+      logAssistantEvent('assistant_provider_retry_scheduled', {
+        provider,
+        modelId,
+        latestQueryLength: latestQuery.length,
+        retryAttempt,
+        waitMs,
+      });
+
+      await delay(waitMs);
+      attempt += 1;
+    }
+  }
+
+  throw lastError ?? new Error('Provider failed without a recoverable response.');
 };
 
 export async function POST(req: Request) {
@@ -298,12 +465,14 @@ export async function POST(req: Request) {
     const modelMessages = toModelMessages(messages);
     const latestUserMessage = [...messages].reverse().find((message) => message.role === 'user');
     const latestQuery = getMessageText(latestUserMessage);
+    const cacheKey = buildConversationCacheKey(modelMessages);
     const { models, googleKeyPresent, openAiKeyPresent } = resolveModels();
 
     logAssistantEvent('assistant_request_received', {
       messageCount: messages.length,
       latestQueryLength: latestQuery.length,
       normalizedMessageCount: modelMessages.length,
+      cacheable: modelMessages.length > 0,
       googleKeyPresent,
       openAiKeyPresent,
       providerCount: models.length,
@@ -338,6 +507,7 @@ export async function POST(req: Request) {
           model: candidate.model,
           messages: modelMessages,
           latestQuery,
+          cacheKey,
         });
       } catch (error) {
         lastError = error;
