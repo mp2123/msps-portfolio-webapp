@@ -26,7 +26,6 @@ type AmbientParticle = {
   phase: number;
 };
 
-const MOUSE_RADIUS = 160;
 const RETURN_SPEED = 0.022;
 const DAMPING = 0.94;
 
@@ -37,7 +36,6 @@ export function HeroParticleField({ className }: { className?: string }) {
   const dimensionsRef = useRef({ width: 0, height: 0, dpr: 1 });
   const particlesRef = useRef<Particle[]>([]);
   const ambientRef = useRef<AmbientParticle[]>([]);
-  const pointerRef = useRef({ x: -1000, y: -1000, active: false });
   const reducedMotionRef = useRef(false);
   const isVisibleRef = useRef(true);
   const isDesktopRef = useRef(true);
@@ -73,8 +71,8 @@ export function HeroParticleField({ className }: { className?: string }) {
 
       isDesktopRef.current = width >= 1024;
 
-      const particleCount = Math.floor(width * height * (isDesktopRef.current ? 0.000035 : 0.000012));
-      const ambientCount = Math.floor(width * height * (isDesktopRef.current ? 0.000016 : 0.000008));
+      const particleCount = Math.floor(width * height * (isDesktopRef.current ? 0.000018 : 0.000008));
+      const ambientCount = Math.floor(width * height * (isDesktopRef.current ? 0.000008 : 0.000004));
 
       particlesRef.current = Array.from({ length: particleCount }, () => {
         const x = Math.random() * width;
@@ -140,19 +138,6 @@ export function HeroParticleField({ className }: { className?: string }) {
       }
 
       for (const particle of particlesRef.current) {
-        const dx = pointerRef.current.x - particle.x;
-        const dy = pointerRef.current.y - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (shouldAnimate() && pointerRef.current.active && distance < MOUSE_RADIUS) {
-        const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-          const directionX = distance > 0 ? dx / distance : 0;
-          const directionY = distance > 0 ? dy / distance : 0;
-
-          particle.vx -= directionX * force * 1.9;
-          particle.vy -= directionY * force * 1.9;
-        }
-
         particle.vx += (particle.originX - particle.x) * RETURN_SPEED;
         particle.vy += (particle.originY - particle.y) * RETURN_SPEED;
         particle.vx *= DAMPING;
@@ -196,20 +181,6 @@ export function HeroParticleField({ className }: { className?: string }) {
       render(0);
     };
 
-    const updatePointer = (event: PointerEvent) => {
-      if (!shouldAnimate()) return;
-      const rect = container.getBoundingClientRect();
-      pointerRef.current = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-        active: true,
-      };
-    };
-
-    const clearPointer = () => {
-      pointerRef.current.active = false;
-    };
-
     initParticles();
     render(0);
 
@@ -236,9 +207,6 @@ export function HeroParticleField({ className }: { className?: string }) {
 
     resizeObserver.observe(container);
     visibilityObserver.observe(container);
-    window.addEventListener('pointermove', updatePointer, { passive: true });
-    window.addEventListener('pointerleave', clearPointer);
-    window.addEventListener('blur', clearPointer);
 
     if (shouldAnimate()) {
       startAnimation();
@@ -247,10 +215,6 @@ export function HeroParticleField({ className }: { className?: string }) {
     return () => {
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
-      window.removeEventListener('pointermove', updatePointer);
-      window.removeEventListener('pointerleave', clearPointer);
-      window.removeEventListener('blur', clearPointer);
-
       stopAnimation();
     };
   }, []);

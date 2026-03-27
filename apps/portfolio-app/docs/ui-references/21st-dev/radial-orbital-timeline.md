@@ -22,6 +22,7 @@ Raw integration cautions:
 - interaction density is high for recruiter scanning
 - works best when the data model is tightly curated
 
-Production counterpart in this repo:
-- `src/components/ui/radial-orbital-timeline.tsx`
-
+Likely production adaptation guidance:
+- keep the orbital metaphor only if the narrative benefits from it
+- reduce motion by default and let the user choose focus, not chase rotation
+- ensure the dense expanded state is still readable on mobile before using it broadly

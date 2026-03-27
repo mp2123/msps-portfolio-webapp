@@ -15,6 +15,7 @@ Raw integration cautions:
 - multiple instances can add layout and paint cost quickly
 - best used selectively for premium proof blocks, not across the whole page
 
-Closest current production usage:
-- glow and spotlight language is used across several portfolio surfaces, but not via the raw component
-
+Likely production adaptation guidance:
+- reuse the spotlight effect for a small number of proof cards only
+- move pointer tracking to the narrowest scope possible if the component is adapted
+- prefer simple border/glow treatments for bulk lists so the page stays smooth

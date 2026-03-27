@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { TextStreamChatTransport } from 'ai';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,10 +12,31 @@ import { recruiterPrompts } from '@/content/portfolio';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { cn } from '@/lib/utils';
 
+const FALLBACK_RESPONSE_PREFIX = "I'm having trouble reaching the live model right now";
+const UNAVAILABLE_RESPONSE_PREFIX = 'The portfolio assistant is temporarily unavailable right now.';
+
+type AssistantMode = 'unknown' | 'live' | 'degraded' | 'offline';
+
+type AssistantRuntimeState = {
+  mode: AssistantMode;
+  provider: string | null;
+  model: string | null;
+};
+
+const INITIAL_ASSISTANT_RUNTIME: AssistantRuntimeState = {
+  mode: 'unknown',
+  provider: null,
+  model: null,
+};
+
 const getMessageText = (message: {
   content?: unknown;
   parts?: Array<{ type?: string; text?: string }>;
-}) => {
+} | undefined) => {
+  if (!message) {
+    return '';
+  }
+
   if (typeof message.content === 'string') {
     return message.content;
   }
@@ -46,17 +67,47 @@ const getMessageText = (message: {
 export const FloatingAiAssistant = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [assistantRuntime, setAssistantRuntime] = useState<AssistantRuntimeState>(
+    INITIAL_ASSISTANT_RUNTIME
+  );
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const messageViewportRef = useRef<HTMLDivElement | null>(null);
   const hasOpenedRef = useRef(false);
-  const [transport] = useState(
-    new TextStreamChatTransport({
+  const previousMessageCountRef = useRef(0);
+  const transport = useMemo(
+    () =>
+      new TextStreamChatTransport({
       api: '/api/chat',
       body: { source: 'portfolio-app' },
-    })
+        fetch: async (input, init) => {
+          try {
+            const response = await fetch(input, init);
+            const modeHeader = response.headers.get('x-portfolio-assistant-mode');
+
+            setAssistantRuntime({
+              mode:
+                modeHeader === 'live' || modeHeader === 'degraded' || modeHeader === 'offline'
+                  ? modeHeader
+                  : 'unknown',
+              provider: response.headers.get('x-portfolio-assistant-provider'),
+              model: response.headers.get('x-portfolio-assistant-model'),
+            });
+
+            return response;
+          } catch (fetchError) {
+            setAssistantRuntime({
+              mode: 'offline',
+              provider: null,
+              model: null,
+            });
+            throw fetchError;
+          }
+        },
+      }),
+    []
   );
 
   const { messages, sendMessage, status, error, clearError } = useChat({
@@ -64,6 +115,34 @@ export const FloatingAiAssistant = () => {
   });
 
   const isLoading = status === 'streaming' || status === 'submitted';
+  const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
+  const latestAssistantText = getMessageText(latestAssistantMessage);
+  const hasHeaderMode = assistantRuntime.mode !== 'unknown';
+  const isOfflineResponse =
+    assistantRuntime.mode === 'offline' ||
+    (!hasHeaderMode && latestAssistantText.startsWith(UNAVAILABLE_RESPONSE_PREFIX));
+  const isDegradedResponse =
+    assistantRuntime.mode === 'degraded' ||
+    (!hasHeaderMode &&
+      (latestAssistantText.startsWith(FALLBACK_RESPONSE_PREFIX) ||
+        latestAssistantText.startsWith('I can help with Michael’s projects')));
+  const isLiveResponse = assistantRuntime.mode === 'live';
+  const hasCompletedAssistantReply = Boolean(latestAssistantText);
+  const assistantModeLabel = error
+    ? 'Assistant degraded'
+    : isLoading
+      ? 'Connecting'
+      : isOfflineResponse
+        ? 'Offline'
+      : isDegradedResponse
+        ? 'Degraded fallback'
+        : isLiveResponse
+          ? assistantRuntime.provider === 'openai'
+            ? 'OpenAI live'
+            : 'Gemini live'
+          : hasCompletedAssistantReply
+            ? 'Portfolio reply'
+          : 'Ready';
   const assistantErrorMessage = (() => {
     if (!error) return null;
     const rawMessage = error.message?.toLowerCase() ?? '';
@@ -98,6 +177,7 @@ export const FloatingAiAssistant = () => {
       },
     });
     clearError();
+    setAssistantRuntime(INITIAL_ASSISTANT_RUNTIME);
     sendMessage({ text: message });
     setInput('');
   };
@@ -111,6 +191,7 @@ export const FloatingAiAssistant = () => {
       section: 'assistant',
     });
     clearError();
+    setAssistantRuntime(INITIAL_ASSISTANT_RUNTIME);
     sendMessage({ text: prompt });
   };
 
@@ -188,6 +269,7 @@ export const FloatingAiAssistant = () => {
 
   useEffect(() => {
     if (isChatOpen) {
+      window.dispatchEvent(new Event('portfolio-assistant-open'));
       hasOpenedRef.current = true;
       requestAnimationFrame(() => {
         inputRef.current?.focus();
@@ -203,16 +285,85 @@ export const FloatingAiAssistant = () => {
     if (!isChatOpen) return;
 
     const viewport = chatRef.current?.querySelector<HTMLDivElement>('[data-slot="scroll-area-viewport"]');
+    const dialog = dialogRef.current;
     if (!viewport) return;
 
     messageViewportRef.current = viewport;
+    const applyViewportScroll = (deltaY: number) => {
+      const currentViewport = messageViewportRef.current;
+      if (!currentViewport) return false;
+
+      const { scrollTop, scrollHeight, clientHeight } = currentViewport;
+      const maxScrollTop = scrollHeight - clientHeight;
+      const canScrollDown = deltaY > 0 && scrollTop < maxScrollTop - 1;
+      const canScrollUp = deltaY < 0 && scrollTop > 0;
+
+      if (!canScrollDown && !canScrollUp) {
+        return false;
+      }
+
+      currentViewport.scrollTop = Math.max(
+        0,
+        Math.min(maxScrollTop, currentViewport.scrollTop + deltaY)
+      );
+
+      return true;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (!applyViewportScroll(event.deltaY)) {
+        return;
+      }
+
+      event.preventDefault();
+    };
+
+    dialog?.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => {
+      dialog?.removeEventListener('wheel', onWheel);
+    };
+  }, [isChatOpen]);
+
+  useEffect(() => {
+    if (!isChatOpen) {
+      previousMessageCountRef.current = 0;
+      return;
+    }
+
+    const viewport =
+      messageViewportRef.current ??
+      chatRef.current?.querySelector<HTMLDivElement>('[data-slot="scroll-area-viewport"]');
+
+    if (!viewport) {
+      return;
+    }
+
+    const distanceFromBottom =
+      viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop;
+    const previousMessageCount = previousMessageCountRef.current;
+    const latestMessageRole = messages[messages.length - 1]?.role;
+    const shouldAutoScroll =
+      previousMessageCount === 0 ||
+      (messages.length > previousMessageCount &&
+        (latestMessageRole === 'user' || distanceFromBottom < 96));
+
+    previousMessageCountRef.current = messages.length;
+
+    if (!shouldAutoScroll) {
+      return;
+    }
+
     requestAnimationFrame(() => {
-      viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+      viewport.scrollTo({
+        top: viewport.scrollHeight,
+        behavior: previousMessageCount > 0 ? 'smooth' : 'auto',
+      });
     });
-  }, [assistantErrorMessage, isChatOpen, isLoading, messages.length]);
+  }, [isChatOpen, messages]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       <button
         ref={launcherRef}
         className={`floating-ai-button relative flex h-16 w-16 items-center justify-center rounded-full transition-all duration-500 transform ${
@@ -263,23 +414,22 @@ export const FloatingAiAssistant = () => {
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            className="absolute bottom-20 right-0 w-[420px] max-w-[92vw] origin-bottom-right"
+            className="absolute bottom-20 right-0 h-[min(620px,calc(100dvh-4.5rem))] w-[min(420px,calc(100vw-0.75rem))] origin-bottom-right sm:h-[min(640px,calc(100dvh-5.5rem))] sm:w-[min(420px,calc(100vw-1rem))]"
           >
             <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-cyan-400/10 blur-3xl" />
             <div
               ref={dialogRef}
               id="recruiter-assistant-dialog"
               role="dialog"
-              aria-modal="true"
               aria-labelledby="recruiter-assistant-title"
               aria-describedby="recruiter-assistant-description"
               onKeyDown={handleDialogKeyDown}
-              className="relative flex h-[640px] flex-col overflow-hidden rounded-3xl border border-cyan-500/15 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-2xl shadow-cyan-500/10 backdrop-blur-3xl"
+              className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-cyan-500/15 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-2xl shadow-cyan-500/10 backdrop-blur-3xl"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
-              <div className="flex items-start justify-between gap-3 px-6 pb-3 pt-5">
-                <div className="space-y-1">
+              <div className="flex items-start justify-between gap-3 px-4 pb-3 pt-4 sm:px-6 sm:pt-5">
+                <div className="min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
                     <span className="text-xs font-medium uppercase tracking-[0.2em] text-cyan-200/70">
@@ -291,10 +441,28 @@ export const FloatingAiAssistant = () => {
                   </h2>
                   <p
                     id="recruiter-assistant-description"
-                    className="max-w-[28ch] text-xs leading-relaxed text-zinc-400"
+                    className="max-w-[26ch] text-[11px] leading-relaxed text-zinc-400 sm:max-w-[28ch] sm:text-xs"
                   >
                     Ask about role fit, measurable impact, projects, or why Michael is a strong operator-to-analyst hire.
                   </p>
+                  <div className="pt-1">
+                    <span
+                      className={cn(
+                        'inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]',
+                        error
+                          ? 'border-amber-300/30 bg-amber-300/10 text-amber-100'
+                          : isLoading
+                            ? 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100'
+                            : isOfflineResponse
+                              ? 'border-zinc-300/20 bg-white/5 text-zinc-200'
+                            : isDegradedResponse
+                              ? 'border-amber-300/30 bg-amber-300/10 text-amber-100'
+                              : 'border-emerald-300/30 bg-emerald-300/10 text-emerald-100'
+                      )}
+                    >
+                      {assistantModeLabel}
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsChatOpen(false)}
@@ -305,27 +473,55 @@ export const FloatingAiAssistant = () => {
                 </button>
               </div>
 
-              <div className="px-6 pb-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {recruiterPrompts.map((item) => (
+              {messages.length === 0 ? (
+                <div className="px-4 pb-3 sm:px-6 sm:pb-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {recruiterPrompts.map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => handleStarterPrompt(item.question)}
+                        disabled={isLoading}
+                        className="rounded-2xl border border-white/8 bg-white/[0.06] px-3 py-2.5 text-left transition-colors hover:border-cyan-400/30 hover:bg-cyan-400/10 focus-visible:border-cyan-300/45 focus-visible:outline-none disabled:opacity-60 sm:py-3"
+                      >
+                        <div className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-cyan-100/70 sm:text-[10px] sm:tracking-[0.22em]">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          {item.label}
+                        </div>
+                        <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-300 sm:mt-2 sm:text-[13px] sm:leading-snug">
+                          {item.question}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 overflow-x-auto px-4 pb-3 text-[10px] text-zinc-500 sm:px-6">
+                  <span className="shrink-0 uppercase tracking-[0.16em] text-cyan-100/60">
+                    Quick asks
+                  </span>
+                  {recruiterPrompts.slice(0, 3).map((item) => (
                     <button
-                      key={item.label}
+                      key={item.id}
                       type="button"
                       onClick={() => handleStarterPrompt(item.question)}
                       disabled={isLoading}
-                      className="rounded-2xl border border-white/8 bg-white/[0.06] px-3 py-3 text-left transition-colors hover:border-cyan-400/30 hover:bg-cyan-400/10 focus-visible:border-cyan-300/45 focus-visible:outline-none disabled:opacity-60"
+                      className="shrink-0 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] text-zinc-300 transition-colors hover:border-cyan-400/30 hover:bg-cyan-400/10"
                     >
-                      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-cyan-100/70">
-                        <Sparkles className="h-3.5 w-3.5" />
-                        {item.label}
-                      </div>
-                      <p className="mt-2 text-xs leading-snug text-zinc-300">{item.question}</p>
+                      {item.label}
                     </button>
                   ))}
                 </div>
-              </div>
+              )}
 
-              <ScrollArea className="flex-1 px-6">
+              <ScrollArea
+                className="relative flex-1 min-h-0 px-4 sm:px-6"
+                style={{
+                  overscrollBehavior: 'auto',
+                  WebkitOverflowScrolling: 'touch',
+                  touchAction: 'pan-y',
+                }}
+              >
                 {assistantErrorMessage ? (
                   <div className="mb-4 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-50">
                     {assistantErrorMessage}
@@ -335,7 +531,7 @@ export const FloatingAiAssistant = () => {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex h-full flex-col items-center justify-center px-2 py-8 text-center"
+                    className="flex h-full min-h-0 flex-col items-center justify-center px-2 py-8 text-center"
                   >
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/10 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
                       <Bot className="h-7 w-7 text-cyan-300" />
@@ -347,7 +543,7 @@ export const FloatingAiAssistant = () => {
                   </motion.div>
                 ) : (
                   <div className="space-y-4 pb-4">
-                    {messages.map((m, index) => (
+                    {messages.map((m) => (
                       <motion.div
                         key={m.id}
                         data-role={m.role}
@@ -357,7 +553,6 @@ export const FloatingAiAssistant = () => {
                           'flex items-start gap-3 text-sm',
                           m.role === 'user' ? 'flex-row-reverse' : 'flex-row'
                         )}
-                        ref={index === messages.length - 1 ? (node) => node?.scrollIntoView({ block: 'end' }) : undefined}
                       >
                         <div
                           className={cn(
@@ -371,7 +566,7 @@ export const FloatingAiAssistant = () => {
                         </div>
                         <div
                           className={cn(
-                            'max-w-[78%] rounded-2xl px-4 py-3 shadow-sm ring-1 ring-inset transition-all',
+                            'max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ring-1 ring-inset transition-all whitespace-pre-wrap break-words leading-relaxed sm:max-w-[78%]',
                             m.role === 'user'
                               ? 'bg-cyan-400 text-slate-950 ring-cyan-300/30'
                               : 'bg-white/[0.07] text-zinc-100 backdrop-blur-sm ring-white/10 shadow-[0_0_25px_rgba(34,211,238,0.04)]'
@@ -394,15 +589,15 @@ export const FloatingAiAssistant = () => {
                 )}
               </ScrollArea>
 
-              <div className="border-t border-white/8 px-4 pb-4 pt-4">
+              <div className="mt-auto border-t border-white/8 px-4 pb-4 pt-3 sm:px-5 sm:pt-4">
                 <form onSubmit={handleSubmit} className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
                     value={input}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    rows={2}
-                    className="min-h-14 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm leading-relaxed text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-cyan-400/40"
+                    rows={1}
+                    className="min-h-12 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm leading-relaxed text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-cyan-400/40 sm:min-h-14"
                     placeholder="Ask about impact, projects, skills, or role fit..."
                   />
                   <Button
@@ -415,7 +610,7 @@ export const FloatingAiAssistant = () => {
                   </Button>
                 </form>
 
-                <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-zinc-500">
+                <div className="mt-3 hidden items-center justify-between gap-3 text-[11px] text-zinc-500 sm:flex">
                   <div className="flex items-center gap-1.5">
                     <ChevronDown className="h-3.5 w-3.5" />
                     Ask for metrics, examples, or a role-fit summary
@@ -424,6 +619,10 @@ export const FloatingAiAssistant = () => {
                     <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
                     Portfolio-assisted replies
                   </div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-[10px] text-zinc-500 sm:hidden">
+                  <span className="truncate">Ask for metrics, examples, or role fit</span>
+                  <span className="ml-3 shrink-0 text-cyan-200/75">Portfolio-assisted</span>
                 </div>
               </div>
             </div>

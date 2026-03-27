@@ -20,3 +20,18 @@ Current production-safe counterparts live in:
 - `src/components/ui/radial-orbital-timeline.tsx`
 - `src/components/ui/glowing-ai-chat-assistant.tsx`
 
+Archived reference files in this folder:
+- `hero-futuristic.md`
+- `particle-effect-for-hero.md`
+- `scroll-expansion-hero.md`
+- `spotlight-card.md`
+- `radial-orbital-timeline.md`
+- `spiral-animation.md`
+- `cobe-globe-cdn.md`
+- `funnel-chart.md`
+
+Archive conventions:
+- each file records the intended target path and dependencies
+- each file summarizes the visual/interaction traits worth preserving
+- each file calls out why the raw component is risky in production
+- each file ends with a practical production adaptation note

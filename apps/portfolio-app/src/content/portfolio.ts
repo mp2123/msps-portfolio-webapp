@@ -24,6 +24,7 @@ export type TrustLevel = "manager" | "operator" | "stakeholder";
 export interface HeroContent {
   eyebrow: string;
   title: string;
+  titleLines?: string[];
   subtitle: string;
   dateLabel: string;
   scrollLabel: string;
@@ -133,6 +134,7 @@ export interface SkillsGroup {
 export const heroContent: HeroContent = {
   eyebrow: "Business Analytics / BI",
   title: "Turn messy data into decision-ready reporting systems.",
+  titleLines: ["Turn messy data", "into decision-ready reporting systems."],
   subtitle:
     "Power BI, SQL, Python, and workflow automation for teams that need stronger reporting cadence, cleaner KPI definitions, and practical stakeholder-facing execution.",
   dateLabel: "Michael Panico",

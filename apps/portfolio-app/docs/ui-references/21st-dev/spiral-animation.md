@@ -15,6 +15,7 @@ Raw integration cautions:
 - it is visually compelling but expensive as a persistent page surface
 - better suited to a self-contained hero block or splash experience than a full recruiter flow
 
-Production adaptation in this repo:
-- `src/components/ui/spiral-signal.tsx`
-
+Likely production adaptation guidance:
+- translate the spiral into a lighter signal graphic or timed reveal
+- keep the story of progression and motion, not the exact particle volume
+- pause or remove the canvas entirely when the block is offscreen

@@ -18,6 +18,7 @@ Raw integration cautions:
 - flexible enough to be powerful, but also easier to over-style
 - should be grounded in one real metric story, not used as abstract decoration
 
-Closest current production usage:
-- the portfolio currently uses other proof/impact visualizations instead of this exact funnel pattern
-
+Likely production adaptation guidance:
+- use it only when the funnel stages map to real recruiter-facing proof
+- keep the label and hover logic simple if the chart is adapted into the portfolio
+- avoid introducing it as decorative motion without a business narrative behind it

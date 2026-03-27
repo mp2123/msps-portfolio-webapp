@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -16,18 +17,17 @@ import { Header } from "@/components/ui/header-1";
 import { ROICalculator } from "@/components/ui/roi-calculator";
 import { LiveDataChart } from "@/components/ui/live-data-chart";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
-import { FloatingAiAssistant } from "@/components/ui/glowing-ai-chat-assistant";
 import { HospitalityStory } from "@/components/ui/hospitality-story";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { TerminalWindow } from "@/components/ui/terminal-window";
 import { SkillsMatrix } from "@/components/ui/skills-matrix";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
-import { ExperienceGlobe } from "@/components/ui/experience-globe";
 import { SpiralSignal } from "@/components/ui/spiral-signal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
+import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import {
   artifacts,
   careerNodes,
@@ -39,6 +39,36 @@ import {
   recommendations,
   skillsGroups,
 } from "@/content/portfolio";
+
+const FloatingAiAssistant = dynamic(
+  () =>
+    import("@/components/ui/glowing-ai-chat-assistant").then(
+      (mod) => mod.FloatingAiAssistant
+    ),
+  { ssr: false, loading: () => null }
+);
+
+const ExperienceGlobe = dynamic(
+  () => import("@/components/ui/experience-globe").then((mod) => mod.ExperienceGlobe),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
+          <div className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_52%)]" />
+        </div>
+        <div className="grid gap-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={`globe-placeholder-${index}`}
+              className="min-h-[6.5rem] rounded-[1.5rem] border border-white/10 bg-white/5 animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
 
 const projectCards: BentoItem[] = projects.map((project) => {
   const Icon = project.icon;
@@ -83,6 +113,26 @@ function handleTrackedNavigation(
       section,
       metadata,
     });
+}
+
+function handleTrackedSectionNavigation(
+  sectionId: string,
+  eventType: Parameters<typeof trackPortfolioEvent>[0]["eventType"],
+  label: string,
+  section?: string,
+  metadata?: Record<string, unknown>
+) {
+  return (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    scrollToPortfolioSection(sectionId);
+    trackPortfolioEvent({
+      eventType,
+      label,
+      href: `#${sectionId}`,
+      section,
+      metadata,
+    });
+  };
 }
 
 function ProofStrip() {
@@ -172,12 +222,17 @@ function QuickRecruiterSummary() {
 
             <div className="flex flex-wrap gap-3">
               <Button asChild className="bg-cyan-400 text-slate-950 hover:bg-cyan-300">
-                <a href="#projects">View projects</a>
+                <a
+                  href="#projects"
+                  onClick={handleTrackedSectionNavigation("projects", "section_navigation", "quick-summary-projects", "quick-summary")}
+                >
+                  View projects
+                </a>
               </Button>
               <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
                 <a
                   href="#contact"
-                  onClick={handleTrackedNavigation("contact_click", "quick-summary-contact", "#contact", "quick-summary")}
+                  onClick={handleTrackedSectionNavigation("contact", "contact_click", "quick-summary-contact", "quick-summary")}
                 >
                   Contact Michael
                 </a>
@@ -266,7 +321,7 @@ function QuickRecruiterSummary() {
 
 function ArtifactGallery() {
   return (
-    <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="artifacts">
+    <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="artifacts">
       <div className="mb-12 max-w-3xl space-y-4">
         <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
         <h2 className="text-4xl font-bold tracking-tight text-white">Sanitized proof slots ready for media.</h2>
@@ -281,7 +336,7 @@ function ArtifactGallery() {
           <div
             key={artifact.id}
             id={artifact.id}
-            className="scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/20 shadow-[0_0_40px_rgba(15,23,42,0.35)] spotlight-border"
+            className="portfolio-section-anchor overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/20 shadow-[0_0_40px_rgba(15,23,42,0.35)] spotlight-border"
           >
             <div className="relative h-56 w-full">
               <Image
@@ -322,7 +377,7 @@ function ArtifactGallery() {
 
 function ContactSection() {
   return (
-    <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="contact">
+    <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="contact">
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="scanlines relative rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/10 via-black/35 to-black/50 p-8 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
           <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent shadow-[0_0_18px_rgba(34,211,238,0.3)]" />
@@ -458,6 +513,7 @@ export default function PortfolioHome() {
         bgImageSrc={heroContent.bgImageSrc}
         eyebrow={heroContent.eyebrow}
         title={heroContent.title}
+        titleLines={heroContent.titleLines}
         subtitle={heroContent.subtitle}
         date={heroContent.dateLabel}
         scrollToExpand={heroContent.scrollLabel}
@@ -468,11 +524,11 @@ export default function PortfolioHome() {
             <ProofStrip />
             <QuickRecruiterSummary />
 
-            <section className="w-full relative z-20" id="roi-calculator">
+            <section className="portfolio-section-anchor relative z-20 w-full" id="roi-calculator">
               <ROICalculator />
             </section>
 
-            <section className="section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="projects">
+            <section className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20" id="projects">
               <div className="mb-16 max-w-3xl space-y-4">
                 <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
                   Command Center
@@ -493,7 +549,7 @@ export default function PortfolioHome() {
               <BentoGrid items={projectCards} />
             </section>
 
-            <section className="section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20" id="skills">
+            <section className="portfolio-section-anchor section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20" id="skills">
               <div className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
               <div className="relative z-10">
                 <div className="mb-12 text-center space-y-4">
@@ -510,11 +566,11 @@ export default function PortfolioHome() {
 
             <ArtifactGallery />
 
-            <section className="section-glow relative w-full border-y border-border bg-black/30" id="advantage">
+            <section className="portfolio-section-anchor section-glow relative w-full border-y border-border bg-black/30" id="advantage">
               <HospitalityStory />
             </section>
 
-            <section className="section-glow grid-noise relative w-full bg-black/50 py-20" id="experience">
+            <section className="portfolio-section-anchor section-glow grid-noise relative w-full bg-black/50 py-20" id="experience">
               <div className="mx-auto max-w-6xl px-4">
                 <div className="mb-16 max-w-3xl space-y-4">
                   <Badge className="border-white/10 bg-white/5 text-zinc-100">Experience graph</Badge>
@@ -531,7 +587,7 @@ export default function PortfolioHome() {
               </div>
             </section>
 
-            <section className="w-full py-20" id="recommendations">
+            <section className="portfolio-section-anchor w-full py-20" id="recommendations">
               <div className="mb-12 text-center space-y-4">
                 <Badge className="border-white/10 bg-white/5 text-zinc-100">Social proof</Badge>
                 <h2 className="text-4xl font-bold tracking-tight text-white">What leaders noticed first.</h2>
@@ -543,6 +599,7 @@ export default function PortfolioHome() {
             </section>
 
             <ContactSection />
+            <div aria-hidden="true" className="h-72 md:h-96" />
           </main>
         </TerminalWindow>
       </ScrollExpandMedia>

@@ -2,7 +2,14 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import {
+  motion,
+  useMotionValue,
+  useMotionTemplate,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from 'framer-motion';
 
 import { HeroParticleField } from '@/components/ui/hero-particle-field';
 
@@ -13,6 +20,7 @@ interface ScrollExpandMediaProps {
   bgImageSrc: string;
   eyebrow?: string;
   title?: string;
+  titleLines?: string[];
   subtitle?: string;
   date?: string;
   scrollToExpand?: string;
@@ -27,39 +35,20 @@ const ScrollExpandMedia = ({
   bgImageSrc,
   eyebrow,
   title,
+  titleLines,
   subtitle,
   date,
   scrollToExpand,
   textBlend,
   children,
 }: ScrollExpandMediaProps) => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [showContent, setShowContent] = useState(false);
   const [isMobileState, setIsMobileState] = useState(false);
   const heroTrackRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const syncProgress = () => {
-      if (!heroTrackRef.current) return;
-
-      const rect = heroTrackRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || 1;
-      const scrollableDistance = Math.max(rect.height - viewportHeight, 1);
-      const rawProgress = Math.min(Math.max(-rect.top / scrollableDistance, 0), 1);
-
-      setScrollProgress(rawProgress);
-      setShowContent(rawProgress >= 0.56);
-    };
-
-    syncProgress();
-    window.addEventListener('scroll', syncProgress, { passive: true });
-    window.addEventListener('resize', syncProgress);
-
-    return () => {
-      window.removeEventListener('scroll', syncProgress);
-      window.removeEventListener('resize', syncProgress);
-    };
-  }, []);
+  const prefersReducedMotion = useReducedMotion();
+  const rawProgress = useMotionValue(0);
+  const progress = useSpring(rawProgress, prefersReducedMotion
+    ? { stiffness: 520, damping: 90 }
+    : { stiffness: 180, damping: 28, mass: 0.24 });
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -72,29 +61,97 @@ const ScrollExpandMedia = ({
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const frameScale = 0.68 + scrollProgress * (isMobileState ? 0.46 : 0.76);
-  const frameHeight = isMobileState ? 360 : 520;
-  const frameTranslateY = 56 - scrollProgress * 120;
-  const frameRotateX = 16 - scrollProgress * 16;
-  const frameRotateY = -11 + scrollProgress * 11;
-  const textTranslateX = scrollProgress * (isMobileState ? 92 : 62);
-  const headingShiftY = scrollProgress * 52;
-  const backgroundOpacity = 0.94 - scrollProgress * 0.42;
-  const backgroundScale = 1.08 - scrollProgress * 0.14;
-  const mediaShadow = `0 42px 120px rgba(14, 165, 233, ${0.14 + scrollProgress * 0.14}), 0 10px 60px rgba(2, 6, 23, 0.62)`;
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-  const firstWord = title ? title.split(' ')[0] : '';
-  const restOfTitle = title ? title.split(' ').slice(1).join(' ') : '';
+    let frameId: number | null = null;
+
+    const updateProgress = () => {
+      const track = heroTrackRef.current;
+      if (!track) {
+        rawProgress.set(0);
+        return;
+      }
+
+      const rect = track.getBoundingClientRect();
+      const scrollRange = Math.max(rect.height - window.innerHeight, 1);
+      const nextProgress = Math.max(0, Math.min(1, -rect.top / scrollRange));
+
+      rawProgress.set(nextProgress);
+    };
+
+    const onScrollOrResize = () => {
+      if (frameId !== null) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        updateProgress();
+      });
+    };
+
+    updateProgress();
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [rawProgress]);
+
+  const showParticleField = !prefersReducedMotion && !isMobileState;
+  const showAmbientMotion = !prefersReducedMotion && !isMobileState;
+  const heroTrackHeight = isMobileState
+    ? 'clamp(1480px, 184svh, 1940px)'
+    : 'clamp(1680px, 156svh, 2140px)';
+  const frameHeight = isMobileState ? 360 : 520;
+  const firstLine = titleLines?.[0] ?? title ?? '';
+  const secondLine = titleLines?.[1] ?? '';
+
+  const backgroundOpacity = useTransform(progress, [0, 1], [0.98, 0.62]);
+  const backgroundScale = useTransform(progress, [0, 1], [1.04, 0.95]);
+  const eyebrowOpacity = useTransform(progress, [0, 1], [1, 0.78]);
+  const headingTranslateY = useTransform(progress, [0, 1], [0, -12]);
+  const leftTitleX = useTransform(progress, [0, 1], [0, isMobileState ? -42 : -30]);
+  const rightTitleX = useTransform(progress, [0, 1], [0, isMobileState ? 42 : 30]);
+  const subtitleOpacity = useTransform(progress, [0, 1], [1, 0.84]);
+  const shellGlowOpacity = useTransform(progress, [0, 1], [0.28, 0.42]);
+  const shellGlowScaleX = useTransform(progress, [0, 1], [0.9, 1.12]);
+  const frameScale = useTransform(progress, [0, 0.93, 1], [
+    isMobileState ? 0.78 : 0.72,
+    isMobileState ? 1.01 : 1.06,
+    isMobileState ? 1.06 : 1.12,
+  ]);
+  const frameTranslateY = useTransform(progress, [0, 0.93, 1], [64, 38, 20]);
+  const frameRotateX = useTransform(progress, [0, 0.9, 1], [16, 2, 0]);
+  const frameRotateY = useTransform(progress, [0, 0.9, 1], [-11, -1.5, 0]);
+  const mediaOverlayOpacity = useTransform(progress, [0, 1], [0.56, 0.34]);
+  const contentOpacity = useTransform(progress, [0, 0.62, 0.84, 1], [0, 0.05, 0.8, 1]);
+  const shadowCyan = useTransform(progress, [0, 1], [0.18, 0.3]);
+  const shadowSlate = useTransform(progress, [0, 1], [0.58, 0.68]);
+  const mediaShadow = useMotionTemplate`0 42px 120px rgba(14, 165, 233, ${shadowCyan}), 0 10px 60px rgba(2, 6, 23, ${shadowSlate})`;
 
   return (
     <div className="overflow-x-hidden">
-      <section ref={heroTrackRef} className="relative h-[185svh] md:h-[205svh]">
-        <div className="sticky top-0 h-screen overflow-hidden">
+      <section ref={heroTrackRef} className="relative" style={{ height: heroTrackHeight }}>
+        <div
+          className="sticky overflow-hidden"
+          style={{
+            top: 'var(--portfolio-header-height)',
+            height: 'calc(100svh - var(--portfolio-header-height))',
+          }}
+        >
           <motion.div
             className="absolute inset-0 z-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: backgroundOpacity, scale: backgroundScale }}
-            transition={{ duration: 0.18 }}
+            style={{ opacity: backgroundOpacity, scale: backgroundScale }}
           >
             <Image
               src={bgImageSrc}
@@ -107,35 +164,27 @@ const ScrollExpandMedia = ({
           </motion.div>
 
           <div className="absolute inset-0 z-[1]">
-            <HeroParticleField className="opacity-90" />
+            {showParticleField ? <HeroParticleField className="opacity-90" /> : null}
             <div className="absolute -left-20 top-[14%] h-72 w-72 rounded-full bg-cyan-400/18 blur-3xl md:h-[24rem] md:w-[24rem]" />
             <div className="absolute right-[-8%] top-[12%] h-72 w-72 rounded-full bg-blue-500/16 blur-3xl md:h-[28rem] md:w-[28rem]" />
             <div className="absolute bottom-[10%] left-1/2 h-40 w-[72vw] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-3xl" />
             <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.05)_0,transparent_1px)] bg-[size:100%_28px] opacity-[0.14]" />
-            <motion.div
-              className="absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-cyan-300/55 to-transparent shadow-[0_0_30px_rgba(34,211,238,0.35)]"
-                animate={{ opacity: [0.25, 0.8, 0.25], scaleX: [0.82, 1.02, 0.82] }}
-                transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            <motion.div
-              className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_42%)]"
-              animate={{ opacity: [0.15, 0.3, 0.15] }}
-              transition={{ duration: 6.4, repeat: Infinity, ease: 'easeInOut' }}
-            />
+            <div className="absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-cyan-300/45 to-transparent shadow-[0_0_24px_rgba(34,211,238,0.22)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04),transparent_42%)]" />
           </div>
 
           <div className="relative z-10 flex h-full items-center justify-center px-4">
             <div className="container mx-auto flex h-full max-w-7xl flex-col items-center justify-center">
-              <div
+              <motion.div
                 className={`pointer-events-none relative z-20 mb-8 flex w-full max-w-5xl flex-col items-center justify-center gap-4 text-center ${
                   textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
                 }`}
-                style={{ transform: `translateY(-${headingShiftY}px)` }}
+                style={{ y: headingTranslateY }}
               >
                 {eyebrow ? (
                   <motion.p
                     className="rounded-full border border-cyan-200/20 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.45em] text-cyan-100/80 shadow-[0_0_30px_rgba(34,211,238,0.08)] backdrop-blur-xl md:text-xs"
-                    style={{ opacity: 1 - scrollProgress * 0.25 }}
+                    style={{ opacity: eyebrowOpacity }}
                   >
                     {eyebrow}
                   </motion.p>
@@ -144,45 +193,49 @@ const ScrollExpandMedia = ({
                 <div className="space-y-2">
                   <motion.h2
                     className="text-4xl font-bold text-blue-100 md:text-6xl lg:text-7xl"
-                    style={{ transform: `translateX(-${textTranslateX}px)` }}
+                    style={{ x: leftTitleX }}
                   >
-                    {firstWord}
+                    {firstLine}
                   </motion.h2>
-                  <motion.h2
-                    className="text-4xl font-bold text-cyan-100 md:text-6xl lg:text-7xl"
-                    style={{ transform: `translateX(${textTranslateX}px)` }}
-                  >
-                    {restOfTitle}
-                  </motion.h2>
+                  {secondLine ? (
+                    <motion.h2
+                      className="text-4xl font-bold text-cyan-100 md:text-6xl lg:text-7xl"
+                      style={{ x: rightTitleX }}
+                    >
+                      {secondLine}
+                    </motion.h2>
+                  ) : null}
                 </div>
 
                 {subtitle ? (
                   <motion.p
                     className="mx-auto max-w-3xl px-4 text-sm leading-relaxed text-blue-100/85 md:text-base lg:text-lg"
-                    style={{ opacity: Math.max(0.36, 1 - scrollProgress * 0.42) }}
+                    style={{ opacity: subtitleOpacity }}
                   >
                     {subtitle}
                   </motion.p>
                 ) : null}
-              </div>
+              </motion.div>
 
               <div className="relative flex w-full items-center justify-center [perspective:1800px]">
                 <motion.div
                   className="absolute inset-x-0 top-[58%] mx-auto h-28 w-[78%] rounded-full bg-cyan-300/12 blur-3xl md:h-32"
-                  animate={{ opacity: 0.36 + scrollProgress * 0.28, scaleX: 0.88 + scrollProgress * 0.24 }}
+                  style={{ opacity: shellGlowOpacity, scaleX: shellGlowScaleX }}
                 />
 
-                <div
+                <motion.div
                   className="relative z-20 w-full max-w-[1320px]"
                   style={{
                     height: `${frameHeight}px`,
                     maxHeight: '84vh',
-                    transform: `translate3d(0, ${frameTranslateY}px, 0) rotateX(${frameRotateX}deg) rotateY(${frameRotateY}deg) scale(${frameScale})`,
                     transformStyle: 'preserve-3d',
-                    transition: 'transform 120ms linear, height 120ms linear',
+                    y: frameTranslateY,
+                    rotateX: frameRotateX,
+                    rotateY: frameRotateY,
+                    scale: frameScale,
                   }}
                 >
-                  <div
+                  <motion.div
                     className="absolute inset-0 rounded-[2rem] border border-cyan-200/15 bg-white/[0.03] backdrop-blur-xl"
                     style={{ boxShadow: mediaShadow }}
                   />
@@ -205,7 +258,7 @@ const ScrollExpandMedia = ({
                       <div className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_2px)] bg-[size:100%_34px] opacity-[0.14]" />
                       <motion.div
                         className="absolute inset-x-0 top-[18%] z-10 h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent"
-                        animate={{ y: ['-10%', '420%'] }}
+                        animate={showAmbientMotion ? { y: ['-10%', '420%'] } : undefined}
                         transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
                       />
                       <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-slate-950 to-transparent" />
@@ -220,22 +273,17 @@ const ScrollExpandMedia = ({
                                 mediaSrc.includes('embed')
                                   ? mediaSrc +
                                     (mediaSrc.includes('?') ? '&' : '?') +
-                                    'autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1'
+                                      'autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1'
                                   : mediaSrc.replace('watch?v=', 'embed/') +
-                                    '?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playlist=' +
-                                      mediaSrc.split('v=')[1]
+                                      '?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playlist=' +
+                                        mediaSrc.split('v=')[1]
                               }
                               className="h-full w-full"
                               frameBorder="0"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               allowFullScreen
                             />
-                            <motion.div
-                              className="absolute inset-0 bg-black/35"
-                              initial={{ opacity: 0.68 }}
-                              animate={{ opacity: 0.48 - scrollProgress * 0.18 }}
-                              transition={{ duration: 0.2 }}
-                            />
+                            <motion.div className="absolute inset-0 bg-black/35" style={{ opacity: mediaOverlayOpacity }} />
                           </div>
                         ) : (
                           <div className="relative h-full w-full pointer-events-none">
@@ -252,12 +300,7 @@ const ScrollExpandMedia = ({
                               disablePictureInPicture
                               disableRemotePlayback
                             />
-                            <motion.div
-                              className="absolute inset-0 bg-black/30"
-                              initial={{ opacity: 0.68 }}
-                              animate={{ opacity: 0.44 - scrollProgress * 0.14 }}
-                              transition={{ duration: 0.2 }}
-                            />
+                            <motion.div className="absolute inset-0 bg-black/30" style={{ opacity: mediaOverlayOpacity }} />
                           </div>
                         )
                       ) : (
@@ -269,12 +312,7 @@ const ScrollExpandMedia = ({
                             height={720}
                             className="h-full w-full object-cover"
                           />
-                          <motion.div
-                            className="absolute inset-0 bg-black/45"
-                            initial={{ opacity: 0.72 }}
-                            animate={{ opacity: 0.6 - scrollProgress * 0.18 }}
-                            transition={{ duration: 0.2 }}
-                          />
+                          <motion.div className="absolute inset-0 bg-black/45" style={{ opacity: mediaOverlayOpacity }} />
                         </div>
                       )}
 
@@ -295,7 +333,7 @@ const ScrollExpandMedia = ({
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -303,13 +341,8 @@ const ScrollExpandMedia = ({
       </section>
 
       <motion.section
-        className="relative z-10 flex w-full flex-col px-4 py-10 md:px-10 lg:px-16 lg:py-16"
-        initial={{ opacity: 0, y: 48 }}
-        animate={{
-          opacity: showContent ? 1 : 0.24,
-          y: showContent ? 0 : 48,
-        }}
-        transition={{ duration: 0.5 }}
+        className="relative z-10 -mt-[8vh] flex w-full flex-col px-4 py-10 md:-mt-[16vh] md:px-10 lg:-mt-[24vh] lg:px-16 lg:py-16"
+        style={{ opacity: contentOpacity }}
       >
         {children}
       </motion.section>

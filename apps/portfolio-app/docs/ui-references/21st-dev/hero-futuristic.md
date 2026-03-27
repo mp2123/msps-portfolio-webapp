@@ -19,6 +19,7 @@ Raw integration cautions:
 - this component is much heavier than the recruiter use case justifies
 - it is better as inspiration for scanline, glow, and reveal language than as a direct mount
 
-Production adaptation in this repo:
-- the cinematic hero borrows the scanline / control-room feel without shipping the raw WebGPU stack
-
+Likely production adaptation guidance:
+- keep the scanline and depth-language, but render it with lighter canvas or CSS effects
+- avoid shipping the raw WebGPU stack unless the target browser matrix explicitly allows it
+- use it as a visual reference for hero pacing, not a literal production dependency

@@ -5,10 +5,24 @@ import { cn } from '@/lib/utils';
 import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
 import { useScroll } from '@/components/ui/use-scroll';
 import { SearchCommand } from '@/components/ui/search-command';
+import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
 
 export function Header() {
 	const [open, setOpen] = React.useState(false);
 	const scrolled = useScroll(10);
+	const handleSectionNavigation = React.useCallback(
+		(event: React.MouseEvent<HTMLAnchorElement>, href: string, closeMenu = false) => {
+			const sectionId = href.replace('#', '');
+			if (!sectionId) return;
+
+			event.preventDefault();
+			if (closeMenu) {
+				setOpen(false);
+			}
+			scrollToPortfolioSection(sectionId);
+		},
+		[]
+	);
 
 	const links = [
 		{ label: 'Projects', href: '#projects' },
@@ -16,6 +30,7 @@ export function Header() {
 		{ label: 'Artifacts', href: '#artifacts' },
 		{ label: 'Advantage', href: '#advantage' },
 		{ label: 'Experience', href: '#experience' },
+		{ label: 'Recommendations', href: '#recommendations' },
 		{ label: 'Contact', href: '#contact' },
 	];
 
@@ -25,27 +40,56 @@ export function Header() {
 		return () => { document.body.style.overflow = ''; };
 	}, [open]);
 
+	React.useEffect(() => {
+		const handleAssistantOpen = () => {
+			setOpen(false);
+		};
+
+		window.addEventListener('portfolio-assistant-open', handleAssistantOpen);
+		return () => window.removeEventListener('portfolio-assistant-open', handleAssistantOpen);
+	}, []);
+
 	return (
-		<header className={cn('sticky top-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-sm', scrolled && 'border-border bg-background/95')}>
-			<nav className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4">
-				<a href="#home" className="hover:bg-accent rounded-md p-2 transition-colors" aria-label="Jump to top of portfolio">
-					<WordmarkIcon className="h-4" />
+		<header className={cn('fixed top-0 left-0 right-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-xl transition-colors', scrolled && 'border-white/10 bg-background/92')}>
+			<nav className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-6 lg:px-8">
+				<a
+					href="#home"
+					className="group flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 transition-colors hover:border-cyan-300/25 hover:bg-white/[0.08]"
+					aria-label="Jump to top of portfolio"
+					onClick={(event) => handleSectionNavigation(event, '#home')}
+				>
+					<span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-400/12 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-100">
+						MP
+					</span>
+					<span className="hidden min-w-0 flex-col leading-none sm:flex">
+						<span className="text-[10px] font-medium uppercase tracking-[0.26em] text-cyan-100/65">
+							Michael
+						</span>
+						<span className="text-sm font-semibold text-white">Panico</span>
+					</span>
 				</a>
-				<div className="flex-1 flex justify-center md:justify-start md:pl-4">
+				<div className="hidden min-w-0 max-w-[22rem] flex-1 md:flex lg:max-w-[25rem]">
 					<SearchCommand />
 				</div>
-				<div className="hidden items-center gap-2 md:flex">
+				<div className="ml-auto hidden items-center gap-1 md:flex lg:gap-2">
 					{links.map((link) => (
-						<a key={link.label} className={buttonVariants({ variant: 'ghost' })} href={link.href}>
+						<a
+							key={link.label}
+							className={buttonVariants({ variant: 'ghost' })}
+							href={link.href}
+							onClick={(event) => handleSectionNavigation(event, link.href)}
+						>
 							{link.label}
 						</a>
 					))}
-					<div className="w-px h-6 bg-border mx-2"/>
+					<div className="mx-2 h-6 w-px bg-border" />
 					<Button asChild>
-						<a href="#projects">Explore Work</a>
+						<a href="#projects" onClick={(event) => handleSectionNavigation(event, '#projects')}>
+							Explore Work
+						</a>
 					</Button>
 				</div>
-				<div className="md:hidden">
+				<div className="ml-auto md:hidden">
                     <Button size="icon" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-menu" aria-label="Toggle menu">
                         <MenuToggleIcon open={open} className="size-5" />
                     </Button>
@@ -53,16 +97,26 @@ export function Header() {
 			</nav>
 			{open && (
 				<div id="mobile-menu" className={cn('fixed top-14 right-0 bottom-0 left-0 z-40 md:hidden', 'bg-background/95 backdrop-blur-lg border-t')}>
-					<div className="p-4 space-y-2">
+					<div className="space-y-4 p-4">
+						<SearchCommand />
+						<div className="space-y-2">
 						{links.map((link) => (
-							<a key={link.label} className={buttonVariants({ variant: 'ghost', className: 'justify-start w-full' })} href={link.href} onClick={() => setOpen(false)}>
+							<a
+								key={link.label}
+								className={buttonVariants({ variant: 'ghost', className: 'justify-start w-full' })}
+								href={link.href}
+								onClick={(event) => handleSectionNavigation(event, link.href, true)}
+							>
 								{link.label}
 							</a>
 						))}
+						</div>
 					</div>
                     <div className='p-4 border-t space-y-2'>
 					    <Button asChild className="w-full">
-							<a href="#projects" onClick={() => setOpen(false)}>Explore Work</a>
+							<a href="#projects" onClick={(event) => handleSectionNavigation(event, '#projects', true)}>
+								Explore Work
+							</a>
 						</Button>
                     </div>
 				</div>

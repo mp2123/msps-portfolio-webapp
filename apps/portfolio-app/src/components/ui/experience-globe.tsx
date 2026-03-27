@@ -67,40 +67,44 @@ export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
+  const [isGlobeVisible, setIsGlobeVisible] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current || hasEnteredViewport) return;
+    if (!containerRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
           setHasEnteredViewport(true);
-          observer.disconnect();
+          setIsGlobeVisible(true);
+          return;
         }
+
+        setIsGlobeVisible(false);
       },
       { threshold: 0.2 }
     );
 
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, [hasEnteredViewport]);
+  }, []);
 
   useEffect(() => {
-    if (!hasEnteredViewport || !canvasRef.current) return;
+    if (!isGlobeVisible || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     let phi = 5.1;
     let width = 0;
 
     const globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.6),
       width: width * 2,
       height: width * 2,
       phi,
       theta: 0.35,
       dark: 1,
       diffuse: 1.2,
-      mapSamples: 18000,
+      mapSamples: 12000,
       mapBrightness: 4,
       baseColor: [0.04, 0.07, 0.13],
       markerColor: [0.34, 0.88, 1],
@@ -129,9 +133,10 @@ export function ExperienceGlobe() {
     canvas.style.opacity = '1';
 
     return () => {
+      canvas.style.opacity = '0';
       globe.destroy();
     };
-  }, [hasEnteredViewport]);
+  }, [isGlobeVisible]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { gsap } from 'gsap';
 
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ type SpiralSignalProps = {
 
 export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,6 +27,8 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let isVisible = true;
+    let isDocumentVisible = document.visibilityState === 'visible';
 
     const setSize = () => {
       const parent = canvas.parentElement;
@@ -104,18 +108,44 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
       .to(state, { progress: 1, duration: 9, onUpdate: draw }, 0)
       .to(state, { pulse: 1, duration: 2.2, yoyo: true, repeat: -1, ease: 'sine.inOut', onUpdate: draw }, 0);
 
+    const syncPlayback = () => {
+      const shouldRun = !prefersReducedMotion && isVisible && isDocumentVisible;
+      if (shouldRun) {
+        motion.resume();
+      } else {
+        motion.pause();
+        draw();
+      }
+    };
+
     const resizeObserver = new ResizeObserver(() => {
       setSize();
       draw();
     });
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = Boolean(entry?.isIntersecting);
+        syncPlayback();
+      },
+      { threshold: 0.2 }
+    );
+    const handleVisibilityChange = () => {
+      isDocumentVisible = document.visibilityState === 'visible';
+      syncPlayback();
+    };
 
     resizeObserver.observe(canvas.parentElement ?? canvas);
+    visibilityObserver.observe(canvas.parentElement ?? canvas);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    syncPlayback();
 
     return () => {
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       motion.kill();
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <div className="relative overflow-hidden rounded-[1.8rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-500/10 via-slate-950/90 to-black/95 p-5 shadow-[0_0_40px_rgba(34,211,238,0.08)]">

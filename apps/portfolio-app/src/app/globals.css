@@ -49,6 +49,8 @@
 
 :root {
   --radius: 0.625rem;
+  --portfolio-header-height: 3.5rem;
+  --portfolio-scroll-offset: calc(var(--portfolio-header-height) + 0.75rem);
   --background: oklch(1 0 0);
   --foreground: oklch(0.13 0.028 261.692);
   --card: oklch(1 0 0);
@@ -127,13 +129,15 @@
   body {
 
     @apply bg-background text-foreground;
+    position: relative;
 
   }
 
   html {
 
     scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: var(--portfolio-scroll-offset);
+    position: relative;
 
   }
 
@@ -222,6 +226,12 @@
       0 0 0 1px rgba(255, 255, 255, 0.06) inset,
       0 0 0 1px rgba(34, 211, 238, 0.06),
       0 24px 60px rgba(2, 6, 23, 0.36);
+
+  }
+
+  .portfolio-section-anchor {
+
+    scroll-margin-top: var(--portfolio-scroll-offset);
 
   }
 

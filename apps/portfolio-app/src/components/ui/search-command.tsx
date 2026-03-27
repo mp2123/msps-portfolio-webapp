@@ -10,6 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
 
 const portfolioSections = [
   { name: 'Projects', category: 'Case studies', id: 'projects' },
@@ -23,15 +24,6 @@ const portfolioSections = [
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
-
-  const scrollToSection = React.useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (!element) return;
-
-    const headerOffset = 88;
-    const targetTop = element.getBoundingClientRect().top + window.scrollY - headerOffset;
-    window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
-  }, []);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -48,17 +40,19 @@ export function SearchCommand() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground border border-border/40 rounded-full bg-muted/20 hover:bg-muted/40 transition-all ml-4"
+        className="flex h-10 w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm text-zinc-400 transition-colors hover:border-cyan-300/20 hover:bg-white/[0.08]"
       >
-        <Search className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Search portfolio sections...</span>
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100">
-          <span className="text-xs">⌘</span>K
+        <span className="flex min-w-0 items-center gap-2">
+          <Search className="h-3.5 w-3.5 shrink-0 text-cyan-100/70" />
+          <span className="truncate">Search sections...</span>
+        </span>
+        <kbd className="pointer-events-none inline-flex h-6 shrink-0 select-none items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 font-mono text-[10px] font-medium text-zinc-500">
+          <span className="text-xs text-zinc-400">⌘</span>K
         </kbd>
       </button>
       {open ? (
         <CommandDialog open={open} onOpenChange={setOpen}>
-          <CommandInput placeholder="Type a section or topic..." />
+          <CommandInput placeholder="Search sections or topics..." />
           <CommandList>
             <CommandEmpty>No matching section found.</CommandEmpty>
             <CommandGroup heading="Portfolio Sections">
@@ -67,7 +61,7 @@ export function SearchCommand() {
                   key={section.name}
                   onSelect={() => {
                     setOpen(false);
-                    scrollToSection(section.id);
+                    scrollToPortfolioSection(section.id);
                   }}
                 >
                   <span>{section.name}</span>
@@ -79,7 +73,7 @@ export function SearchCommand() {
               <CommandItem
                 onSelect={() => {
                   setOpen(false);
-                  scrollToSection('projects');
+                  scrollToPortfolioSection('projects');
                 }}
               >
                 <span>Jump to featured work</span>

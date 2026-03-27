@@ -15,6 +15,7 @@ Raw integration cautions:
 - debug overlays and continuous canvas updates need trimming for production
 - full-screen canvas effects should be gated by viewport size and reduced-motion preferences
 
-Production adaptation in this repo:
-- `src/components/ui/hero-particle-field.tsx`
-
+Likely production adaptation guidance:
+- preserve the atmospheric particle field, but cap density and stop animating offscreen
+- keep the interaction subtle and selectively enabled on large viewports only
+- treat the mouse-repulsion feel as a hero accent, not a full-screen physics demo

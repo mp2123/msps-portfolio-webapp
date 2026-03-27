@@ -1,6 +1,7 @@
 export type PortfolioEventType =
   | "resume_download"
   | "contact_click"
+  | "section_navigation"
   | "assistant_prompt_click"
   | "assistant_message_submit"
   | "print_cv_open";
