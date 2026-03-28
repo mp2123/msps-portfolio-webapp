@@ -562,10 +562,10 @@ export const FloatingAiAssistant = () => {
         onClick={handleLauncherToggle}
         style={{
           background:
-            'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 35%), linear-gradient(135deg, rgba(34,211,238,0.92) 0%, rgba(59,130,246,0.92) 45%, rgba(37,99,235,0.96) 100%)',
+            'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.34), transparent 34%), linear-gradient(135deg, rgba(16,185,129,0.98) 0%, rgba(20,184,166,0.96) 48%, rgba(34,211,238,0.95) 100%)',
           boxShadow:
-            '0 0 24px rgba(34,211,238,0.75), 0 0 48px rgba(37,99,235,0.55), 0 0 88px rgba(14,165,233,0.35), 0 18px 40px rgba(2,6,23,0.42)',
-          border: '2px solid rgba(255, 255, 255, 0.2)',
+            '0 0 26px rgba(16,185,129,0.72), 0 0 52px rgba(20,184,166,0.52), 0 0 96px rgba(34,211,238,0.28), 0 18px 40px rgba(2,6,23,0.42)',
+          border: '2px solid rgba(209, 250, 229, 0.24)',
         }}
         aria-label={isChatOpen ? 'Close recruiter assistant' : 'Open recruiter assistant'}
         aria-haspopup="dialog"
@@ -573,26 +573,26 @@ export const FloatingAiAssistant = () => {
         aria-controls="recruiter-assistant-dialog"
       >
         <motion.div
-          className="absolute -inset-3 rounded-full bg-cyan-400/20 blur-2xl"
-          animate={{ opacity: isChatOpen ? 0.78 : 0.38, scale: isChatOpen ? 1.08 : 1 }}
+          className="absolute -inset-3 rounded-full bg-emerald-400/30 blur-[22px]"
+          animate={{ opacity: isChatOpen ? 0.86 : 0.52, scale: isChatOpen ? 1.1 : 1.02 }}
           transition={{ duration: 0.3 }}
         />
         <motion.div
-          className="absolute -inset-5 rounded-full border border-cyan-300/20"
-          animate={{ opacity: isChatOpen ? 0.78 : 0.38, scale: isChatOpen ? 1.05 : 1 }}
+          className="absolute -inset-5 rounded-full border border-emerald-200/30"
+          animate={{ opacity: isChatOpen ? 0.85 : 0.48, scale: isChatOpen ? 1.06 : 1.01 }}
           transition={{ duration: 0.3 }}
         />
-        <div className="absolute -inset-8 rounded-full border border-cyan-300/10 opacity-40" />
+        <div className="absolute -inset-8 rounded-full border border-emerald-300/15 opacity-45" />
         <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-30" />
-        <div className="absolute inset-0 rounded-full border-2 border-white/10" />
-        <div className="absolute inset-[7px] rounded-full border border-cyan-100/20" />
+        <div className="absolute inset-0 rounded-full border-2 border-white/12" />
+        <div className="absolute inset-[7px] rounded-full border border-emerald-50/20" />
         <div className="relative z-10 text-white">
           {isChatOpen ? <X /> : <Bot className="h-8 w-8" />}
         </div>
         <motion.div
-          className="absolute inset-0 rounded-full border border-cyan-200/40"
-          animate={{ scale: [1, 1.16, 1], opacity: [0.35, 0, 0.35] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-0 rounded-full border border-emerald-100/45"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.42, 0, 0.42] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
         />
       </button>
 
@@ -605,7 +605,7 @@ export const FloatingAiAssistant = () => {
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             className="absolute bottom-20 right-0 h-[min(760px,calc(100dvh-2.75rem))] w-[min(452px,calc(100vw-0.75rem))] origin-bottom-right sm:h-[min(792px,calc(100dvh-4rem))] sm:w-[min(468px,calc(100vw-1rem))]"
           >
-            <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-cyan-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-emerald-400/10 blur-3xl" />
             <div
               ref={dialogRef}
               id="recruiter-assistant-dialog"
@@ -613,15 +613,15 @@ export const FloatingAiAssistant = () => {
               aria-labelledby="recruiter-assistant-title"
               aria-describedby="recruiter-assistant-description"
               onKeyDown={handleDialogKeyDown}
-              className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-cyan-500/15 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-2xl shadow-cyan-500/10 backdrop-blur-3xl"
+              className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-[0_0_60px_rgba(16,185,129,0.12)] backdrop-blur-3xl"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.15),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.17),transparent_30%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
               <div className="flex items-start justify-between gap-3 px-4 pb-2 pt-4 sm:px-5 sm:pt-4.5">
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
-                    <span className="text-xs font-medium uppercase tracking-[0.2em] text-cyan-200/70">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-300" />
+                    <span className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-100/75">
                       Recruiter Assistant
                     </span>
                     <span
@@ -630,12 +630,12 @@ export const FloatingAiAssistant = () => {
                         error
                           ? 'border-amber-300/30 bg-amber-300/10 text-amber-100'
                           : isLoading
-                            ? 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100'
+                            ? 'border-teal-300/25 bg-teal-300/10 text-teal-100'
                             : isOfflineResponse
                               ? 'border-zinc-300/20 bg-white/5 text-zinc-200'
                             : isDegradedResponse
                               ? 'border-amber-300/30 bg-amber-300/10 text-amber-100'
-                              : 'border-emerald-300/30 bg-emerald-300/10 text-emerald-100'
+                              : 'border-emerald-300/35 bg-emerald-300/10 text-emerald-100 shadow-[0_0_16px_rgba(16,185,129,0.12)]'
                       )}
                     >
                       {assistantModeLabel}
@@ -727,13 +727,13 @@ export const FloatingAiAssistant = () => {
                     animate={{ opacity: 1 }}
                     className="px-1 pb-3 pt-1 text-left"
                   >
-                    <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
+                    <div className="rounded-2xl border border-emerald-300/14 bg-white/[0.03] px-4 py-3 shadow-[0_0_24px_rgba(16,185,129,0.05)]">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.12)]">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-300/24 bg-emerald-300/10 text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.14)]">
                           <Bot className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100/70">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-100/75">
                             Welcome
                           </p>
                           <p className="mt-1 text-xs leading-relaxed text-zinc-300">
@@ -741,10 +741,10 @@ export const FloatingAiAssistant = () => {
                             explanation of a project. The first answer lands here.
                           </p>
                           <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300">
+                            <span className="rounded-full border border-emerald-300/16 bg-emerald-300/[0.08] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-200">
                               Live recruiter framing
                             </span>
-                            <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300">
+                            <span className="rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-200">
                               Portfolio-aware answers
                             </span>
                           </div>

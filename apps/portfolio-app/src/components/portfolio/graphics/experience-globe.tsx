@@ -142,8 +142,8 @@ export function ExperienceGlobe() {
     const deltaY = event.clientY - pointerInteracting.current.y;
 
     dragOffset.current = {
-      phi: deltaX / 180,
-      theta: deltaY / 280,
+      phi: deltaX / 140,
+      theta: deltaY / 220,
     };
     dragDistanceRef.current = Math.max(
       dragDistanceRef.current,
@@ -234,11 +234,11 @@ export function ExperienceGlobe() {
       baseColor: [0.04, 0.07, 0.13],
       markerColor: [0.34, 0.88, 1],
       glowColor: [0.08, 0.27, 0.48],
-      markerSize: 0.075,
+      markerSize: 0.082,
       markerElevation: 0.08,
       markers: markers.map((marker) => ({
         location: marker.location,
-        size: 0.09,
+        size: 0.1,
       })),
       arcs: arcs.map((arc) => ({
         from: arc.from,
@@ -253,12 +253,12 @@ export function ExperienceGlobe() {
         state.width = width * 2;
         state.height = width * 2;
 
-        orbitOffsetRef.current += pointerInteracting.current ? 0.00035 : 0.0024;
+        orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.0048;
         const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
         const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
 
-        state.phi += (targetPhi - state.phi) * 0.11;
-        state.theta += (targetTheta - state.theta) * 0.11;
+        state.phi += (targetPhi - state.phi) * 0.14;
+        state.theta += (targetTheta - state.theta) * 0.14;
       },
     } as never);
 
@@ -290,7 +290,7 @@ export function ExperienceGlobe() {
         className="relative overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_52%)]" />
-        <div className="relative mx-auto aspect-square max-w-[22rem]">
+        <div className="relative mx-auto aspect-square max-w-[26rem]">
           <GlobeCanvasShell
             canvasRef={canvasRef}
             hasEnteredViewport={hasEnteredViewport}
@@ -300,11 +300,11 @@ export function ExperienceGlobe() {
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
           />
-          <div className="pointer-events-none absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 backdrop-blur-xl">
+          <div className="pointer-events-none absolute bottom-6 left-1/2 w-[min(16rem,calc(100%-3rem))] -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/55 px-3.5 py-2.5 backdrop-blur-xl">
             <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/65">
               Active stage
             </p>
-            <p className="mt-2 text-sm font-semibold text-white">{activeMarker.label}</p>
+            <p className="mt-1.5 text-sm font-semibold text-white">{activeMarker.label}</p>
             <p className="mt-1 text-xs uppercase tracking-[0.18em] text-white/45">
               {activeMarker.cityLabel}
             </p>
@@ -316,7 +316,10 @@ export function ExperienceGlobe() {
             Chicago → Iowa City → Phoenix
           </span>
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            Auto-rotating stage map
+            Auto-rotating
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/10 px-3 py-1 text-cyan-50">
+            Drag to inspect
           </span>
         </div>
       </div>

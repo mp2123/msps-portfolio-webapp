@@ -13,10 +13,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { CareerNode } from "@/content/portfolio";
+import { cn } from "@/lib/utils";
 
 interface RadialOrbitalTimelineProps {
   timelineData: CareerNode[];
 }
+
+type OrbitLabelSide = "top" | "bottom" | "left" | "right";
+
+const ORBIT_RADIUS = 274;
+const INNER_ORBIT_DIAMETER = 560;
+const OUTER_ORBIT_DIAMETER = 700;
 
 const statusStyles: Record<CareerNode["status"], string> = {
   completed: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
@@ -68,16 +75,22 @@ export default function RadialOrbitalTimeline({
   }, [activeNode, timelineData]);
 
   const positions = useMemo(() => {
-    const radius = 220;
     return timelineData.map((item, index) => {
       const angle = ((index / timelineData.length) * 360 + rotationAngle) % 360;
       const radian = (angle * Math.PI) / 180;
-      const x = radius * Math.cos(radian);
-      const y = radius * Math.sin(radian);
+      const x = ORBIT_RADIUS * Math.cos(radian);
+      const y = ORBIT_RADIUS * Math.sin(radian);
       const opacity = Math.max(0.55, Math.min(1, 0.45 + 0.6 * ((1 + Math.sin(radian)) / 2)));
       const zIndex = Math.round(100 + 50 * Math.cos(radian));
+      let labelSide: OrbitLabelSide;
 
-      return { id: item.id, x, y, opacity, zIndex };
+      if (Math.abs(y) > Math.abs(x)) {
+        labelSide = y < 0 ? "top" : "bottom";
+      } else {
+        labelSide = x < 0 ? "left" : "right";
+      }
+
+      return { id: item.id, x, y, opacity, zIndex, labelSide };
     });
   }, [rotationAngle, timelineData]);
 
@@ -199,10 +212,16 @@ export default function RadialOrbitalTimeline({
         })}
       </div>
 
-      <div className="relative hidden min-h-[620px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-black/25 px-8 py-10 lg:flex">
+      <div className="relative hidden min-h-[700px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-black/25 px-8 py-10 lg:flex">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.08),transparent_55%)]" />
-        <div className="absolute h-[460px] w-[460px] rounded-full border border-white/10" />
-        <div className="absolute h-[620px] w-[620px] rounded-full border border-white/5" />
+        <div
+          className="absolute rounded-full border border-white/10"
+          style={{ height: `${INNER_ORBIT_DIAMETER}px`, width: `${INNER_ORBIT_DIAMETER}px` }}
+        />
+        <div
+          className="absolute rounded-full border border-white/5"
+          style={{ height: `${OUTER_ORBIT_DIAMETER}px`, width: `${OUTER_ORBIT_DIAMETER}px` }}
+        />
 
         <Card className="relative z-20 w-full max-w-md border-white/10 bg-black/60 backdrop-blur-xl">
           <CardHeader>
@@ -318,9 +337,14 @@ export default function RadialOrbitalTimeline({
                 <Icon className="h-5 w-5" />
               </div>
               <div
-                className={`absolute left-1/2 top-16 -translate-x-1/2 whitespace-nowrap text-xs font-semibold tracking-[0.16em] ${
-                  isActive ? "text-white" : "text-zinc-400"
-                }`}
+                className={cn(
+                  "absolute max-w-[11rem] text-xs font-semibold leading-tight tracking-[0.14em] whitespace-normal",
+                  isActive ? "text-white" : "text-zinc-400",
+                  position?.labelSide === "top" && "bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 text-center",
+                  position?.labelSide === "bottom" && "top-[calc(100%+12px)] left-1/2 -translate-x-1/2 text-center",
+                  position?.labelSide === "left" && "right-[calc(100%+14px)] top-1/2 -translate-y-1/2 text-right",
+                  position?.labelSide === "right" && "left-[calc(100%+14px)] top-1/2 -translate-y-1/2 text-left"
+                )}
               >
                 {item.title}
               </div>
