@@ -227,18 +227,19 @@ export function ExperienceGlobe() {
       height: initialWidth * 2,
       phi: focusRef.current.phi,
       theta: focusRef.current.theta,
-      dark: 1,
-      diffuse: 1.2,
+      dark: 0.38,
+      diffuse: 1.35,
       mapSamples: 11800,
-      mapBrightness: 4,
-      baseColor: [0.04, 0.07, 0.13],
+      mapBrightness: 6.2,
+      mapBaseBrightness: 0.18,
+      baseColor: [0.12, 0.22, 0.33],
       markerColor: [0.34, 0.88, 1],
-      glowColor: [0.08, 0.27, 0.48],
+      glowColor: [0.08, 0.42, 0.62],
       markerSize: 0.082,
       markerElevation: 0.08,
       markers: markers.map((marker) => ({
         location: marker.location,
-        size: 0.1,
+        size: 0.09,
       })),
       arcs: arcs.map((arc) => ({
         from: arc.from,
@@ -256,6 +257,11 @@ export function ExperienceGlobe() {
         orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.0048;
         const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
         const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
+        if (pointerInteracting.current) {
+          state.phi = targetPhi;
+          state.theta = targetTheta;
+          return;
+        }
 
         state.phi += (targetPhi - state.phi) * 0.14;
         state.theta += (targetTheta - state.theta) * 0.14;
