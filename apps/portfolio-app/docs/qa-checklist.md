@@ -13,7 +13,8 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 ## Global Navigation
 
 - Header branding does not collide with the search trigger or nav.
-- Desktop nav links align and scroll to the correct section offsets.
+- Homepage desktop nav links align and scroll to the correct section offsets.
+- `/projects` nav links land on the project library, artifact vault, or back to the correct homepage sections.
 - Mobile menu opens, closes, and all section links work.
 - Command/search modal opens, navigates correctly, and does not trap broken focus.
 
@@ -26,10 +27,10 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 
 ## Sections and Interactions
 
-- ROI calculator sliders move smoothly and values update correctly.
-- Project cards, artifact CTAs, and contact links are clickable.
-- Translation-layer scanner renders between `Skills` and `Artifact vault` without clipping or dead links.
-- No horizontal overflow in projects, skills, advantage, experience, recommendations, or contact.
+- Homepage atlas cards, contact links, and `/projects` deep links are clickable.
+- `/projects` library sections render in equal-weight treatment and anchor correctly from the homepage atlas.
+- Translation-layer scanner renders on `/projects` without clipping or dead links.
+- No horizontal overflow on `/`, `/projects`, or `/cv`.
 - Advantage cards retain readable contrast and hover polish without jank.
 
 ## Graphics and Motion

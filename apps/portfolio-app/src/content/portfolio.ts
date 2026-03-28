@@ -21,10 +21,14 @@ export type ProjectStatus = "Live" | "Completed" | "In Progress";
 export type CareerTheme = "hospitality" | "analytics" | "automation";
 export type TrustLevel = "manager" | "operator" | "stakeholder";
 export type SourceMaterialFolder =
+  | "ai-workflow-automation"
   | "command-center-bi"
   | "ticket-routing-prediction"
   | "automation-workflows"
   | "spotify-modeling"
+  | "yelp-review-modeling"
+  | "relational-database-design"
+  | "tjix-net-sales-drivers"
   | "recommendations"
   | "resume-and-positioning"
   | "shared-proof-assets";
@@ -77,16 +81,20 @@ export interface PortfolioProject {
   title: string;
   meta: string;
   oneLiner: string;
+  atlasSummary: string;
   problem: string;
   method: string;
   result: string;
   impact: string;
   impactLabel: string;
+  headlineOutcome: string;
   tools: string[];
   tags: string[];
   status: ProjectStatus;
   sensitivity: SensitivityLevel;
   artifactIds: string[];
+  proofSurfaces: string[];
+  sourceConfidence: "High" | "Medium";
   colSpan: 1 | 2;
   icon: LucideIcon;
   sourceMaterialFolder: SourceMaterialFolder;
@@ -259,6 +267,22 @@ export const artifacts: Artifact[] = [
     plannedAssetType: "PDF brief or web case-study page",
     websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
   },
+  {
+    id: "artifact-repo",
+    type: "repo",
+    title: "Gemini/Codex workflow docs repository",
+    summary:
+      "Public documentation layer for the larger Gemini/Codex workflow automation system, including architecture notes, runbooks, and readiness receipts.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80",
+    badge: "Public repo",
+    ctaLabel: "Open docs repo",
+    href: "https://github.com/mp2123/Gemini_Codex_Project_1_Docs",
+    note: "Public-safe companion repo for a much larger local automation workspace and CLI orchestration system.",
+    sourceMaterialFolder: "ai-workflow-automation",
+    plannedAssetType: "public documentation repository",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
 ];
 
 export const impactSignals: ImpactSignal[] = [
@@ -291,6 +315,8 @@ export const projects: PortfolioProject[] = [
     title: "Command Center BI Infrastructure",
     meta: "Power BI + stakeholder adoption",
     oneLiner: "Built scalable reporting systems that turned fragmented sales data into decision-ready operating visibility.",
+    atlasSummary:
+      "Internal BI infrastructure for KPI clarity, adoption tracking, and recurring executive reporting at Avnet.",
     problem:
       "Stakeholders needed clean opportunity visibility, recurring executive reporting, and adoption tracking inside a growing internal analytics hub.",
     method:
@@ -299,80 +325,195 @@ export const projects: PortfolioProject[] = [
       "Created a more scalable reporting backbone for sales enablement, self-serve decision support, and recurring executive trend reviews.",
     impact: "20+ hours per week removed from manual reporting and follow-up effort",
     impactLabel: "Operational leverage",
+    headlineOutcome: "Reporting cadence scaled beyond manual capacity",
     tools: ["Power BI", "DAX", "Power Query", "VBA", "Databricks", "Stakeholder Discovery"],
     tags: ["BI", "Automation", "Executive Reporting"],
     status: "Live",
     sensitivity: "sanitized",
-    artifactIds: ["artifact-dashboard", "artifact-methodology"],
-    colSpan: 2,
+    artifactIds: ["artifact-dashboard", "artifact-template"],
+    proofSurfaces: [
+      "Sanitized dashboard walkthrough",
+      "Automation process note",
+      "Reporting template or scorecard handoff",
+    ],
+    sourceConfidence: "High",
+    colSpan: 1,
     icon: Database,
     sourceMaterialFolder: "command-center-bi",
   },
   {
+    id: "gemini-codex-workflow",
+    title: "Gemini/Codex Workflow Automation",
+    meta: "CLI orchestration + durable context",
+    oneLiner:
+      "Built a file-driven AI orchestration system that keeps Gemini CLI and Codex CLI aligned through durable context, reconciliation, and validation gates.",
+    atlasSummary:
+      "A multi-agent automation system for context persistence, cross-model handoff, and deterministic session close-out.",
+    problem:
+      "Long-running AI coding workflows break when context lives only in chat history and when handoffs across models or sessions are not durable.",
+    method:
+      "Designed a constitution-first repository around declarative intent, a reconciliation loop, blackboard coordination, Gemini/Codex bridge scripts, MCP and n8n automation lanes, and deterministic close-out gates.",
+    result:
+      "Created a working orchestration environment that treats AI collaboration like an operational system instead of a one-off prompt chain.",
+    impact:
+      "100 automation scripts, 34 operating docs, and 58 research receipts in a working cross-model CLI workflow ecosystem",
+    impactLabel: "System scale",
+    headlineOutcome: "Multi-agent AI work stopped depending on chat memory",
+    tools: ["Shell", "Python", "Gemini CLI", "Codex CLI", "MCP", "n8n"],
+    tags: ["AI Automation", "CLI", "Systems Design"],
+    status: "Live",
+    sensitivity: "public",
+    artifactIds: ["artifact-repo"],
+    proofSurfaces: [
+      "Public docs repository",
+      "Architecture and runbook corpus",
+      "Read-only local repo evidence",
+    ],
+    sourceConfidence: "High",
+    colSpan: 1,
+    icon: Bot,
+    sourceMaterialFolder: "ai-workflow-automation",
+  },
+  {
     id: "ticket-routing-prediction",
     title: "Ticket Reassignment Prediction",
-    meta: "Python model",
-    oneLiner: "Modeled IT ticket reassignment behavior to reduce friction, rerouting cost, and wasted analyst time.",
+    meta: "Adidas IT · Gradient Boosting",
+    oneLiner:
+      "Modeled IT ticket reassignment behavior to reduce escalation friction, rerouting cost, and downtime risk.",
+    atlasSummary:
+      "Classification model for identifying reassigned tickets before extra handling time and store downtime accumulate.",
     problem:
       "IT support workflows were bleeding time through preventable reassignments and misrouted work.",
     method:
-      "Built a Gradient Boosting workflow in Python, evaluated model quality with accuracy, recall, and F1, and translated the outputs into a business-facing story recruiters can understand quickly.",
+      "Built a Gradient Boosting workflow around ticket urgency, service, category, and geography variables, then evaluated the model with accuracy, recall, precision, and F1.",
     result:
-      "Produced a predictive decision aid tied to an estimated annual savings opportunity.",
-    impact: "76% accuracy, 86% recall, 73% F1, and an estimated $280K annual savings opportunity",
+      "Produced a predictive decision aid that could be integrated into ticket submission to flag likely reassignments earlier.",
+    impact: "76% accuracy, 86% recall, 73% F1, and roughly $280K in modeled annual labor savings",
     impactLabel: "Model performance",
+    headlineOutcome: "Reassigned tickets averaged roughly a week longer to resolve",
     tools: ["Python", "scikit-learn", "Feature Engineering", "Model Evaluation"],
     tags: ["ML", "Prediction", "Ops Analytics"],
     status: "Completed",
     sensitivity: "sanitized",
-    artifactIds: ["artifact-methodology", "artifact-video"],
+    artifactIds: ["artifact-methodology"],
+    proofSurfaces: ["Final presentation deck", "Adidas service poster", "Methodology brief"],
+    sourceConfidence: "High",
     colSpan: 1,
     icon: BrainCircuit,
     sourceMaterialFolder: "ticket-routing-prediction",
   },
   {
-    id: "agentic-automation",
-    title: "Agentic Workflow Automation",
-    meta: "AI orchestration",
-    oneLiner: "Designed repeatable AI-assisted workflows that favor durable context, clear handoffs, and practical execution.",
-    problem:
-      "Many AI demos look impressive but fall apart when work needs to persist across tools, prompts, and real delivery constraints.",
-    method:
-      "Structured task decomposition, orchestration patterns, and guided prompt flows around realistic execution, durable context, and operator-style rigor.",
-    result:
-      "Created a stronger bridge between experimentation and reliable day-to-day automation work.",
-    impact: "Faster iteration and clearer execution across multi-step analytical workflows",
-    impactLabel: "Execution speed",
-    tools: ["AI SDKs", "Prompt Design", "Workflow Design", "CLI Tooling"],
-    tags: ["AI", "Automation", "Systems Thinking"],
-    status: "In Progress",
-    sensitivity: "public",
-    artifactIds: ["artifact-video"],
-    colSpan: 1,
-    icon: Bot,
-    sourceMaterialFolder: "automation-workflows",
-  },
-  {
     id: "spotify-popularity",
-    title: "Spotify Popularity Modeling",
-    meta: "Regression",
-    oneLiner: "Used audio feature data to predict song popularity and communicate model quality in business-readable terms.",
+    title: "Spotify Popularity Prediction",
+    meta: "Regression + cross-validation",
+    oneLiner:
+      "Used audio-feature data to model song popularity and translate statistical results into product and marketing recommendations.",
+    atlasSummary:
+      "Regression case study focused on feature interpretation, model significance, and business-readable music analytics.",
     problem:
-      "Needed to understand which measurable features were most predictive of popularity rather than relying on intuition alone.",
+      "Needed to understand which measurable audio features aligned most with song popularity rather than relying on intuition alone.",
     method:
-      "Applied regression workflows, feature analysis, and k-fold cross-validation to balance interpretability with predictive lift.",
+      "Applied multiple linear regression, correlation analysis, outlier handling, and cross-validation-oriented model evaluation to a Spotify feature dataset.",
     result:
-      "Produced an analytics case study that demonstrates model thinking, evaluation discipline, and communication clarity.",
-    impact: "R² above 0.85 in portfolio-ready modeling work",
-    impactLabel: "Model quality",
-    tools: ["Python", "Regression", "Cross Validation", "EDA"],
+      "Produced an interpretable modeling case study that surfaced which features mattered most and how that insight could shape promotion strategy.",
+    impact:
+      "Statistically significant regression work with feature-level interpretation instead of inflated black-box claims",
+    impactLabel: "Model insight",
+    headlineOutcome: "Turned audio features into business-readable popularity signals",
+    tools: ["Python", "Regression", "Cross Validation", "Feature Analysis", "EDA"],
     tags: ["Modeling", "Analytics", "Communication"],
     status: "Completed",
     sensitivity: "public",
     artifactIds: ["artifact-methodology"],
-    colSpan: 2,
+    proofSurfaces: ["Phase 3 report", "Screen-recorded walkthrough", "Project proposal sequence"],
+    sourceConfidence: "Medium",
+    colSpan: 1,
     icon: LineChart,
     sourceMaterialFolder: "spotify-modeling",
+  },
+  {
+    id: "yelp-review-modeling",
+    title: "Yelp Review Rating / Sentiment Modeling",
+    meta: "TF-IDF + logistic regression",
+    oneLiner:
+      "Built a text-mining workflow to classify Yelp review sentiment and surface operational signals from customer language.",
+    atlasSummary:
+      "Restaurant review modeling using NLP preprocessing, TF-IDF, sentiment analyzers, and logistic regression.",
+    problem:
+      "Needed a structured way to turn large volumes of review text into actionable insight about customer sentiment and service issues.",
+    method:
+      "Applied text preprocessing, TF-IDF vectorization, VADER and FLAIR sentiment labeling, and logistic regression classification with standard evaluation metrics.",
+    result:
+      "Generated a model and business readout that highlighted where customer experience was strong and where wait time or staff issues were driving negative reviews.",
+    impact: "High-accuracy sentiment classification paired with operational feedback signals a manager could act on",
+    impactLabel: "Decision support",
+    headlineOutcome: "Customer review text became a usable service-improvement signal",
+    tools: ["Python", "TF-IDF", "Logistic Regression", "VADER", "FLAIR"],
+    tags: ["NLP", "Classification", "Customer Insight"],
+    status: "Completed",
+    sensitivity: "public",
+    artifactIds: ["artifact-video", "artifact-methodology"],
+    proofSurfaces: ["Final project report", "Final presentation deck", "Recorded walkthrough"],
+    sourceConfidence: "Medium",
+    colSpan: 1,
+    icon: Radar,
+    sourceMaterialFolder: "yelp-review-modeling",
+  },
+  {
+    id: "tjix-net-sales-drivers",
+    title: "TJIX Net Sales Drivers",
+    meta: "Multivariable regression",
+    oneLiner:
+      "Linked advertising, e-commerce growth, and market trends to a business-readable net-sales growth story for TJX.",
+    atlasSummary:
+      "Retail and e-commerce driver analysis combining regression, industry benchmarking, and scenario-based recommendation framing.",
+    problem:
+      "Needed to explain why TJX e-commerce penetration lagged peers and what levers could most credibly increase total net sales.",
+    method:
+      "Used regression, correlation analysis, scenario modeling, and competitor comparison to relate advertising and e-commerce growth to net-sales outcomes.",
+    result:
+      "Produced a business-facing argument for deeper e-commerce investment and more deliberate advertising support.",
+    impact: "Estimated ~$12.7M in net-sales lift per +$1M of advertising spend in the final model",
+    impactLabel: "Revenue signal",
+    headlineOutcome: "Advertising and e-commerce were tied directly to net-sales upside",
+    tools: ["Regression", "Correlation Analysis", "Excel", "Decision Trees", "Scenario Modeling"],
+    tags: ["Commercial Analytics", "Regression", "Strategy"],
+    status: "Completed",
+    sensitivity: "public",
+    artifactIds: ["artifact-methodology", "artifact-template"],
+    proofSurfaces: ["Final report", "Supporting workbook", "Scenario summary"],
+    sourceConfidence: "High",
+    colSpan: 1,
+    icon: Radar,
+    sourceMaterialFolder: "tjix-net-sales-drivers",
+  },
+  {
+    id: "relational-database-design",
+    title: "Relational Database Design",
+    meta: "Access + SQL queries",
+    oneLiner:
+      "Designed a relational database structure to replace spreadsheet-driven project and staffing tracking for a growing IT support business.",
+    atlasSummary:
+      "Normalized Access database design for projects, employees, tickets, services, and client reporting.",
+    problem:
+      "A growing IT support firm had outgrown shared spreadsheets, making staffing, project status, and customer support visibility hard to manage cleanly.",
+    method:
+      "Designed normalized entities, bridge tables, business rules, metadata, and query patterns for projects, employees, clients, assets, tickets, and services.",
+    result:
+      "Produced a database design built for cleaner reporting, resource allocation visibility, and operational scalability.",
+    impact: "Replaced spreadsheet thinking with a relational model built for queryability, consistency, and future growth",
+    impactLabel: "Systems design",
+    headlineOutcome: "Operations data became structured, relational, and report-ready",
+    tools: ["Microsoft Access", "SQL", "ERD Design", "Normalization", "Metadata Design"],
+    tags: ["Database", "SQL", "Operations Systems"],
+    status: "Completed",
+    sensitivity: "public",
+    artifactIds: ["artifact-template", "artifact-methodology"],
+    proofSurfaces: ["Final report", "Presentation deck", "ERD and metadata narrative"],
+    sourceConfidence: "High",
+    colSpan: 1,
+    icon: Workflow,
+    sourceMaterialFolder: "relational-database-design",
   },
 ];
 
@@ -430,7 +571,7 @@ export const careerNodes: CareerNode[] = [
       "Integrated Python-based predictive analytics into business-facing Power BI outputs for opportunity and forecasting use cases.",
       "Automated recurring workflows with VBA and QA checks, saving 20+ hours per week while producing enablement materials that improved self-serve usage.",
     ],
-    linkedProjectIds: ["avnet-command-center", "ticket-routing-prediction", "agentic-automation"],
+    linkedProjectIds: ["avnet-command-center", "ticket-routing-prediction", "gemini-codex-workflow"],
     relatedIds: ["avnet-internship", "operator-to-builder"],
     theme: "automation",
     status: "in-progress",
@@ -450,7 +591,7 @@ export const careerNodes: CareerNode[] = [
       "Frames cross-functional leadership as a technical advantage, not a tangent.",
       "Creates clear paths for BI, analytics, automation, and operations-intelligence conversations.",
     ],
-    linkedProjectIds: ["spotify-popularity", "agentic-automation"],
+    linkedProjectIds: ["spotify-popularity", "gemini-codex-workflow"],
     relatedIds: ["avnet-expanded"],
     theme: "automation",
     status: "pending",
@@ -540,19 +681,19 @@ export const artifactScannerSignals: ArtifactScannerSignal[] = [
     ],
   },
   {
-    id: "scanner-automation-demo",
-    artifactId: "artifact-video",
+    id: "scanner-ai-workflow",
+    artifactId: "artifact-repo",
     scannerId: "SCAN-2026-PROOF-1002",
-    rawLabel: "Manual workflow logic",
-    title: "Automation demo reel",
-    meta: "Workflow compression",
-    proofLabel: "Repeatable system proof",
-    outcome: "Manual refreshes, QA checks, and handoff friction compress into a short demo that shows how repetitive reporting becomes a durable workflow.",
+    rawLabel: "Agent orchestration contract",
+    title: "Workflow docs repository",
+    meta: "Durable context / AI orchestration",
+    proofLabel: "Public systems proof",
+    outcome: "Bridge scripts, blackboard coordination, and reconciliation logic resolve into a public-safe documentation layer that shows the automation system is real.",
     rawFragments: [
-      "INPUT.manual_refresh_hours = 20_per_week",
-      "RUN qa_checkpoint('source parity', 'row totals', 'stakeholder labels')",
-      "SCHEDULE workflow = recurring_reporting_cleanup",
-      "RETURN output = decision_ready_packet",
+      "DECLARE desired_state = INTENT.md",
+      "LEASE blackboard.owner = atomic_file_lock",
+      "ROUTE bridge = gemini_cli <-> codex_cli",
+      "CLOSEOUT = sync + check + archive + push",
     ],
   },
   {

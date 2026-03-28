@@ -15,6 +15,8 @@ Why it behaves like a web app:
 
 - `/`
   The main recruiter-first portfolio experience.
+- `/projects`
+  The canonical project library with equal-weight project sections, the translation layer, and the artifact vault.
 - `/cv`
   A web CV / printable resume route.
 - `/api/chat`
@@ -39,6 +41,7 @@ Why it behaves like a web app:
 
 - `src/app/layout.tsx`
 - `src/app/page.tsx`
+- `src/app/projects/page.tsx`
 - `src/app/globals.css`
 
 These assemble the homepage, load major sections, and define global styling tokens and scroll behavior.
@@ -47,13 +50,15 @@ These assemble the homepage, load major sections, and define global styling toke
 
 - `src/components/ui/header-1.tsx`
 - `src/components/ui/scroll-expansion-hero.tsx`
-- `src/components/ui/roi-calculator.tsx`
-- `src/components/ui/bento-grid.tsx`
-- `src/components/ui/skills-matrix.tsx`
-- `src/components/portfolio/sections/hospitality-story.tsx`
+- `src/components/portfolio/sections/project-atlas.tsx`
+- `src/components/portfolio/sections/projects-library.tsx`
+- `src/components/portfolio/sections/skills-snapshot.tsx`
+- `src/components/portfolio/sections/advantage-preview.tsx`
+- `src/components/portfolio/sections/experience-preview.tsx`
+- `src/components/portfolio/sections/artifact-scanner.tsx`
+- `src/components/portfolio/sections/artifact-gallery.tsx`
 - `src/components/portfolio/invisible-ink-wall.tsx`
 - `src/components/portfolio/section-analytics-tracker.tsx`
-- `src/components/ui/radial-orbital-timeline.tsx`
 - `src/components/ui/recommendations.tsx`
 - `src/components/ui/glowing-ai-chat-assistant.tsx`
 
@@ -101,10 +106,10 @@ The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-gl
 
 ## Active Features
 
-- Recruiter-first homepage with explicit section navigation.
+- Recruiter-first homepage with explicit section navigation and a compact project atlas.
+- Dedicated `/projects` library for equal-weight project depth.
 - Scroll-based hero reveal with animated proof handoff.
-- ROI calculator and business-impact proof modules.
-- Project case-study grid, translation-layer scanner, and artifact vault slots.
+- Translation-layer scanner and artifact vault slots.
 - Recruiter assistant backed by `/api/chat`.
 - Hidden "Invisible Ink" wall embedded discreetly in the contact section.
 - Web CV route.
@@ -168,10 +173,12 @@ Python is not part of the public site runtime. It only appears in external proje
 ## Content Intake Workflow
 
 - `source-material/` is the staging area for all future project-proof ingestion.
+- `_incoming/` is the default unsorted drop zone.
 - `01-raw` keeps originals.
 - `02-sanitized` keeps public-safe copies.
 - `03-selected-assets` holds likely publishable candidates.
 - `04-notes` stores context, impact provenance, and publication guidance.
+- `docs/project-fact-sheets.md` is the tracked, derived layer used to translate local source material into public-safe portfolio content.
 
 ## Assistant Cache Layers
 

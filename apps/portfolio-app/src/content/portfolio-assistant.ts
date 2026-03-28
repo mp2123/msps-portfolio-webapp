@@ -69,14 +69,28 @@ const buildProjectDocs = (): PortfolioKnowledgeDoc[] => {
       title: project.title,
       content: [
         project.oneLiner,
+        `Atlas summary: ${project.atlasSummary}`,
         `Problem: ${project.problem}`,
         `Method: ${project.method}`,
         `Result: ${project.result}`,
         `Impact: ${project.impact}`,
+        `Headline outcome: ${project.headlineOutcome}`,
+        `Proof surfaces: ${project.proofSurfaces.join(", ")}`,
+        `Source confidence: ${project.sourceConfidence}`,
         `Tools: ${project.tools.join(", ")}`,
         `Tags: ${project.tags.join(", ")}`,
       ].join(" "),
-      keywords: joinKeywords(project.meta, project.tags, project.tools, project.status, project.sensitivity),
+      keywords: joinKeywords(
+        project.meta,
+        project.tags,
+        project.tools,
+        project.status,
+        project.sensitivity,
+        project.atlasSummary,
+        project.headlineOutcome,
+        project.proofSurfaces,
+        project.sourceMaterialFolder
+      ),
       linkedIds: [...project.artifactIds, ...careerLinks],
     };
   });
@@ -183,7 +197,11 @@ const buildPromptDocs = (): PortfolioKnowledgeDoc[] => {
       "skill-programming",
       "skill-automation",
     ],
-    "best-example": ["project-avnet-command-center", "project-ticket-routing-prediction", "project-agentic-automation"],
+    "best-example": [
+      "project-avnet-command-center",
+      "project-gemini-codex-workflow",
+      "project-ticket-routing-prediction",
+    ],
     "cross-functional": ["career-hospitality-foundation", "career-avnet-internship", "career-avnet-expanded"],
   };
 

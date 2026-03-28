@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -12,34 +13,26 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { AdvantagePreview } from "@/components/portfolio/sections/advantage-preview";
+import { ExperiencePreview } from "@/components/portfolio/sections/experience-preview";
+import { ProjectAtlas } from "@/components/portfolio/sections/project-atlas";
+import { SkillsSnapshot } from "@/components/portfolio/sections/skills-snapshot";
+import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
 import { Header } from "@/components/ui/header-1";
-import { ROICalculator } from "@/components/ui/roi-calculator";
-import { LiveDataChart } from "@/components/ui/live-data-chart";
-import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
-import { HospitalityStory } from "@/components/portfolio/sections/hospitality-story";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { TerminalWindow } from "@/components/ui/terminal-window";
-import { SkillsMatrix } from "@/components/ui/skills-matrix";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
-import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
-import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
-import { ArtifactGallery } from "@/components/portfolio/sections/artifact-gallery";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
-import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import {
-  careerNodes,
   contactProfile,
-  getArtifactById,
   heroContent,
   proofMetrics,
-  projects,
   recommendations,
-  skillsGroups,
 } from "@/content/portfolio";
 
 const FloatingAiAssistant = dynamic(
@@ -49,59 +42,6 @@ const FloatingAiAssistant = dynamic(
     ),
   { ssr: false, loading: () => null }
 );
-
-const ExperienceGlobe = dynamic(
-  () =>
-    import("@/components/portfolio/graphics/experience-globe").then(
-      (mod) => mod.ExperienceGlobe
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl">
-          <div className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_52%)]" />
-        </div>
-        <div className="grid gap-3">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={`globe-placeholder-${index}`}
-              className="min-h-[6.5rem] rounded-[1.5rem] border border-white/10 bg-white/5 animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
-    ),
-  }
-);
-
-const projectCards: BentoItem[] = projects.map((project) => {
-  const Icon = project.icon;
-
-  return {
-    title: project.title,
-    meta: project.meta,
-    description: project.oneLiner,
-    icon: <Icon className="h-5 w-5 text-cyan-200" />,
-    status: project.status,
-    tags: project.tags,
-    problem: project.problem,
-    method: project.method,
-    result: project.result,
-    proofLabel: project.impactLabel,
-    proofValue: project.impact,
-    actions: project.artifactIds.map((artifactId) => {
-      const artifact = getArtifactById(artifactId);
-
-      return {
-        label: artifact?.ctaLabel ?? "Artifact slot",
-        href: artifact?.href ?? `#${artifactId}`,
-        note: artifact?.note,
-      };
-    }),
-    colSpan: project.colSpan,
-  };
-});
 
 function handleTrackedNavigation(
   eventType: Parameters<typeof trackPortfolioEvent>[0]["eventType"],
@@ -231,12 +171,12 @@ function QuickRecruiterSummary() {
 
             <div className="flex flex-wrap gap-3">
               <Button asChild className="bg-cyan-400 text-slate-950 hover:bg-cyan-300">
-                <a
-                  href="#projects"
-                  onClick={handleTrackedSectionNavigation("projects", "section_navigation", "quick-summary-projects", "quick-summary")}
+                <Link
+                  href="/projects"
+                  onClick={handleTrackedNavigation("section_navigation", "quick-summary-project-library", "/projects", "quick-summary")}
                 >
-                  View projects
-                </a>
+                  Open project library
+                </Link>
               </Button>
               <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
                 <a
@@ -257,12 +197,12 @@ function QuickRecruiterSummary() {
                 </a>
               </Button>
               <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
-                <a
+                <Link
                   href="/cv"
                   onClick={handleTrackedNavigation("print_cv_open", "quick-summary-cv", "/cv", "quick-summary")}
                 >
                   Open web CV
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
@@ -488,90 +428,10 @@ export default function PortfolioHome() {
             <SectionAnalyticsTracker />
             <ProofStrip />
             <QuickRecruiterSummary />
-
-            <section
-              className="portfolio-section-anchor relative z-20 w-full"
-              id="roi-calculator"
-              data-portfolio-section="true"
-            >
-              <ROICalculator />
-            </section>
-
-            <section
-              className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
-              id="projects"
-              data-portfolio-section="true"
-            >
-              <div className="mb-16 max-w-3xl space-y-4">
-                <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
-                  Command Center
-                </Badge>
-                <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
-                  Case studies that connect business problems to operating leverage.
-                </h2>
-                <p className="text-lg leading-relaxed text-zinc-400">
-                  Each project is framed around the business question, the analytical method,
-                  and the proof a recruiter actually needs to see.
-                </p>
-              </div>
-
-              <div className="mb-12">
-                <LiveDataChart />
-              </div>
-
-              <BentoGrid items={projectCards} />
-            </section>
-
-            <section
-              className="portfolio-section-anchor section-glow grid-noise relative w-full overflow-hidden bg-background/50 py-20"
-              id="skills"
-              data-portfolio-section="true"
-            >
-              <div className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-              <div className="relative z-10">
-                <div className="mb-12 text-center space-y-4">
-                  <Badge className="border-white/10 bg-white/5 text-zinc-100">Technical arsenal</Badge>
-                  <h2 className="text-4xl font-bold tracking-tight text-white">Capabilities that bridge operators and analysts.</h2>
-                  <p className="mx-auto max-w-3xl text-lg text-zinc-400">
-                    The stack spans BI, modeling, workflow automation, and the communication discipline
-                    needed to move work across teams.
-                  </p>
-                </div>
-                <SkillsMatrix groups={skillsGroups} />
-              </div>
-            </section>
-
-            <ArtifactScanner />
-            <ArtifactGallery />
-
-            <section
-              className="portfolio-section-anchor section-glow relative w-full border-y border-border bg-black/30"
-              id="advantage"
-              data-portfolio-section="true"
-            >
-              <HospitalityStory />
-            </section>
-
-            <section
-              className="portfolio-section-anchor section-glow grid-noise relative w-full bg-black/50 py-20"
-              id="experience"
-              data-portfolio-section="true"
-            >
-              <div className="mx-auto max-w-6xl px-4">
-                <div className="mb-16 max-w-3xl space-y-4">
-                  <Badge className="border-white/10 bg-white/5 text-zinc-100">Experience graph</Badge>
-                  <h2 className="text-4xl font-bold tracking-tight text-white">A career arc built around pressure, translation, and systems thinking.</h2>
-                  <p className="text-lg text-zinc-400">
-                    The shift from hospitality leadership to analytics and automation is not a pivot away from execution.
-                    It is the reason the technical work stays practical.
-                  </p>
-                </div>
-                <div className="mb-10">
-                  <ExperienceGlobe />
-                </div>
-                <RadialOrbitalTimeline timelineData={careerNodes} />
-              </div>
-            </section>
+            <ProjectAtlas />
+            <SkillsSnapshot />
+            <AdvantagePreview />
+            <ExperiencePreview />
 
             <section
               className="portfolio-section-anchor w-full py-20"

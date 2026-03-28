@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
@@ -7,42 +8,46 @@ import { useScroll } from '@/components/ui/use-scroll';
 import { SearchCommand } from '@/components/ui/search-command';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
+import {
+	getHeaderPrimaryCta,
+	getHomeLinkHref,
+	getPortfolioNavLinks,
+	getSamePageSectionId,
+} from '@/lib/portfolio-nav';
 
 export function Header() {
 	const [open, setOpen] = React.useState(false);
 	const scrolled = useScroll(10);
+	const pathname = usePathname() ?? '/';
 	const handleSectionNavigation = React.useCallback(
 		(event: React.MouseEvent<HTMLAnchorElement>, href: string, closeMenu = false) => {
-			const sectionId = href.replace('#', '');
-			if (!sectionId) return;
-
-			event.preventDefault();
+			const sectionId = getSamePageSectionId(href, pathname);
 			if (closeMenu) {
 				setOpen(false);
 			}
-			scrollToPortfolioSection(sectionId);
+
+			if (sectionId) {
+				event.preventDefault();
+				scrollToPortfolioSection(sectionId);
+			}
+
 			trackPortfolioEvent({
 				eventType: 'section_navigation',
-				label: `header-${sectionId}`,
+				label: `header-${sectionId ?? href.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`,
 				href,
 				section: 'header',
 				metadata: {
 					closeMenu,
+					pathname,
 				},
 			});
 		},
-		[]
+		[pathname]
 	);
 
-	const links = [
-		{ label: 'Projects', href: '#projects' },
-		{ label: 'Skills', href: '#skills' },
-		{ label: 'Artifacts', href: '#artifacts' },
-		{ label: 'Advantage', href: '#advantage' },
-		{ label: 'Experience', href: '#experience' },
-		{ label: 'Recommendations', href: '#recommendations' },
-		{ label: 'Contact', href: '#contact' },
-	];
+	const links = getPortfolioNavLinks(pathname);
+	const primaryCta = getHeaderPrimaryCta(pathname);
+	const homeHref = getHomeLinkHref(pathname);
 
 	React.useEffect(() => {
 		if (open) { document.body.style.overflow = 'hidden'; } 
@@ -63,10 +68,10 @@ export function Header() {
 		<header className={cn('fixed top-0 left-0 right-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-xl transition-colors', scrolled && 'border-white/10 bg-background/92')}>
 			<nav className="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-4 md:px-6 lg:px-8">
 				<a
-					href="#home"
+					href={homeHref}
 					className="group flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 transition-colors hover:border-cyan-300/25 hover:bg-white/[0.08]"
 					aria-label="Jump to top of portfolio"
-					onClick={(event) => handleSectionNavigation(event, '#home')}
+					onClick={(event) => handleSectionNavigation(event, homeHref)}
 				>
 					<span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-400/12 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-100">
 						MP
@@ -94,8 +99,8 @@ export function Header() {
 					))}
 					<div className="mx-2 h-6 w-px bg-border" />
 					<Button asChild>
-						<a href="#projects" onClick={(event) => handleSectionNavigation(event, '#projects')}>
-							Explore Work
+						<a href={primaryCta.href} onClick={(event) => handleSectionNavigation(event, primaryCta.href)}>
+							{primaryCta.label}
 						</a>
 					</Button>
 				</div>
@@ -124,8 +129,8 @@ export function Header() {
 					</div>
                     <div className='p-4 border-t space-y-2'>
 					    <Button asChild className="w-full">
-							<a href="#projects" onClick={(event) => handleSectionNavigation(event, '#projects', true)}>
-								Explore Work
+							<a href={primaryCta.href} onClick={(event) => handleSectionNavigation(event, primaryCta.href, true)}>
+								{primaryCta.label}
 							</a>
 						</Button>
                     </div>

@@ -16,6 +16,18 @@ This document maps intake folders to the current public portfolio surfaces so fu
   - `Artifact vault`
   - `Assistant`
 
+### `ai-workflow-automation`
+
+- Primary project: `Gemini/Codex Workflow Automation`
+- Best current artifact targets:
+  - `artifact-repo`
+  - `artifact-video`
+- Best website destinations:
+  - `Project library`
+  - `Translation layer`
+  - `Artifact vault`
+  - `Assistant`
+
 ### `ticket-routing-prediction`
 
 - Primary project: `Ticket Reassignment Prediction`
@@ -29,23 +41,56 @@ This document maps intake folders to the current public portfolio surfaces so fu
 
 ### `automation-workflows`
 
-- Primary project: `Agentic Workflow Automation`
+- Primary project: `Command Center BI Infrastructure`
 - Best current artifact targets:
   - `artifact-video`
   - `artifact-template`
 - Best website destinations:
-  - `Projects`
+  - `Project library`
   - `Translation layer`
   - `Artifact vault`
   - `Assistant`
 
 ### `spotify-modeling`
 
-- Primary project: `Spotify Popularity Modeling`
+- Primary project: `Spotify Popularity Prediction`
 - Best current artifact targets:
   - `artifact-methodology`
 - Best website destinations:
-  - `Projects`
+  - `Project library`
+  - `Artifact vault`
+  - `Assistant`
+
+### `yelp-review-modeling`
+
+- Primary project: `Yelp Review Rating / Sentiment Modeling`
+- Best current artifact targets:
+  - `artifact-video`
+  - `artifact-methodology`
+- Best website destinations:
+  - `Project library`
+  - `Artifact vault`
+  - `Assistant`
+
+### `tjix-net-sales-drivers`
+
+- Primary project: `TJIX Net Sales Drivers`
+- Best current artifact targets:
+  - `artifact-methodology`
+  - `artifact-template`
+- Best website destinations:
+  - `Project library`
+  - `Artifact vault`
+  - `Assistant`
+
+### `relational-database-design`
+
+- Primary project: `Relational Database Design`
+- Best current artifact targets:
+  - `artifact-template`
+  - `artifact-methodology`
+- Best website destinations:
+  - `Project library`
   - `Artifact vault`
   - `Assistant`
 
@@ -79,3 +124,5 @@ When real files arrive:
 - replace placeholders only with sanitized assets
 - keep raw originals available for provenance, but never publish directly from `01-raw`
 
+Additional rule:
+- `_incoming` remains the default unsorted drop zone, but tracked portfolio content should only be updated from canonical fact sheets and sanitized/public-safe candidates

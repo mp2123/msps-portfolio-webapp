@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { usePathname } from 'next/navigation';
 import { Search } from 'lucide-react';
 import {
   CommandDialog,
@@ -12,19 +13,17 @@ import {
 } from '@/components/ui/command';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
-
-const portfolioSections = [
-  { name: 'Projects', category: 'Case studies', id: 'projects' },
-  { name: 'Skills', category: 'Capabilities', id: 'skills' },
-  { name: 'Artifacts', category: 'Media vault', id: 'artifacts' },
-  { name: 'Advantage', category: 'Story', id: 'advantage' },
-  { name: 'Experience', category: 'Career', id: 'experience' },
-  { name: 'Recommendations', category: 'Social proof', id: 'recommendations' },
-  { name: 'Contact', category: 'Outreach', id: 'contact' },
-];
+import {
+  getPortfolioActionItems,
+  getPortfolioNavLinks,
+  getSamePageSectionId,
+} from '@/lib/portfolio-nav';
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
+  const pathname = usePathname() ?? '/';
+  const portfolioSections = getPortfolioNavLinks(pathname);
+  const actions = getPortfolioActionItems(pathname);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -66,41 +65,64 @@ export function SearchCommand() {
             <CommandGroup heading="Portfolio Sections">
               {portfolioSections.map((section) => (
                 <CommandItem
-                  key={section.name}
+                  key={section.label}
                   onSelect={() => {
                     setOpen(false);
-                    scrollToPortfolioSection(section.id);
+                    const samePageSection = getSamePageSectionId(section.href, pathname);
+
+                    if (samePageSection) {
+                      scrollToPortfolioSection(samePageSection);
+                    } else {
+                      window.location.assign(section.href);
+                    }
+
                     trackPortfolioEvent({
                       eventType: 'search_select',
-                      label: section.name,
-                      href: `#${section.id}`,
+                      label: section.label,
+                      href: section.href,
                       section: 'header-search',
                       metadata: {
                         category: section.category,
+                        pathname,
                       },
                     });
                   }}
                 >
-                  <span>{section.name}</span>
+                  <span>{section.label}</span>
                   <span className="ml-auto text-[10px] text-muted-foreground uppercase">{section.category}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
             <CommandGroup heading="Actions">
-              <CommandItem
-                onSelect={() => {
-                  setOpen(false);
-                  scrollToPortfolioSection('projects');
-                  trackPortfolioEvent({
-                    eventType: 'search_select',
-                    label: 'Jump to featured work',
-                    href: '#projects',
-                    section: 'header-search',
-                  });
-                }}
-              >
-                <span>Jump to featured work</span>
-              </CommandItem>
+              {actions.map((action) => (
+                <CommandItem
+                  key={action.label}
+                  onSelect={() => {
+                    setOpen(false);
+                    const samePageSection = getSamePageSectionId(action.href, pathname);
+
+                    if (samePageSection) {
+                      scrollToPortfolioSection(samePageSection);
+                    } else {
+                      window.location.assign(action.href);
+                    }
+
+                    trackPortfolioEvent({
+                      eventType: 'search_select',
+                      label: action.label,
+                      href: action.href,
+                      section: 'header-search',
+                      metadata: {
+                        category: action.category,
+                        pathname,
+                      },
+                    });
+                  }}
+                >
+                  <span>{action.label}</span>
+                  <span className="ml-auto text-[10px] text-muted-foreground uppercase">{action.category}</span>
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </CommandDialog>

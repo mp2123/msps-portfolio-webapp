@@ -14,30 +14,18 @@ This inventory maps the homepage experience to its implementation and notes whet
   - `src/app/page.tsx` (`QuickRecruiterSummary`)
   - Uses `src/components/portfolio/graphics/spiral-signal.tsx`
   - Classification: portfolio-only section composition + portfolio graphic
-- `ROI calculator`
-  - `src/components/ui/roi-calculator.tsx`
-  - Classification: reusable-ish portfolio feature
-- `Projects`
-  - `src/components/ui/bento-grid.tsx`
-  - `src/components/ui/live-data-chart.tsx`
-  - Classification: reusable shell + portfolio-specific data/content
+- `Project atlas`
+  - `src/components/portfolio/sections/project-atlas.tsx`
+  - Classification: portfolio-only recruiter briefing surface
 - `Skills`
-  - `src/components/ui/skills-matrix.tsx`
-  - Classification: reusable presentation component
-- `Translation layer`
-  - `src/components/portfolio/sections/artifact-scanner.tsx`
-  - Classification: portfolio-only section composition adapted from an internal sibling-app pattern
-- `Artifacts`
-  - `src/components/portfolio/sections/artifact-gallery.tsx`
-  - Classification: portfolio-only section composition
+  - `src/components/portfolio/sections/skills-snapshot.tsx`
+  - Classification: compact portfolio-only summary surface
 - `Advantage`
-  - `src/components/portfolio/sections/hospitality-story.tsx`
-  - Uses `src/components/portfolio/graphics/interactive-orb.tsx`
-  - Classification: portfolio-only section + portfolio graphic
+  - `src/components/portfolio/sections/advantage-preview.tsx`
+  - Classification: portfolio-only summary section
 - `Experience`
-  - `src/components/portfolio/graphics/experience-globe.tsx`
-  - `src/components/ui/radial-orbital-timeline.tsx`
-  - Classification: portfolio-specific feature components
+  - `src/components/portfolio/sections/experience-preview.tsx`
+  - Classification: portfolio-only summary section
 - `Recommendations`
   - `src/components/ui/recommendations.tsx`
   - Classification: reusable presentation component with portfolio data
@@ -45,6 +33,21 @@ This inventory maps the homepage experience to its implementation and notes whet
   - `src/app/page.tsx` (`ContactSection`)
   - `src/components/portfolio/invisible-ink-wall.tsx`
   - Classification: portfolio-only section composition + portfolio feature
+
+## Projects Route Sections
+
+- `Projects hero`
+  - `src/app/projects/page.tsx`
+  - Classification: route-level portfolio composition
+- `Project library`
+  - `src/components/portfolio/sections/projects-library.tsx`
+  - Classification: portfolio-only deep project surface
+- `Translation layer`
+  - `src/components/portfolio/sections/artifact-scanner.tsx`
+  - Classification: portfolio-only section composition adapted from an internal sibling-app pattern
+- `Artifact vault`
+  - `src/components/portfolio/sections/artifact-gallery.tsx`
+  - Classification: portfolio-only section composition
 
 ## Persistent or Interactive Features
 
@@ -89,5 +92,6 @@ These currently re-export portfolio-specific implementations to avoid breaking i
 
 - New reusable primitives go in `src/components/ui`.
 - New homepage sections or recruiter-specific composites go in `src/components/portfolio/sections`.
+- Project-library sections and proof surfaces also live in `src/components/portfolio/sections`.
 - New portfolio-only graphics, canvas, or R3F pieces go in `src/components/portfolio/graphics`.
 - New content intake assets belong in `source-material/`, not `docs/` or `public/`, until they are selected and sanitized.

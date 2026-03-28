@@ -17,7 +17,7 @@ Folder rules:
 - `04-notes`: supporting context, filenames, impact notes, and provenance
 
 Working order:
-1. Drop files into the right project folder.
+1. Drop unsorted files into `_incoming` or place them directly in the right project folder.
 2. Keep originals in `01-raw`.
 3. Put redacted or cropped public-safe copies in `02-sanitized`.
 4. Move the best likely portfolio candidates into `03-selected-assets`.
@@ -36,3 +36,4 @@ Start with:
 Companion docs:
 - `../docs/source-material-map.md`
 - `../docs/architecture-map.md`
+- `../docs/project-fact-sheets.md`
