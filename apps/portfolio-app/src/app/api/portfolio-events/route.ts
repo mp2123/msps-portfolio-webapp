@@ -25,6 +25,8 @@ const ALLOWED_EVENT_TYPES = new Set<PortfolioEventType>([
   "globe_stage_select",
   "globe_drag",
   "project_action_click",
+  "cocktail_spin",
+  "cocktail_recipe_view",
   "wall_open",
   "wall_submit",
   "wall_reveal",
