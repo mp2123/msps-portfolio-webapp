@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { ArtifactGallery } from "@/components/portfolio/sections/artifact-gallery";
+import { ProjectImpactLab } from "@/components/portfolio/sections/project-impact-lab";
 import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
 import { ProjectsLibrary } from "@/components/portfolio/sections/projects-library";
 import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
@@ -91,6 +92,7 @@ export default function ProjectsPage() {
         </section>
 
         <ProjectsLibrary />
+        <ProjectImpactLab />
         <ArtifactScanner />
         <ArtifactGallery />
       </main>

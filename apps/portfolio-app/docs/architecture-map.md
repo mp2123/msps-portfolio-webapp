@@ -52,6 +52,7 @@ These assemble the homepage, load major sections, and define global styling toke
 - `src/components/ui/scroll-expansion-hero.tsx`
 - `src/components/portfolio/sections/project-atlas.tsx`
 - `src/components/portfolio/sections/projects-library.tsx`
+- `src/components/portfolio/sections/project-impact-lab.tsx`
 - `src/components/portfolio/sections/skills-snapshot.tsx`
 - `src/components/portfolio/sections/advantage-preview.tsx`
 - `src/components/portfolio/sections/experience-preview.tsx`
@@ -73,6 +74,7 @@ The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-gl
 ### CV experience
 
 - `src/components/cv/web-cv.tsx`
+- `src/components/cv/cv-deep-dive.tsx`
 - `src/components/cv/print-toolbar.tsx`
 
 ### Shared UI primitives
@@ -109,7 +111,9 @@ The `src/components/ui/*.tsx` files for `spiral-signal`, `globe`, `experience-gl
 - Recruiter-first homepage with explicit section navigation and a compact project atlas.
 - Dedicated `/projects` library for equal-weight project depth.
 - Scroll-based hero reveal with animated proof handoff.
-- Translation-layer scanner and artifact vault slots.
+- Impact lab on `/projects` for ROI and quantified business leverage.
+- Translation-layer scanner and artifact vault slots on `/projects`.
+- Print-hidden CV companion for deeper experience visuals, hospitality/advantage context, and the full skills matrix.
 - Recruiter assistant backed by `/api/chat`.
 - Hidden "Invisible Ink" wall embedded discreetly in the contact section.
 - Web CV route.

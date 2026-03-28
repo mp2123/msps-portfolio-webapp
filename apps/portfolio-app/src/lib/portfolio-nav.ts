@@ -34,6 +34,7 @@ const HOME_ACTIONS: PortfolioActionItem[] = [
 ];
 
 const PROJECTS_ACTIONS: PortfolioActionItem[] = [
+  { label: "Open impact lab", href: "#impact-lab", category: "Business leverage" },
   { label: "Open translation layer", href: "#translation-layer", category: "Deep work" },
   { label: "Open artifact vault", href: "#artifacts", category: "Proof vault" },
   { label: "Open web CV", href: "/cv", category: "Resume" },

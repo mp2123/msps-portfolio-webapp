@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { CvDeepDive } from '@/components/cv/cv-deep-dive';
 import { PrintToolbar } from '@/components/cv/print-toolbar';
 import { WebCv } from '@/components/cv/web-cv';
 import { getCanonicalUrl, siteDescription, siteName } from '@/lib/portfolio-site';
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function CvPage() {
   return (
-    <main className="cv-page min-h-screen bg-zinc-950 text-white">
+    <main className="cv-page min-h-screen overflow-x-hidden bg-zinc-950 text-white">
       <style>{`
         @media print {
           .cv-page {
@@ -56,8 +57,8 @@ export default function CvPage() {
       <div className="mx-auto max-w-5xl px-6 py-6">
         <PrintToolbar />
         <WebCv />
+        <CvDeepDive />
       </div>
     </main>
   );
 }
-

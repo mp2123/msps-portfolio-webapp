@@ -42,12 +42,30 @@ This inventory maps the homepage experience to its implementation and notes whet
 - `Project library`
   - `src/components/portfolio/sections/projects-library.tsx`
   - Classification: portfolio-only deep project surface
+- `Impact lab`
+  - `src/components/portfolio/sections/project-impact-lab.tsx`
+  - Uses `src/components/ui/live-data-chart.tsx`
+  - Uses `src/components/ui/roi-calculator.tsx`
+  - Classification: portfolio-specific proof and business-leverage surface
 - `Translation layer`
   - `src/components/portfolio/sections/artifact-scanner.tsx`
   - Classification: portfolio-only section composition adapted from an internal sibling-app pattern
 - `Artifact vault`
   - `src/components/portfolio/sections/artifact-gallery.tsx`
   - Classification: portfolio-only section composition
+
+## CV Companion Sections
+
+- `Web CV summary`
+  - `src/components/cv/web-cv.tsx`
+  - Classification: recruiter/print-oriented summary surface
+- `Experience visuals`
+  - `src/components/cv/cv-deep-dive.tsx`
+  - Uses `src/components/portfolio/graphics/experience-globe.tsx`
+  - Uses `src/components/ui/radial-orbital-timeline.tsx`
+  - Uses `src/components/portfolio/sections/hospitality-story.tsx`
+  - Uses `src/components/ui/skills-matrix.tsx`
+  - Classification: print-hidden deep companion layer
 
 ## Persistent or Interactive Features
 

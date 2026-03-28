@@ -15,6 +15,7 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 - Header branding does not collide with the search trigger or nav.
 - Homepage desktop nav links align and scroll to the correct section offsets.
 - `/projects` nav links land on the project library, artifact vault, or back to the correct homepage sections.
+- `/cv` still loads quickly, and the print toolbar remains usable.
 - Mobile menu opens, closes, and all section links work.
 - Command/search modal opens, navigates correctly, and does not trap broken focus.
 
@@ -29,7 +30,9 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 
 - Homepage atlas cards, contact links, and `/projects` deep links are clickable.
 - `/projects` library sections render in equal-weight treatment and anchor correctly from the homepage atlas.
+- Impact lab renders cleanly on `/projects` and the ROI calculator still behaves.
 - Translation-layer scanner renders on `/projects` without clipping or dead links.
+- CV companion sections render below the printable CV summary without affecting print layout.
 - No horizontal overflow on `/`, `/projects`, or `/cv`.
 - Advantage cards retain readable contrast and hover polish without jank.
 
@@ -39,6 +42,7 @@ Use this checklist before shipping visual or interaction changes to the portfoli
 - Signal path pauses when offscreen or the tab is hidden.
 - Interactive orb responds on hover without frame drops or overflow.
 - Globe drag works, stage cards switch state clearly, and active city copy updates.
+- CV companion globe and timeline remain usable after moving them off the homepage.
 
 ## Assistant
 
