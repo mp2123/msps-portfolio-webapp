@@ -564,8 +564,8 @@ export const FloatingAiAssistant = () => {
           background:
             'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.34), transparent 34%), linear-gradient(135deg, rgba(16,185,129,0.98) 0%, rgba(20,184,166,0.96) 48%, rgba(34,211,238,0.95) 100%)',
           boxShadow:
-            '0 0 34px rgba(16,185,129,0.82), 0 0 74px rgba(20,184,166,0.6), 0 0 136px rgba(34,211,238,0.34), 0 20px 44px rgba(2,6,23,0.48)',
-          border: '2px solid rgba(209, 250, 229, 0.34)',
+            '0 0 26px rgba(16,185,129,0.92), 0 0 54px rgba(20,184,166,0.56), 0 18px 40px rgba(2,6,23,0.48)',
+          border: '2px solid rgba(209, 250, 229, 0.42)',
         }}
         aria-label={isChatOpen ? 'Close recruiter assistant' : 'Open recruiter assistant'}
         aria-haspopup="dialog"
@@ -573,8 +573,8 @@ export const FloatingAiAssistant = () => {
         aria-controls="recruiter-assistant-dialog"
       >
         <motion.div
-          className="absolute -inset-4 rounded-full bg-emerald-400/45 blur-[28px]"
-          animate={{ opacity: isChatOpen ? 0.94 : 0.68, scale: isChatOpen ? 1.14 : 1.05 }}
+          className="absolute -inset-4 rounded-full bg-emerald-400/55 blur-[22px]"
+          animate={{ opacity: isChatOpen ? 0.96 : 0.78, scale: isChatOpen ? 1.15 : 1.08 }}
           transition={{ duration: 0.3 }}
         />
         <motion.div
@@ -590,8 +590,8 @@ export const FloatingAiAssistant = () => {
           {isChatOpen ? <X /> : <Bot className="h-8 w-8" />}
         </div>
         <motion.div
-          className="absolute inset-0 rounded-full border border-emerald-100/55"
-          animate={{ scale: [1, 1.24, 1], opacity: [0.56, 0, 0.56] }}
+          className="absolute inset-0 rounded-full border border-emerald-100/60"
+          animate={{ scale: [1, 1.22, 1], opacity: [0.62, 0, 0.62] }}
           transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
         />
       </button>

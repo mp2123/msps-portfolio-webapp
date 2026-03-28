@@ -63,8 +63,8 @@ export function ArtifactScanner() {
     userVelocity: 0,
     friction: 0.94,
     isHovering: false,
-    isStill: true,
   });
+  const animationBudgetRef = useRef(0);
 
   const items = useMemo(
     () =>
@@ -118,29 +118,6 @@ export function ArtifactScanner() {
   }, [repeatedItems.length]);
 
   useEffect(() => {
-    let stillTimeout: number | null = null;
-
-    const markActive = () => {
-      physicsRef.current.isStill = false;
-      if (stillTimeout) {
-        window.clearTimeout(stillTimeout);
-      }
-      stillTimeout = window.setTimeout(() => {
-        physicsRef.current.isStill = true;
-      }, 140);
-    };
-
-    window.addEventListener("mousemove", markActive);
-
-    return () => {
-      window.removeEventListener("mousemove", markActive);
-      if (stillTimeout) {
-        window.clearTimeout(stillTimeout);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -167,6 +144,13 @@ export function ArtifactScanner() {
     const container = containerRef.current;
     if (!container || repeatedItems.length === 0) return;
 
+    animationBudgetRef.current += delta;
+    if (animationBudgetRef.current < 1000 / 30) {
+      return;
+    }
+    const frameDelta = animationBudgetRef.current;
+    animationBudgetRef.current = 0;
+
     const shouldAnimate =
       !prefersReducedMotion &&
       playbackRef.current.sectionVisible &&
@@ -181,14 +165,14 @@ export function ArtifactScanner() {
       }
 
       const totalVelocity =
-        physics.isHovering && physics.isStill
+        physics.isHovering
           ? 0
           : (physics.baseVelocity + physics.userVelocity) * physics.direction;
 
       const singleSetWidth =
         (measurementsRef.current.cardWidth + CARD_GAP) * items.length;
 
-      let nextX = x.get() + totalVelocity * (delta / 1000);
+      let nextX = x.get() + totalVelocity * (frameDelta / 1000);
 
       if (singleSetWidth > 0) {
         if (physics.direction === -1 && nextX < -singleSetWidth) {
@@ -235,7 +219,6 @@ export function ArtifactScanner() {
 
     physics.direction = delta > 0 ? 1 : -1;
     physics.userVelocity += Math.min(Math.abs(delta) * 1.3, 90);
-    physics.isStill = false;
   };
 
   return (

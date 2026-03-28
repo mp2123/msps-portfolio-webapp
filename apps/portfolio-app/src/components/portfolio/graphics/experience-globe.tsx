@@ -69,6 +69,10 @@ const clampTheta = (value: number) =>
 const clampTilt = (value: number) => Math.max(-18, Math.min(18, value));
 const getFocusPhi = (longitude: number) => degToRad(-(longitude + 90));
 const getFocusTheta = (latitude: number) => clampTheta(degToRad(latitude));
+const GLOBE_TARGET_FRAME_MS = 1000 / 30;
+const GLOBE_RENDER_SCALE = 1.65;
+const GLOBE_ORBIT_SPEED = 0.32;
+const GLOBE_IDLE_PHASE_SPEED = 1.68;
 
 export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -235,19 +239,20 @@ export function ExperienceGlobe() {
 
     let width = initialWidth;
     let frameId = 0;
+    let lastFrameTime = 0;
     let currentPhi = focusRef.current.phi;
     let currentTheta = focusRef.current.theta;
     const motionShell = motionShellRef.current;
 
     const globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.55),
-      width: initialWidth * 2,
-      height: initialWidth * 2,
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.12),
+      width: Math.round(initialWidth * GLOBE_RENDER_SCALE),
+      height: Math.round(initialWidth * GLOBE_RENDER_SCALE),
       phi: focusRef.current.phi,
       theta: focusRef.current.theta,
       dark: 0.38,
       diffuse: 1.35,
-      mapSamples: 11800,
+      mapSamples: 7800,
       mapBrightness: 6.2,
       mapBaseBrightness: 0.18,
       baseColor: [0.12, 0.22, 0.33],
@@ -269,11 +274,19 @@ export function ExperienceGlobe() {
       opacity: 0.92,
     } as never);
 
-    const animate = () => {
+    const animate = (time: number) => {
+      frameId = window.requestAnimationFrame(animate);
+      if (lastFrameTime !== 0 && time - lastFrameTime < GLOBE_TARGET_FRAME_MS) {
+        return;
+      }
+
+      const frameDelta =
+        lastFrameTime === 0 ? 1 / 60 : Math.min((time - lastFrameTime) / 1000, 0.05);
+      lastFrameTime = time;
       width = canvas.offsetWidth || width;
       if (!pointerInteracting.current) {
-        orbitOffsetRef.current += 0.0052;
-        idleVisualPhaseRef.current += 0.028;
+        orbitOffsetRef.current += frameDelta * GLOBE_ORBIT_SPEED;
+        idleVisualPhaseRef.current += frameDelta * GLOBE_IDLE_PHASE_SPEED;
       }
       const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
       const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
@@ -282,24 +295,26 @@ export function ExperienceGlobe() {
         currentPhi = targetPhi;
         currentTheta = targetTheta;
       } else {
-        currentPhi += (targetPhi - currentPhi) * 0.18;
-        currentTheta += (targetTheta - currentTheta) * 0.18;
+        const focusBlend = 1 - Math.pow(0.82, frameDelta * 60);
+        const visualBlend = 1 - Math.pow(0.92, frameDelta * 60);
+        currentPhi += (targetPhi - currentPhi) * focusBlend;
+        currentTheta += (targetTheta - currentTheta) * focusBlend;
         visualRotationRef.current = {
           yaw:
             visualRotationRef.current.yaw +
-            (Math.sin(idleVisualPhaseRef.current) * 9.5 - visualRotationRef.current.yaw) * 0.08,
+            (Math.sin(idleVisualPhaseRef.current) * 9.5 - visualRotationRef.current.yaw) * visualBlend,
           pitch:
             visualRotationRef.current.pitch +
-            (-4 + Math.cos(idleVisualPhaseRef.current * 0.78) * 4.5 - visualRotationRef.current.pitch) * 0.08,
+            (-4 + Math.cos(idleVisualPhaseRef.current * 0.78) * 4.5 - visualRotationRef.current.pitch) * visualBlend,
           roll:
             visualRotationRef.current.roll +
-            (Math.sin(idleVisualPhaseRef.current * 0.56) * 1.4 - visualRotationRef.current.roll) * 0.08,
+            (Math.sin(idleVisualPhaseRef.current * 0.56) * 1.4 - visualRotationRef.current.roll) * visualBlend,
         };
       }
 
       globe.update({
-        width: width * 2,
-        height: width * 2,
+        width: Math.round(width * GLOBE_RENDER_SCALE),
+        height: Math.round(width * GLOBE_RENDER_SCALE),
         phi: currentPhi,
         theta: currentTheta,
       } as never);
@@ -307,7 +322,6 @@ export function ExperienceGlobe() {
       if (motionShell) {
         motionShell.style.transform = `translateZ(0) rotateX(${visualRotationRef.current.pitch}deg) rotateY(${visualRotationRef.current.yaw}deg) rotateZ(${visualRotationRef.current.roll}deg)`;
       }
-      frameId = window.requestAnimationFrame(animate);
     };
 
     frameId = window.requestAnimationFrame(animate);

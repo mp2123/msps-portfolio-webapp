@@ -11,6 +11,8 @@ type SpiralSignalProps = {
   labels: string[];
 };
 
+const SPIRAL_TARGET_FRAME_MS = 1000 / 30;
+
 export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -37,6 +39,7 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
     let isDocumentVisible = document.visibilityState === 'visible';
     let frameId: number | null = null;
     let isAnimating = false;
+    let lastFrameTime = 0;
 
     const setSize = () => {
       const parent = canvas.parentElement;
@@ -44,7 +47,7 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
 
       width = parent.clientWidth;
       height = parent.clientHeight;
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.2);
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -75,8 +78,8 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
 
-      const turns = 5.8;
-      const steps = 152;
+      const turns = 5.6;
+      const steps = 126;
       const beaconPhase = ((state.progress * 1.6) % 1 + 1) % 1;
       const counterPhase = ((1 - beaconPhase * 0.72) % 1 + 1) % 1;
 
@@ -146,6 +149,12 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
     const animate = (time: number) => {
       if (!isAnimating) return;
 
+      if (lastFrameTime !== 0 && time - lastFrameTime < SPIRAL_TARGET_FRAME_MS) {
+        frameId = window.requestAnimationFrame(animate);
+        return;
+      }
+
+      lastFrameTime = time;
       state.progress = ((time * 0.0001) % 1 + 1) % 1;
       state.pulse = 0.5 + Math.sin(time * 0.0024) * 0.5;
       state.shimmer = 0.5 + Math.sin(time * 0.0012) * 0.5;
@@ -160,6 +169,7 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
       const shouldRun = !prefersReducedMotion && isVisible && isDocumentVisible;
       if (shouldRun && !isAnimating) {
         isAnimating = true;
+        lastFrameTime = 0;
         frameId = window.requestAnimationFrame(animate);
         return;
       }

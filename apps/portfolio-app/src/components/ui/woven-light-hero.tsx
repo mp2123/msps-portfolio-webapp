@@ -22,12 +22,13 @@ type WovenLightHeroProps = {
 };
 
 const HERO_PALETTE = ["#8be5ff", "#4fd8ff", "#84ccff", "#87a7ff"];
-const POINT_COUNT = 3200;
+const POINT_COUNT = 2400;
+const HERO_TARGET_FRAME_MS = 1000 / 36;
 
 function buildWovenGeometry() {
   const positions = new Float32Array(POINT_COUNT * 3);
   const colors = new Float32Array(POINT_COUNT * 3);
-  const torusKnot = new THREE.TorusKnotGeometry(1.55, 0.38, 420, 24);
+  const torusKnot = new THREE.TorusKnotGeometry(1.55, 0.38, 300, 18);
   const sourcePositions = torusKnot.getAttribute("position");
   const colorPool = HERO_PALETTE.map((hex) => new THREE.Color(hex));
 
@@ -80,12 +81,12 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: false,
       powerPreference: "high-performance",
     });
 
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.18));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1));
     mountElement.appendChild(renderer.domElement);
 
     const geometry = buildWovenGeometry();
@@ -125,6 +126,8 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
     let isDocumentVisible = !document.hidden;
     let isIntersecting = true;
     let isAnimating = false;
+    let lastRenderTime = 0;
+    let elapsedTime = 0;
 
     const updateSize = () => {
       const { width, height } = hostElement.getBoundingClientRect();
@@ -180,28 +183,36 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
 
     const clock = new THREE.Clock();
 
-    function renderFrame() {
+    function renderFrame(now: number) {
       frameId = window.requestAnimationFrame(renderFrame);
-      const elapsed = clock.getElapsedTime();
+      if (lastRenderTime !== 0 && now - lastRenderTime < HERO_TARGET_FRAME_MS) {
+        return;
+      }
 
-      pointerCurrent.lerp(pointerTarget, 0.06);
+      const frameDelta =
+        lastRenderTime === 0 ? 1 / 60 : Math.min((now - lastRenderTime) / 1000, 0.05);
+      lastRenderTime = now;
+      elapsedTime += frameDelta;
+      const pointerBlend = 1 - Math.pow(0.94, frameDelta * 60);
 
-      primaryCloud.rotation.y = elapsed * 0.16 + pointerCurrent.x * 0.18;
+      pointerCurrent.lerp(pointerTarget, pointerBlend);
+
+      primaryCloud.rotation.y = elapsedTime * 0.16 + pointerCurrent.x * 0.18;
       primaryCloud.rotation.x = pointerCurrent.y * 0.1;
-      primaryCloud.rotation.z = elapsed * 0.035;
+      primaryCloud.rotation.z = elapsedTime * 0.035;
 
-      secondaryCloud.rotation.y = -elapsed * 0.12 + pointerCurrent.x * 0.1;
-      secondaryCloud.rotation.x = elapsed * 0.045 + pointerCurrent.y * 0.08;
-      secondaryCloud.rotation.z = -elapsed * 0.026;
+      secondaryCloud.rotation.y = -elapsedTime * 0.12 + pointerCurrent.x * 0.1;
+      secondaryCloud.rotation.x = elapsedTime * 0.045 + pointerCurrent.y * 0.08;
+      secondaryCloud.rotation.z = -elapsedTime * 0.026;
 
-      tertiaryCloud.rotation.y = elapsed * 0.08 - pointerCurrent.x * 0.12;
-      tertiaryCloud.rotation.x = -elapsed * 0.03 + pointerCurrent.y * 0.05;
-      tertiaryCloud.rotation.z = elapsed * 0.02;
+      tertiaryCloud.rotation.y = elapsedTime * 0.08 - pointerCurrent.x * 0.12;
+      tertiaryCloud.rotation.x = -elapsedTime * 0.03 + pointerCurrent.y * 0.05;
+      tertiaryCloud.rotation.z = elapsedTime * 0.02;
 
-      const pulse = 1 + Math.sin(elapsed * 1.4) * 0.015;
+      const pulse = 1 + Math.sin(elapsedTime * 1.4) * 0.015;
       primaryCloud.scale.setScalar(pulse);
-      secondaryCloud.scale.setScalar(1.06 + Math.cos(elapsed * 1.05) * 0.014);
-      tertiaryCloud.scale.setScalar(1.11 + Math.sin(elapsed * 0.75) * 0.017);
+      secondaryCloud.scale.setScalar(1.06 + Math.cos(elapsedTime * 1.05) * 0.014);
+      tertiaryCloud.scale.setScalar(1.11 + Math.sin(elapsedTime * 0.75) * 0.017);
 
       pointLight.position.x = pointerCurrent.x * 2.15;
       pointLight.position.y = 1.35 + pointerCurrent.y * 1.2;
@@ -216,7 +227,9 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
 
       isAnimating = true;
       clock.start();
-      renderFrame();
+      lastRenderTime = 0;
+      elapsedTime = 0;
+      frameId = window.requestAnimationFrame(renderFrame);
     }
 
     function stopAnimation() {
