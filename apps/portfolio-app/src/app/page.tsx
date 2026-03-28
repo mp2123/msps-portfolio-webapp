@@ -128,11 +128,33 @@ function QuickRecruiterSummary() {
     `${proofMetrics[2]?.value} revenue signal surfaced through commercial analysis`,
     "B.S. in Business Analytics expected June 2026",
   ];
+  const summaryPanels = [
+    {
+      label: "Best-fit roles",
+      value: primaryRoleTargets.join(" · "),
+      icon: BriefcaseBusiness,
+    },
+    {
+      label: "Current posture",
+      value: "Portfolio first, PDF resume second",
+      icon: FileText,
+    },
+    {
+      label: "Location",
+      value: contactProfile.location,
+      icon: MapPin,
+    },
+    {
+      label: "Current status",
+      value: "B.S. Business Analytics, expected June 2026",
+      icon: GraduationCap,
+    },
+  ];
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-10">
       <div className="rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/8 via-black/40 to-slate-950/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
           <div className="space-y-5">
             <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
               Quick recruiter summary
@@ -197,6 +219,17 @@ function QuickRecruiterSummary() {
                 </Link>
               </Button>
             </div>
+
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-4">
+              <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/65">
+                Recruiter read
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                Strongest when a team needs someone who can absorb messy asks, structure the reporting
+                logic, automate the repetitive pieces, and still explain the result clearly to
+                stakeholders.
+              </p>
+            </div>
           </div>
 
           <div className="grid gap-4">
@@ -205,53 +238,29 @@ function QuickRecruiterSummary() {
               subtitle="The portfolio is built around the same pattern that shows up across Michael's work: absorb ambiguity fast, translate it into a cleaner system, then hand back something stakeholders can actually use."
               labels={["hospitality", "analytics", "automation", "storytelling"]}
             />
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
-                  <BriefcaseBusiness className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Best-fit roles</p>
-                  <p className="mt-1 text-sm font-semibold text-white">{primaryRoleTargets.join(" · ")}</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
-                  <GraduationCap className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Current status</p>
-                  <p className="mt-1 text-sm font-semibold text-white">
-                    B.S. Business Analytics, expected June 2026
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Location</p>
-                  <p className="mt-1 text-sm font-semibold text-white">{contactProfile.location}</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Portfolio posture</p>
-                  <p className="mt-1 text-sm font-semibold text-white">
-                    Portfolio first, PDF resume second
-                  </p>
-                </div>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {summaryPanels.map((panel) => {
+                const Icon = panel.icon;
+
+                return (
+                  <div
+                    key={panel.label}
+                    className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+                          {panel.label}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-white">{panel.value}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

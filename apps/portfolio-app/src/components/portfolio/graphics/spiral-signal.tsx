@@ -44,7 +44,7 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
 
       width = parent.clientWidth;
       height = parent.clientHeight;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -76,7 +76,7 @@ export function SpiralSignal({ title, subtitle, labels }: SpiralSignalProps) {
       ctx.fillRect(0, 0, width, height);
 
       const turns = 5.8;
-      const steps = 170;
+      const steps = 152;
       const beaconPhase = ((state.progress * 1.6) % 1 + 1) % 1;
       const counterPhase = ((1 - beaconPhase * 0.72) % 1 + 1) % 1;
 

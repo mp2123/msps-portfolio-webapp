@@ -574,26 +574,25 @@ export const FloatingAiAssistant = () => {
       >
         <motion.div
           className="absolute -inset-3 rounded-full bg-cyan-400/20 blur-2xl"
-          animate={{ opacity: isChatOpen ? 0.85 : 0.45, scale: isChatOpen ? 1.1 : 1 }}
+          animate={{ opacity: isChatOpen ? 0.78 : 0.38, scale: isChatOpen ? 1.08 : 1 }}
           transition={{ duration: 0.3 }}
         />
         <motion.div
           className="absolute -inset-5 rounded-full border border-cyan-300/20"
-          animate={{ opacity: isChatOpen ? 0.9 : 0.45, scale: isChatOpen ? 1.08 : 1 }}
+          animate={{ opacity: isChatOpen ? 0.78 : 0.38, scale: isChatOpen ? 1.05 : 1 }}
           transition={{ duration: 0.3 }}
         />
-        <div className="absolute -inset-8 rounded-full border border-cyan-300/10 opacity-50" />
+        <div className="absolute -inset-8 rounded-full border border-cyan-300/10 opacity-40" />
         <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-30" />
         <div className="absolute inset-0 rounded-full border-2 border-white/10" />
         <div className="absolute inset-[7px] rounded-full border border-cyan-100/20" />
         <div className="relative z-10 text-white">
           {isChatOpen ? <X /> : <Bot className="h-8 w-8" />}
         </div>
-        <div className="absolute inset-0 rounded-full animate-ping bg-primary opacity-20" />
         <motion.div
           className="absolute inset-0 rounded-full border border-cyan-200/40"
-          animate={{ scale: [1, 1.22, 1], opacity: [0.6, 0, 0.6] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ scale: [1, 1.16, 1], opacity: [0.35, 0, 0.35] }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </button>
 
@@ -604,7 +603,7 @@ export const FloatingAiAssistant = () => {
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            className="absolute bottom-20 right-0 h-[min(720px,calc(100dvh-3.75rem))] w-[min(438px,calc(100vw-0.75rem))] origin-bottom-right sm:h-[min(760px,calc(100dvh-5rem))] sm:w-[min(448px,calc(100vw-1rem))]"
+            className="absolute bottom-20 right-0 h-[min(760px,calc(100dvh-2.75rem))] w-[min(452px,calc(100vw-0.75rem))] origin-bottom-right sm:h-[min(792px,calc(100dvh-4rem))] sm:w-[min(468px,calc(100vw-1rem))]"
           >
             <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-cyan-400/10 blur-3xl" />
             <div
@@ -647,7 +646,7 @@ export const FloatingAiAssistant = () => {
                   </h2>
                   <p
                     id="recruiter-assistant-description"
-                    className="max-w-[34ch] text-[12px] leading-relaxed text-zinc-400 sm:text-[13px]"
+                    className="max-w-[34ch] text-[11.5px] leading-relaxed text-zinc-400 sm:text-[12.5px]"
                   >
                     Ask about role fit, measurable impact, strongest proof, or where Michael fits best right now.
                   </p>
@@ -677,13 +676,13 @@ export const FloatingAiAssistant = () => {
                         type="button"
                         onClick={() => handleStarterPrompt(item.question)}
                         disabled={isLoading}
-                        className="rounded-2xl border border-white/8 bg-white/[0.06] px-3 py-2.5 text-left transition-colors hover:border-cyan-400/30 hover:bg-cyan-400/10 focus-visible:border-cyan-300/45 focus-visible:outline-none disabled:opacity-60"
+                        className="rounded-2xl border border-white/8 bg-white/[0.05] px-3 py-2.5 text-left transition-colors hover:border-cyan-400/30 hover:bg-cyan-400/10 focus-visible:border-cyan-300/45 focus-visible:outline-none disabled:opacity-60"
                       >
                         <div className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-cyan-100/70 sm:text-[10px] sm:tracking-[0.22em]">
                           <Sparkles className="h-3.5 w-3.5" />
                           {item.label}
                         </div>
-                        <p className="mt-1.5 text-[12px] leading-snug text-zinc-300 sm:text-[13px]">
+                        <p className="mt-1.5 line-clamp-3 text-[11.5px] leading-snug text-zinc-300 sm:text-[12.5px]">
                           {item.question}
                         </p>
                       </button>
@@ -729,13 +728,28 @@ export const FloatingAiAssistant = () => {
                     className="px-1 pb-3 pt-1 text-left"
                   >
                     <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100/70">
-                        Recruiter-ready briefing mode
-                      </p>
-                      <p className="mt-1 text-xs leading-relaxed text-zinc-400">
-                        Use a quick ask above or type a custom question below. Once the first answer starts,
-                        this space becomes the main transcript window.
-                      </p>
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.12)]">
+                          <Bot className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100/70">
+                            Welcome
+                          </p>
+                          <p className="mt-1 text-xs leading-relaxed text-zinc-300">
+                            Ask for a recruiter-ready summary, strongest proof, role fit, or the cleanest
+                            explanation of a project. The first answer lands here.
+                          </p>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300">
+                              Live recruiter framing
+                            </span>
+                            <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-zinc-300">
+                              Portfolio-aware answers
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 ) : (

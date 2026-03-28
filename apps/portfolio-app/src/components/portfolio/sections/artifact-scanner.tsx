@@ -227,11 +227,9 @@ export function ArtifactScanner() {
     });
   });
 
-  const handleInteraction = (
-    event: React.WheelEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement>
-  ) => {
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     const physics = physicsRef.current;
-    const delta = "deltaY" in event ? event.deltaX || event.deltaY : event.movementX;
+    const delta = event.deltaX || event.deltaY;
 
     if (Math.abs(delta) <= 1) return;
 
@@ -261,8 +259,7 @@ export function ArtifactScanner() {
 
       <div
         ref={containerRef}
-        onWheel={handleInteraction}
-        onMouseMove={handleInteraction}
+        onWheel={handleWheel}
         onMouseEnter={() => {
           physicsRef.current.isHovering = true;
         }}
@@ -314,7 +311,7 @@ export function ArtifactScanner() {
           <span>Raw signal</span>
           <div className="flex items-center gap-3 self-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
             <ChevronsLeftRight className="h-4 w-4" />
-            <span className="tracking-[0.24em]">Flick or wheel to scan</span>
+            <span className="tracking-[0.24em]">Wheel to scan</span>
           </div>
           <span className="text-right">Proof asset</span>
         </div>

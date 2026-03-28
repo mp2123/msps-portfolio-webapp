@@ -27,7 +27,7 @@ const CV_LINKS: PortfolioNavItem[] = [
   { label: "Advantage", href: "#cv-advantage", category: "Story" },
   { label: "Capabilities", href: "#cv-capabilities", category: "Skills matrix" },
   { label: "Projects", href: "/projects", category: "Library" },
-  { label: "Contact", href: "#contact", category: "Outreach" },
+  { label: "Contact", href: "/#contact", category: "Outreach" },
 ];
 
 export interface PortfolioActionItem {

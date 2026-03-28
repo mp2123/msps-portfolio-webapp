@@ -38,6 +38,13 @@ type RandomCraftCocktail = {
 };
 
 const orbitRadius = 118;
+const spiritAccentMap: Record<string, string> = {
+  gin: "from-emerald-300/40 via-cyan-300/18 to-slate-950",
+  bourbon: "from-amber-300/45 via-orange-400/18 to-slate-950",
+  tequila: "from-lime-300/35 via-emerald-400/16 to-slate-950",
+  vodka: "from-sky-200/35 via-cyan-300/14 to-slate-950",
+  rum: "from-amber-200/35 via-rose-300/16 to-slate-950",
+};
 
 function getFallbackCocktail(): RandomCraftCocktail {
   const cocktail = EXAMPLE_CRAFT_COCKTAILS[Math.floor(Math.random() * EXAMPLE_CRAFT_COCKTAILS.length)];
@@ -47,6 +54,40 @@ function getFallbackCocktail(): RandomCraftCocktail {
     notes: cocktail.notes ?? null,
     source: "seed",
   };
+}
+
+function CocktailVisual({ cocktail }: { cocktail: RandomCraftCocktail }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const accent =
+    spiritAccentMap[cocktail.spiritBase.toLowerCase()] ??
+    "from-cyan-300/35 via-sky-300/16 to-slate-950";
+
+  if (imageFailed) {
+    return (
+      <div className={`absolute inset-0 bg-gradient-to-br ${accent} to-black`}>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_28%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.1]" />
+        <div className="absolute inset-x-8 top-8 rounded-[1.5rem] border border-white/10 bg-black/25 p-5 backdrop-blur-xl">
+          <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/70">{cocktail.style}</p>
+          <h3 className="mt-3 text-3xl font-black tracking-tight text-white">{cocktail.name}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-200">
+            Seeded cocktail visual while the spreadsheet-backed photo set is still being finalized.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={cocktail.imageUrl}
+      alt={cocktail.name}
+      fill
+      sizes="(max-width: 1024px) 100vw, 46vw"
+      className="object-cover"
+      onError={() => setImageFailed(true)}
+    />
+  );
 }
 
 export function RandomCraftCocktail() {
@@ -233,17 +274,11 @@ export function RandomCraftCocktail() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-h-[min(90vh,860px)] max-w-5xl overflow-hidden border-white/10 bg-[#04070d]/95 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
+        <DialogContent className="h-[min(92vh,920px)] max-w-[min(1120px,calc(100vw-1rem))] overflow-hidden border-white/10 bg-[#04070d]/95 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
           {activeCocktail ? (
-            <div className="grid max-h-[min(90vh,860px)] overflow-y-auto lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="relative min-h-[20rem] overflow-hidden lg:min-h-full">
-                <Image
-                  src={activeCocktail.imageUrl}
-                  alt={activeCocktail.name}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  className="object-cover"
-                />
+            <div className="grid h-full min-h-0 overflow-hidden lg:grid-cols-[0.96fr_1.04fr]">
+              <div className="relative min-h-[21rem] overflow-hidden lg:min-h-0">
+                <CocktailVisual cocktail={activeCocktail} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
                 <div className="absolute inset-x-6 bottom-6 space-y-3">
                   <Badge className="border-white/10 bg-black/50 text-zinc-100">
@@ -260,8 +295,8 @@ export function RandomCraftCocktail() {
                 </div>
               </div>
 
-              <div className="p-6 md:p-8">
-                <DialogHeader className="text-left">
+              <div className="flex min-h-0 flex-col p-6 md:p-8">
+                <DialogHeader className="shrink-0 text-left">
                   <DialogTitle className="text-2xl font-black tracking-tight text-white md:text-3xl">
                     Full build and service call
                   </DialogTitle>
@@ -270,66 +305,68 @@ export function RandomCraftCocktail() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Base spirit</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.spiritBase}</p>
+                <div className="mt-6 flex-1 overflow-y-auto pr-1">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Base spirit</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.spiritBase}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Glassware</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.glassware}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Garnish</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.garnish ?? "None"}</p>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Glassware</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.glassware}</p>
+
+                  <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                      <div className="flex items-center gap-2">
+                        <Wine className="h-4 w-4 text-cyan-100" />
+                        <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Ingredients</p>
+                      </div>
+                      <ul className="mt-4 space-y-3">
+                        {activeCocktail.ingredients.map((ingredient) => (
+                          <li
+                            key={`${ingredient.amount}-${ingredient.item}`}
+                            className="flex items-start justify-between gap-4 border-b border-white/6 pb-3 text-sm last:border-b-0 last:pb-0"
+                          >
+                            <span className="font-medium text-cyan-100">{ingredient.amount}</span>
+                            <span className="text-right text-zinc-200">{ingredient.item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-cyan-100" />
+                        <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Build method</p>
+                      </div>
+                      <ol className="mt-4 space-y-3">
+                        {activeCocktail.method.map((step, index) => (
+                          <li key={step} className="flex items-start gap-3 text-sm leading-relaxed text-zinc-200">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-400/10 text-[11px] font-semibold text-cyan-100">
+                              {index + 1}
+                            </span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Garnish</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{activeCocktail.garnish ?? "None"}</p>
-                  </div>
+
+                  {activeCocktail.notes ? (
+                    <div className="mt-6 rounded-[1.5rem] border border-amber-300/12 bg-amber-400/6 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-amber-100/70">Build note</p>
+                      <p className="mt-2 text-sm leading-relaxed text-zinc-200">{activeCocktail.notes}</p>
+                    </div>
+                  ) : null}
                 </div>
 
-                <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                    <div className="flex items-center gap-2">
-                      <Wine className="h-4 w-4 text-cyan-100" />
-                      <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Ingredients</p>
-                    </div>
-                    <ul className="mt-4 space-y-3">
-                      {activeCocktail.ingredients.map((ingredient) => (
-                        <li
-                          key={`${ingredient.amount}-${ingredient.item}`}
-                          className="flex items-start justify-between gap-4 border-b border-white/6 pb-3 text-sm last:border-b-0 last:pb-0"
-                        >
-                          <span className="font-medium text-cyan-100">{ingredient.amount}</span>
-                          <span className="text-right text-zinc-200">{ingredient.item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-cyan-100" />
-                      <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Build method</p>
-                    </div>
-                    <ol className="mt-4 space-y-3">
-                      {activeCocktail.method.map((step, index) => (
-                        <li key={step} className="flex items-start gap-3 text-sm leading-relaxed text-zinc-200">
-                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-400/10 text-[11px] font-semibold text-cyan-100">
-                            {index + 1}
-                          </span>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
-
-                {activeCocktail.notes ? (
-                  <div className="mt-6 rounded-[1.5rem] border border-amber-300/12 bg-amber-400/6 px-4 py-3">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-amber-100/70">Build note</p>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-200">{activeCocktail.notes}</p>
-                  </div>
-                ) : null}
-
-                <DialogFooter className="mt-6 justify-between sm:items-center">
+                <DialogFooter className="mt-6 shrink-0 justify-between border-t border-white/10 pt-5 sm:items-center">
                   <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
                     {activeCocktail.source === "database"
                       ? "Served from the portfolio cocktail catalog"

@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type PointerEvent as ReactPointerEvent } from 'react';
 import createGlobe from 'cobe';
-import { ArrowRight, Hand, MapPin } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
 import { cn } from '@/lib/utils';
@@ -142,8 +142,8 @@ export function ExperienceGlobe() {
     const deltaY = event.clientY - pointerInteracting.current.y;
 
     dragOffset.current = {
-      phi: deltaX / 210,
-      theta: deltaY / 320,
+      phi: deltaX / 180,
+      theta: deltaY / 280,
     };
     dragDistanceRef.current = Math.max(
       dragDistanceRef.current,
@@ -222,14 +222,14 @@ export function ExperienceGlobe() {
     let width = initialWidth;
 
     const globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.8),
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.55),
       width: initialWidth * 2,
       height: initialWidth * 2,
       phi: focusRef.current.phi,
       theta: focusRef.current.theta,
       dark: 1,
       diffuse: 1.2,
-      mapSamples: 14000,
+      mapSamples: 11800,
       mapBrightness: 4,
       baseColor: [0.04, 0.07, 0.13],
       markerColor: [0.34, 0.88, 1],
@@ -253,12 +253,12 @@ export function ExperienceGlobe() {
         state.width = width * 2;
         state.height = width * 2;
 
-        orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.00125;
+        orbitOffsetRef.current += pointerInteracting.current ? 0.00035 : 0.0024;
         const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
         const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
 
-        state.phi += (targetPhi - state.phi) * 0.085;
-        state.theta += (targetTheta - state.theta) * 0.085;
+        state.phi += (targetPhi - state.phi) * 0.11;
+        state.theta += (targetTheta - state.theta) * 0.11;
       },
     } as never);
 
@@ -316,8 +316,7 @@ export function ExperienceGlobe() {
             Chicago → Iowa City → Phoenix
           </span>
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            <Hand className="h-3.5 w-3.5" />
-            drag to rotate
+            Auto-rotating stage map
           </span>
         </div>
       </div>

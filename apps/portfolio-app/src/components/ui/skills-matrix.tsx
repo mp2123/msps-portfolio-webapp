@@ -1,8 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import type { SkillsGroup } from '@/content/portfolio';
+import { cn } from '@/lib/utils';
 
-export const SkillsMatrix = ({ groups }: { groups: SkillsGroup[] }) => {
+export const SkillsMatrix = ({
+  groups,
+  className,
+}: {
+  groups: SkillsGroup[];
+  className?: string;
+}) => {
   const accentStyles = [
     {
       shell: 'border-cyan-300/15 bg-cyan-300/8',
@@ -27,7 +34,7 @@ export const SkillsMatrix = ({ groups }: { groups: SkillsGroup[] }) => {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-10">
+    <div className={cn("mx-auto w-full max-w-5xl px-4 py-10", className)}>
       <div className="grid gap-6 md:grid-cols-2">
         {groups.map((group, groupIndex) => (
           (() => {

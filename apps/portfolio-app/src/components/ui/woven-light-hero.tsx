@@ -22,7 +22,7 @@ type WovenLightHeroProps = {
 };
 
 const HERO_PALETTE = ["#8be5ff", "#4fd8ff", "#84ccff", "#87a7ff"];
-const POINT_COUNT = 4600;
+const POINT_COUNT = 3200;
 
 function buildWovenGeometry() {
   const positions = new Float32Array(POINT_COUNT * 3);
@@ -85,25 +85,25 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
     });
 
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.35));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.18));
     mountElement.appendChild(renderer.domElement);
 
     const geometry = buildWovenGeometry();
     const materialA = new THREE.PointsMaterial({
-      size: 0.048,
+      size: 0.044,
       vertexColors: true,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.82,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
     });
     const materialB = materialA.clone();
-    materialB.size = 0.038;
-    materialB.opacity = 0.42;
+    materialB.size = 0.035;
+    materialB.opacity = 0.3;
     const materialC = materialA.clone();
-    materialC.size = 0.055;
-    materialC.opacity = 0.2;
+    materialC.size = 0.05;
+    materialC.opacity = 0.12;
 
     const primaryCloud = new THREE.Points(geometry, materialA);
     const secondaryCloud = new THREE.Points(geometry.clone(), materialB);
@@ -114,8 +114,8 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
 
     scene.add(primaryCloud, secondaryCloud, tertiaryCloud);
 
-    const ambientLight = new THREE.AmbientLight(0xbde8ff, 1.4);
-    const pointLight = new THREE.PointLight(0x59d5ff, 2.6, 30, 1.25);
+    const ambientLight = new THREE.AmbientLight(0xbde8ff, 1.15);
+    const pointLight = new THREE.PointLight(0x59d5ff, 2.05, 26, 1.2);
     pointLight.position.set(0, 1.4, 7.5);
     scene.add(ambientLight, pointLight);
 
@@ -200,11 +200,11 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
 
       const pulse = 1 + Math.sin(elapsed * 1.4) * 0.015;
       primaryCloud.scale.setScalar(pulse);
-      secondaryCloud.scale.setScalar(1.07 + Math.cos(elapsed * 1.1) * 0.018);
-      tertiaryCloud.scale.setScalar(1.14 + Math.sin(elapsed * 0.8) * 0.022);
+      secondaryCloud.scale.setScalar(1.06 + Math.cos(elapsed * 1.05) * 0.014);
+      tertiaryCloud.scale.setScalar(1.11 + Math.sin(elapsed * 0.75) * 0.017);
 
-      pointLight.position.x = pointerCurrent.x * 2.6;
-      pointLight.position.y = 1.4 + pointerCurrent.y * 1.5;
+      pointLight.position.x = pointerCurrent.x * 2.15;
+      pointLight.position.y = 1.35 + pointerCurrent.y * 1.2;
 
       renderer.render(scene, camera);
     }

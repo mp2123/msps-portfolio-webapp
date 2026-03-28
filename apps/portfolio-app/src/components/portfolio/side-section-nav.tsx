@@ -63,7 +63,7 @@ const CV_ITEMS: SideNavItem[] = [
   { id: "experience-visuals", label: "Arc", icon: Waypoints, href: "#experience-visuals" },
   { id: "cv-advantage", label: "Advantage", icon: Sparkles, href: "#cv-advantage" },
   { id: "cv-capabilities", label: "Capabilities", icon: LayoutGrid, href: "#cv-capabilities" },
-  { id: "contact", label: "Contact", icon: Send, href: "#contact" },
+  { id: "contact", label: "Contact", icon: Send, href: "/#contact" },
   { id: "assistant", label: "Ask AI", icon: Bot, action: "assistant" },
 ];
 
