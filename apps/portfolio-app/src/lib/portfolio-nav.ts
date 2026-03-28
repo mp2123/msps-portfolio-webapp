@@ -48,7 +48,7 @@ export const getPortfolioActionItems = (pathname: string) =>
 
 export const getHeaderPrimaryCta = (pathname: string) =>
   pathname.startsWith("/projects")
-    ? { label: "Contact", href: "/#contact" }
+    ? { label: "Back Home", href: "/#home" }
     : { label: "Project Library", href: "/projects" };
 
 export const getHomeLinkHref = (pathname: string) =>

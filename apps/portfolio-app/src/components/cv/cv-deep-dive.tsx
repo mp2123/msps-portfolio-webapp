@@ -37,7 +37,10 @@ const ExperienceGlobe = dynamic(
 export function CvDeepDive() {
   return (
     <div className="cv-no-print mt-10 space-y-10">
-      <section className="rounded-[2rem] border border-white/10 bg-black/20 p-6 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl">
+      <section
+        id="cv-companion"
+        className="rounded-[2rem] border border-white/10 bg-black/20 p-6 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl"
+      >
         <div className="max-w-3xl space-y-4">
           <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
             CV companion
@@ -75,11 +78,17 @@ export function CvDeepDive() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-black/25 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl">
+      <section
+        id="cv-advantage"
+        className="rounded-[2rem] border border-white/10 bg-black/25 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl"
+      >
         <HospitalityStory />
       </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-black/20 p-6 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl">
+      <section
+        id="cv-capabilities"
+        className="rounded-[2rem] border border-white/10 bg-black/20 p-6 shadow-[0_0_40px_rgba(34,211,238,0.06)] backdrop-blur-xl"
+      >
         <div className="mb-8 max-w-3xl space-y-4 px-4 pt-2">
           <Badge className="border-white/10 bg-white/5 text-zinc-100">Capabilities matrix</Badge>
           <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">

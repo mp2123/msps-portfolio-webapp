@@ -15,6 +15,10 @@ import {
   buildAssistantCacheLookup,
 } from '@/lib/assistant-cache';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
+import {
+  PORTFOLIO_ASSISTANT_OPEN,
+  PORTFOLIO_ASSISTANT_REQUEST_OPEN,
+} from '@/lib/portfolio-assistant-ui';
 import { cn } from '@/lib/utils';
 
 const FALLBACK_RESPONSE_PREFIX = "I'm having trouble reaching the live model right now";
@@ -417,7 +421,7 @@ export const FloatingAiAssistant = () => {
 
   useEffect(() => {
     if (isChatOpen) {
-      window.dispatchEvent(new Event('portfolio-assistant-open'));
+      window.dispatchEvent(new Event(PORTFOLIO_ASSISTANT_OPEN));
       hasOpenedRef.current = true;
       requestAnimationFrame(() => {
         inputRef.current?.focus();
@@ -428,6 +432,19 @@ export const FloatingAiAssistant = () => {
       });
     }
   }, [isChatOpen]);
+
+  useEffect(() => {
+    const handleAssistantOpenRequest = () => {
+      setIsChatOpen(true);
+    };
+
+    window.addEventListener(PORTFOLIO_ASSISTANT_REQUEST_OPEN, handleAssistantOpenRequest);
+    return () =>
+      window.removeEventListener(
+        PORTFOLIO_ASSISTANT_REQUEST_OPEN,
+        handleAssistantOpenRequest
+      );
+  }, []);
 
   useEffect(() => {
     if (!isChatOpen) return;

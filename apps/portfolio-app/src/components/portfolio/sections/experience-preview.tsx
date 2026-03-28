@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 import { careerNodes } from "@/content/portfolio";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 
@@ -67,6 +68,22 @@ export function ExperiencePreview() {
             <p className="mt-4 text-sm leading-relaxed text-zinc-300">{node.summary}</p>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 hidden rounded-[2rem] border border-white/10 bg-black/25 p-4 shadow-[0_0_30px_rgba(34,211,238,0.04)] lg:block">
+        <div className="mb-6 max-w-3xl space-y-3 px-2 pt-2">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/60">
+            Experience map
+          </p>
+          <h3 className="text-2xl font-semibold tracking-tight text-white">
+            The systems-thinking map is back in the homepage flow.
+          </h3>
+          <p className="text-sm leading-relaxed text-zinc-400">
+            The interactive career map now lives here as a visual bridge into the deeper globe and
+            CV companion, instead of disappearing behind a route change.
+          </p>
+        </div>
+        <RadialOrbitalTimeline timelineData={careerNodes} />
       </div>
     </section>
   );

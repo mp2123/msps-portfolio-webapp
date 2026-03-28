@@ -83,6 +83,7 @@ export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null);
+  const pointerIdRef = useRef<number | null>(null);
   const dragOffset = useRef({ phi: 0, theta: 0 });
   const dragDistanceRef = useRef(0);
   const focusRef = useRef({
@@ -132,8 +133,8 @@ export function ExperienceGlobe() {
       if (!pointerInteracting.current) return;
 
       dragOffset.current = {
-        phi: (event.clientX - pointerInteracting.current.x) / 260,
-        theta: (event.clientY - pointerInteracting.current.y) / 620,
+        phi: (event.clientX - pointerInteracting.current.x) / 180,
+        theta: (event.clientY - pointerInteracting.current.y) / 360,
       };
       dragDistanceRef.current = Math.max(
         dragDistanceRef.current,
@@ -161,6 +162,13 @@ export function ExperienceGlobe() {
         phi: focusRef.current.phi + dragOffset.current.phi,
         theta: focusRef.current.theta + dragOffset.current.theta,
       };
+      if (
+        pointerIdRef.current !== null &&
+        canvasRef.current?.hasPointerCapture(pointerIdRef.current)
+      ) {
+        canvasRef.current.releasePointerCapture(pointerIdRef.current);
+      }
+      pointerIdRef.current = null;
       dragOffset.current = { phi: 0, theta: 0 };
       dragDistanceRef.current = 0;
       pointerInteracting.current = null;
@@ -258,6 +266,7 @@ export function ExperienceGlobe() {
             canvasRef={canvasRef}
             hasEnteredViewport={hasEnteredViewport}
             pointerInteractingRef={pointerInteracting}
+            pointerIdRef={pointerIdRef}
             dragDistanceRef={dragDistanceRef}
           />
           <div className="pointer-events-none absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 backdrop-blur-xl">
@@ -337,15 +346,19 @@ const GlobeCanvasShell = memo(function GlobeCanvasShell({
   dragDistanceRef,
   hasEnteredViewport,
   pointerInteractingRef,
+  pointerIdRef,
 }: {
   canvasRef: MutableRefObject<HTMLCanvasElement | null>;
   dragDistanceRef: MutableRefObject<number>;
   hasEnteredViewport: boolean;
+  pointerIdRef: MutableRefObject<number | null>;
   pointerInteractingRef: MutableRefObject<{ x: number; y: number } | null>;
 }) {
   const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     pointerInteractingRef.current = { x: event.clientX, y: event.clientY };
+    pointerIdRef.current = event.pointerId;
     dragDistanceRef.current = 0;
+    event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   return (

@@ -110,8 +110,8 @@ const ScrollExpandMedia = ({
   const showParticleField = !prefersReducedMotion && !isMobileState;
   const showAmbientMotion = !prefersReducedMotion && !isMobileState;
   const heroTrackHeight = isMobileState
-    ? 'clamp(1420px, 176svh, 1880px)'
-    : 'clamp(1660px, 156svh, 2100px)';
+    ? 'clamp(1180px, 140svh, 1540px)'
+    : 'clamp(1380px, 130svh, 1760px)';
   const frameHeight = isMobileState ? 360 : 520;
   const firstLine = titleLines?.[0] ?? title ?? '';
   const secondLine = titleLines?.[1] ?? '';
@@ -130,11 +130,11 @@ const ScrollExpandMedia = ({
     isMobileState ? 1.01 : 1.06,
     isMobileState ? 1.06 : 1.12,
   ]);
-  const frameTranslateY = useTransform(progress, [0, 0.93, 1], [64, 38, 20]);
+  const frameTranslateY = useTransform(progress, [0, 0.93, 1], [46, 26, 14]);
   const frameRotateX = useTransform(progress, [0, 0.9, 1], [16, 2, 0]);
   const frameRotateY = useTransform(progress, [0, 0.9, 1], [-11, -1.5, 0]);
   const mediaOverlayOpacity = useTransform(progress, [0, 1], [0.56, 0.34]);
-  const contentOpacity = useTransform(progress, [0, 0.56, 0.78, 1], [0, 0.06, 0.84, 1]);
+  const contentOpacity = useTransform(progress, [0, 0.34, 0.62, 1], [0, 0.12, 0.9, 1]);
   const shadowCyan = useTransform(progress, [0, 1], [0.18, 0.3]);
   const shadowSlate = useTransform(progress, [0, 1], [0.58, 0.68]);
   const mediaShadow = useMotionTemplate`0 42px 120px rgba(14, 165, 233, ${shadowCyan}), 0 10px 60px rgba(2, 6, 23, ${shadowSlate})`;
@@ -174,7 +174,7 @@ const ScrollExpandMedia = ({
           </div>
 
           <div className="relative z-10 flex h-full items-center justify-center px-4">
-            <div className="container mx-auto flex h-full max-w-7xl flex-col items-center justify-start px-0 pb-8 pt-8 md:pb-10 md:pt-12 lg:pb-12 lg:pt-16 xl:justify-center xl:pt-0">
+            <div className="container mx-auto flex h-full max-w-7xl flex-col items-center justify-start px-0 pb-8 pt-10 md:pb-10 md:pt-14 lg:pb-12 lg:pt-16 xl:pt-20">
               <motion.div
                 className={`pointer-events-none relative z-20 mb-8 flex w-full max-w-5xl flex-col items-center justify-center gap-4 px-1 text-center md:mb-10 ${
                   textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
@@ -192,14 +192,14 @@ const ScrollExpandMedia = ({
 
                 <div className="space-y-2 md:space-y-3">
                   <motion.h2
-                    className="text-[clamp(3.1rem,7vw,6.2rem)] font-bold leading-[0.92] text-blue-100"
+                    className="text-[clamp(2.8rem,6.5vw,5.6rem)] font-bold leading-[0.92] text-blue-100"
                     style={{ x: leftTitleX }}
                   >
                     {firstLine}
                   </motion.h2>
                   {secondLine ? (
                     <motion.h2
-                      className="text-[clamp(3.1rem,7vw,6.2rem)] font-bold leading-[0.92] text-cyan-100"
+                      className="text-[clamp(2.8rem,6.5vw,5.6rem)] font-bold leading-[0.92] text-cyan-100"
                       style={{ x: rightTitleX }}
                     >
                       {secondLine}
@@ -341,7 +341,7 @@ const ScrollExpandMedia = ({
       </section>
 
       <motion.section
-        className="relative z-10 -mt-[18vh] flex w-full flex-col px-4 py-10 md:-mt-[30vh] md:px-10 lg:-mt-[40vh] lg:px-16 lg:py-16"
+        className="relative z-10 -mt-[14vh] flex w-full flex-col px-4 py-8 md:-mt-[22vh] md:px-10 md:py-10 lg:-mt-[28vh] lg:px-16 lg:py-14"
         style={{ opacity: contentOpacity }}
       >
         {children}

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+import { SideSectionNav } from "@/components/portfolio/side-section-nav";
 import { ArtifactGallery } from "@/components/portfolio/sections/artifact-gallery";
 import { ProjectImpactLab } from "@/components/portfolio/sections/project-impact-lab";
 import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
@@ -25,6 +26,7 @@ const FloatingAiAssistant = dynamic(
 export default function ProjectsPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background">
+      <SideSectionNav />
       <Header />
       <main className="relative z-10 px-0 pb-24 pt-24">
         <SectionAnalyticsTracker />

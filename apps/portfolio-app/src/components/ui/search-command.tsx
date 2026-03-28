@@ -18,12 +18,30 @@ import {
   getPortfolioNavLinks,
   getSamePageSectionId,
 } from '@/lib/portfolio-nav';
+import { openPortfolioAssistant } from '@/lib/portfolio-assistant-ui';
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname() ?? '/';
   const portfolioSections = getPortfolioNavLinks(pathname);
-  const actions = getPortfolioActionItems(pathname);
+  const launcherLabel = pathname.startsWith('/projects')
+    ? 'Jump projects, proof, or ask about Michael...'
+    : pathname.startsWith('/cv')
+      ? 'Jump CV sections or ask about Michael...'
+      : 'Jump sections or ask about Michael...';
+  const inputPlaceholder = pathname.startsWith('/projects')
+    ? 'Jump to projects, the proof vault, or open the recruiter assistant...'
+    : pathname.startsWith('/cv')
+      ? 'Jump to CV sections, deeper visuals, or open the recruiter assistant...'
+      : 'Jump to sections, deep dives, or open the recruiter assistant...';
+  const actions = [
+    {
+      label: 'Ask recruiter assistant',
+      href: '__assistant__',
+      category: 'AI guide',
+    },
+    ...getPortfolioActionItems(pathname),
+  ];
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -51,7 +69,7 @@ export function SearchCommand() {
       >
         <span className="flex min-w-0 items-center gap-2">
           <Search className="h-3.5 w-3.5 shrink-0 text-cyan-100/70" />
-          <span className="truncate">Search sections...</span>
+          <span className="truncate">{launcherLabel}</span>
         </span>
         <kbd className="pointer-events-none hidden h-6 shrink-0 select-none items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 font-mono text-[10px] font-medium text-zinc-500 xl:inline-flex">
           <span className="text-xs text-zinc-400">⌘</span>K
@@ -59,10 +77,10 @@ export function SearchCommand() {
       </button>
       {open ? (
         <CommandDialog open={open} onOpenChange={setOpen}>
-          <CommandInput placeholder="Search sections or topics..." />
+          <CommandInput placeholder={inputPlaceholder} />
           <CommandList>
             <CommandEmpty>No matching section found.</CommandEmpty>
-            <CommandGroup heading="Portfolio Sections">
+            <CommandGroup heading="Jump">
               {portfolioSections.map((section) => (
                 <CommandItem
                   key={section.label}
@@ -99,6 +117,21 @@ export function SearchCommand() {
                   key={action.label}
                   onSelect={() => {
                     setOpen(false);
+                    if (action.href === '__assistant__') {
+                      openPortfolioAssistant();
+                      trackPortfolioEvent({
+                        eventType: 'search_select',
+                        label: action.label,
+                        href: action.href,
+                        section: 'header-search',
+                        metadata: {
+                          category: action.category,
+                          pathname,
+                        },
+                      });
+                      return;
+                    }
+
                     const samePageSection = getSamePageSectionId(action.href, pathname);
 
                     if (samePageSection) {

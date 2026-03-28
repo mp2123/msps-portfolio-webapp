@@ -5,16 +5,17 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
+  Bot,
   BriefcaseBusiness,
-  Download,
   FileText,
   GraduationCap,
   MapPin,
   ShieldCheck,
 } from "lucide-react";
 
-import { AdvantagePreview } from "@/components/portfolio/sections/advantage-preview";
+import { SideSectionNav } from "@/components/portfolio/side-section-nav";
 import { ExperiencePreview } from "@/components/portfolio/sections/experience-preview";
+import { HospitalityStory } from "@/components/portfolio/sections/hospitality-story";
 import { ProjectAtlas } from "@/components/portfolio/sections/project-atlas";
 import { SkillsSnapshot } from "@/components/portfolio/sections/skills-snapshot";
 import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
@@ -26,6 +27,7 @@ import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
+import { openPortfolioAssistant } from "@/lib/portfolio-assistant-ui";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import {
@@ -387,18 +389,35 @@ function ContactSection() {
             );
           })}
 
-          <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+          <button
+            type="button"
+            onClick={() => {
+              openPortfolioAssistant();
+              trackPortfolioEvent({
+                eventType: "assistant_open",
+                label: "contact-guided-tour-assistant",
+                section: "contact",
+              });
+            }}
+            className="group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-left transition-colors hover:border-cyan-300/25 hover:bg-white/[0.08]"
+          >
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-100">
-                <Download className="h-4 w-4" />
+                <Bot className="h-4 w-4" />
               </div>
               <div>
-                <p className="font-semibold text-white">Asset drop-in notes</p>
-                <p className="mt-1 text-sm leading-relaxed text-zinc-400">{contactProfile.note}</p>
+                <p className="font-semibold text-white">Prefer the guided version?</p>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-400">
+                  Ask the recruiter assistant about projects, role fit, strongest proof, or where to
+                  start.
+                </p>
+                <p className="mt-3 text-[11px] uppercase tracking-[0.24em] text-cyan-100/70">
+                  Open recruiter assistant
+                </p>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </section>
@@ -408,6 +427,7 @@ function ContactSection() {
 export default function PortfolioHome() {
   return (
     <div id="home" className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background">
+      <SideSectionNav />
       <Header />
 
       <ScrollExpandMedia
@@ -430,7 +450,13 @@ export default function PortfolioHome() {
             <QuickRecruiterSummary />
             <ProjectAtlas />
             <SkillsSnapshot />
-            <AdvantagePreview />
+            <section
+              className="portfolio-section-anchor section-glow mx-auto w-full max-w-6xl px-4 py-18"
+              id="advantage"
+              data-portfolio-section="true"
+            >
+              <HospitalityStory />
+            </section>
             <ExperiencePreview />
 
             <section
@@ -449,7 +475,7 @@ export default function PortfolioHome() {
             </section>
 
             <ContactSection />
-            <div aria-hidden="true" className="h-72 md:h-96" />
+            <div aria-hidden="true" className="h-16 md:h-24" />
           </main>
         </TerminalWindow>
       </ScrollExpandMedia>

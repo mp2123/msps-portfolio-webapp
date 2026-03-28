@@ -9,7 +9,7 @@ export const TerminalWindow = ({ children }: { children: ReactNode }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="group relative mx-auto mb-12 mt-0 max-w-7xl overflow-hidden rounded-[1.75rem] border border-cyan-300/10 bg-black/35 shadow-[0_30px_90px_rgba(2,6,23,0.45)] backdrop-blur-3xl md:mb-14"
+      className="group relative mx-auto -mt-8 mb-12 max-w-7xl overflow-hidden rounded-[1.75rem] border border-cyan-300/10 bg-black/35 shadow-[0_30px_90px_rgba(2,6,23,0.45)] backdrop-blur-3xl md:-mt-12 md:mb-14"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.12),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_30px] opacity-[0.08]" />

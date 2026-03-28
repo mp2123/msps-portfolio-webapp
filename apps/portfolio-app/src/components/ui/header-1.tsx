@@ -7,6 +7,7 @@ import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
 import { useScroll } from '@/components/ui/use-scroll';
 import { SearchCommand } from '@/components/ui/search-command';
 import { trackPortfolioEvent } from '@/lib/portfolio-analytics';
+import { PORTFOLIO_ASSISTANT_OPEN } from '@/lib/portfolio-assistant-ui';
 import { scrollToPortfolioSection } from '@/lib/portfolio-navigation';
 import {
 	getHeaderPrimaryCta,
@@ -60,8 +61,8 @@ export function Header() {
 			setOpen(false);
 		};
 
-		window.addEventListener('portfolio-assistant-open', handleAssistantOpen);
-		return () => window.removeEventListener('portfolio-assistant-open', handleAssistantOpen);
+		window.addEventListener(PORTFOLIO_ASSISTANT_OPEN, handleAssistantOpen);
+		return () => window.removeEventListener(PORTFOLIO_ASSISTANT_OPEN, handleAssistantOpen);
 	}, []);
 
 	return (
@@ -81,6 +82,9 @@ export function Header() {
 							Michael
 						</span>
 						<span className="text-sm font-semibold text-white">Panico</span>
+					</span>
+					<span className="hidden rounded-full border border-white/10 bg-black/30 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors group-hover:text-cyan-100/80 lg:inline-flex">
+						Home
 					</span>
 				</a>
 				<div className="hidden min-w-0 flex-1 lg:flex lg:max-w-[18rem] xl:max-w-[22rem] 2xl:max-w-[25rem]">

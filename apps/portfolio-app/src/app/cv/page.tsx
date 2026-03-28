@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { SideSectionNav } from '@/components/portfolio/side-section-nav';
 import { CvDeepDive } from '@/components/cv/cv-deep-dive';
 import { PrintToolbar } from '@/components/cv/print-toolbar';
 import { WebCv } from '@/components/cv/web-cv';
@@ -35,7 +36,8 @@ export const metadata: Metadata = {
 
 export default function CvPage() {
   return (
-    <main className="cv-page min-h-screen overflow-x-hidden bg-zinc-950 text-white">
+    <main id="cv-top" className="cv-page min-h-screen overflow-x-hidden bg-zinc-950 text-white">
+      <SideSectionNav />
       <style>{`
         @media print {
           .cv-page {

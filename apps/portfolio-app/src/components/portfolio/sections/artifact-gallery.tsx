@@ -15,10 +15,10 @@ export function ArtifactGallery() {
     >
       <div className="mb-12 max-w-3xl space-y-4">
         <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
-        <h2 className="text-4xl font-bold tracking-tight text-white">Sanitized proof slots ready for real assets.</h2>
+        <h2 className="text-4xl font-bold tracking-tight text-white">Proof surfaces, downloads, and recruiter-safe artifacts.</h2>
         <p className="text-lg text-zinc-400">
-          The vault is now mapped to real source-material folders, so screenshots, brief PDFs,
-          templates, and demo media can be swapped in without changing the surrounding UX.
+          This is where public-safe screenshots, short briefs, downloadable templates, and demo
+          media will land once each asset is cleared for sharing.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export function ArtifactGallery() {
                   <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-zinc-300">
                     <span>{artifact.ctaLabel}</span>
                     <span className="text-[10px] uppercase tracking-[0.24em] text-cyan-100/65">
-                      mapped to {artifact.sourceMaterialFolder}
+                      public-safe asset planned
                     </span>
                   </div>
                 )}
