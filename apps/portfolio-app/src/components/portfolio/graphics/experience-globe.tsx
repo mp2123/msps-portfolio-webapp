@@ -21,13 +21,6 @@ type GlobeArc = {
   to: [number, number];
 };
 
-type GlobeRenderState = {
-  width: number;
-  height: number;
-  phi: number;
-  theta: number;
-};
-
 const markers: GlobeMarker[] = [
   {
     id: 'chicago-foundation',
@@ -220,6 +213,9 @@ export function ExperienceGlobe() {
     if (!initialWidth) return;
 
     let width = initialWidth;
+    let frameId = 0;
+    let currentPhi = focusRef.current.phi;
+    let currentTheta = focusRef.current.theta;
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.55),
@@ -249,28 +245,36 @@ export function ExperienceGlobe() {
       arcWidth: 0.95,
       arcHeight: 0.16,
       opacity: 0.92,
-      onRender: (state: GlobeRenderState) => {
-        width = canvas.offsetWidth;
-        state.width = width * 2;
-        state.height = width * 2;
-
-        orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.0048;
-        const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
-        const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
-        if (pointerInteracting.current) {
-          state.phi = targetPhi;
-          state.theta = targetTheta;
-          return;
-        }
-
-        state.phi += (targetPhi - state.phi) * 0.14;
-        state.theta += (targetTheta - state.theta) * 0.14;
-      },
     } as never);
 
+    const animate = () => {
+      width = canvas.offsetWidth || width;
+      orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.0048;
+      const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
+      const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
+
+      if (pointerInteracting.current) {
+        currentPhi = targetPhi;
+        currentTheta = targetTheta;
+      } else {
+        currentPhi += (targetPhi - currentPhi) * 0.14;
+        currentTheta += (targetTheta - currentTheta) * 0.14;
+      }
+
+      globe.update({
+        width: width * 2,
+        height: width * 2,
+        phi: currentPhi,
+        theta: currentTheta,
+      } as never);
+      frameId = window.requestAnimationFrame(animate);
+    };
+
+    frameId = window.requestAnimationFrame(animate);
     canvas.style.opacity = '1';
 
     return () => {
+      window.cancelAnimationFrame(frameId);
       canvas.style.opacity = '0';
       globe.destroy();
     };
