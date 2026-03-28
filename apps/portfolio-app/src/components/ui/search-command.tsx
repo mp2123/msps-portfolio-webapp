@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 import {
   CommandDialog,
@@ -23,16 +23,17 @@ import { openPortfolioAssistant } from '@/lib/portfolio-assistant-ui';
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname() ?? '/';
+  const router = useRouter();
   const portfolioSections = getPortfolioNavLinks(pathname);
   const launcherLabel = pathname.startsWith('/projects')
     ? 'Jump projects, proof, or ask about Michael...'
     : pathname.startsWith('/cv')
-      ? 'Jump CV sections or ask about Michael...'
+      ? 'Jump CV sections, visuals, or ask about Michael...'
       : 'Jump sections or ask about Michael...';
   const inputPlaceholder = pathname.startsWith('/projects')
     ? 'Jump to projects, the proof vault, or open the recruiter assistant...'
     : pathname.startsWith('/cv')
-      ? 'Jump to CV sections, deeper visuals, or open the recruiter assistant...'
+      ? 'Jump to CV sections, deeper visuals, or ask the recruiter assistant...'
       : 'Jump to sections, deep dives, or open the recruiter assistant...';
   const actions = [
     {
@@ -91,7 +92,7 @@ export function SearchCommand() {
                     if (samePageSection) {
                       scrollToPortfolioSection(samePageSection);
                     } else {
-                      window.location.assign(section.href);
+                      router.push(section.href);
                     }
 
                     trackPortfolioEvent({
@@ -137,7 +138,7 @@ export function SearchCommand() {
                     if (samePageSection) {
                       scrollToPortfolioSection(samePageSection);
                     } else {
-                      window.location.assign(action.href);
+                      router.push(action.href);
                     }
 
                     trackPortfolioEvent({

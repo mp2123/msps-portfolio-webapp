@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { SideSectionNav } from '@/components/portfolio/side-section-nav';
+import { PublicPageShell } from '@/components/portfolio/public-page-shell';
 import { CvDeepDive } from '@/components/cv/cv-deep-dive';
 import { PrintToolbar } from '@/components/cv/print-toolbar';
 import { WebCv } from '@/components/cv/web-cv';
@@ -36,31 +36,32 @@ export const metadata: Metadata = {
 
 export default function CvPage() {
   return (
-    <main id="cv-top" className="cv-page min-h-screen overflow-x-hidden bg-zinc-950 text-white">
-      <SideSectionNav />
-      <style>{`
-        @media print {
-          .cv-page {
-            background: white !important;
-            color: black !important;
+    <PublicPageShell className="bg-zinc-950 text-white" chromeClassName="cv-no-print">
+      <main id="cv-top" className="cv-page min-h-screen overflow-x-hidden bg-zinc-950 pt-20 text-white">
+        <style>{`
+          @media print {
+            .cv-page {
+              background: white !important;
+              color: black !important;
+            }
+            .cv-page * {
+              box-shadow: none !important;
+            }
+            .cv-no-print {
+              display: none !important;
+            }
+            a {
+              color: inherit !important;
+              text-decoration: none !important;
+            }
           }
-          .cv-page * {
-            box-shadow: none !important;
-          }
-          .cv-no-print {
-            display: none !important;
-          }
-          a {
-            color: inherit !important;
-            text-decoration: none !important;
-          }
-        }
-      `}</style>
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        <PrintToolbar />
-        <WebCv />
-        <CvDeepDive />
-      </div>
-    </main>
+        `}</style>
+        <div className="mx-auto max-w-5xl px-6 py-6">
+          <PrintToolbar />
+          <WebCv />
+          <CvDeepDive />
+        </div>
+      </main>
+    </PublicPageShell>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { SideSectionNav } from "@/components/portfolio/side-section-nav";
+import { PublicPageShell } from "@/components/portfolio/public-page-shell";
 import { ArtifactGallery } from "@/components/portfolio/sections/artifact-gallery";
 import { ProjectImpactLab } from "@/components/portfolio/sections/project-impact-lab";
 import { ArtifactScanner } from "@/components/portfolio/sections/artifact-scanner";
@@ -12,22 +11,11 @@ import { ProjectsLibrary } from "@/components/portfolio/sections/projects-librar
 import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/header-1";
 import { projects } from "@/content/portfolio";
-
-const FloatingAiAssistant = dynamic(
-  () =>
-    import("@/components/ui/glowing-ai-chat-assistant").then(
-      (mod) => mod.FloatingAiAssistant
-    ),
-  { ssr: false, loading: () => null }
-);
 
 export default function ProjectsPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background">
-      <SideSectionNav />
-      <Header />
+    <PublicPageShell>
       <main className="relative z-10 px-0 pb-24 pt-24">
         <SectionAnalyticsTracker />
 
@@ -98,8 +86,6 @@ export default function ProjectsPage() {
         <ArtifactScanner />
         <ArtifactGallery />
       </main>
-
-      <FloatingAiAssistant />
-    </div>
+    </PublicPageShell>
   );
 }

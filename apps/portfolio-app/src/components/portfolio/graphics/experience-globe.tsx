@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useMemo, useRef, useState, type MutableRefObject, type PointerEvent as ReactPointerEvent } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type PointerEvent as ReactPointerEvent } from 'react';
 import createGlobe from 'cobe';
 import { ArrowRight, Hand, MapPin } from 'lucide-react';
 
@@ -70,14 +70,11 @@ const arcs: GlobeArc[] = [
 ];
 
 const BASE_MARKER = markers[2];
-const INITIAL_PHI = 5.1;
-const INITIAL_THETA = 0.35;
-
-const getFocusPhi = (longitude: number) =>
-  INITIAL_PHI - ((longitude - BASE_MARKER.location[1]) * Math.PI) / 180;
-
-const getFocusTheta = (latitude: number) =>
-  INITIAL_THETA - ((latitude - BASE_MARKER.location[0]) * Math.PI) / 720;
+const degToRad = (value: number) => (value * Math.PI) / 180;
+const clampTheta = (value: number) =>
+  Math.max(-Math.PI / 2 + 0.18, Math.min(Math.PI / 2 - 0.18, value));
+const getFocusPhi = (longitude: number) => degToRad(-(longitude + 90));
+const getFocusTheta = (latitude: number) => clampTheta(degToRad(latitude));
 
 export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -99,6 +96,90 @@ export function ExperienceGlobe() {
     () => markers.find((marker) => marker.id === activeMarkerId) ?? BASE_MARKER,
     [activeMarkerId]
   );
+
+  const finishPointerInteraction = useCallback(
+    (shouldTrack = true) => {
+      if (!pointerInteracting.current) return;
+
+      if (shouldTrack && dragDistanceRef.current > 18) {
+        trackPortfolioEvent({
+          eventType: 'globe_drag',
+          label: activeMarker.label,
+          section: 'experience',
+          metadata: {
+            city: activeMarker.cityLabel,
+            dragDistance: Math.round(dragDistanceRef.current),
+          },
+        });
+      }
+
+      focusRef.current = {
+        phi: focusRef.current.phi + dragOffset.current.phi,
+        theta: clampTheta(focusRef.current.theta + dragOffset.current.theta),
+      };
+      pointerIdRef.current = null;
+      dragOffset.current = { phi: 0, theta: 0 };
+      dragDistanceRef.current = 0;
+      pointerInteracting.current = null;
+    },
+    [activeMarker.cityLabel, activeMarker.label]
+  );
+
+  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLCanvasElement>) => {
+    pointerInteracting.current = { x: event.clientX, y: event.clientY };
+    pointerIdRef.current = event.pointerId;
+    dragDistanceRef.current = 0;
+    dragOffset.current = { phi: 0, theta: 0 };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (pointerIdRef.current !== event.pointerId || !pointerInteracting.current) {
+      return;
+    }
+
+    const deltaX = event.clientX - pointerInteracting.current.x;
+    const deltaY = event.clientY - pointerInteracting.current.y;
+
+    dragOffset.current = {
+      phi: deltaX / 210,
+      theta: deltaY / 320,
+    };
+    dragDistanceRef.current = Math.max(
+      dragDistanceRef.current,
+      Math.abs(deltaX) + Math.abs(deltaY)
+    );
+  }, []);
+
+  const handlePointerUp = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (pointerIdRef.current !== event.pointerId) {
+        return;
+      }
+
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+
+      finishPointerInteraction(true);
+    },
+    [finishPointerInteraction]
+  );
+
+  const handlePointerCancel = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (pointerIdRef.current !== event.pointerId) {
+        return;
+      }
+
+      finishPointerInteraction(false);
+    },
+    [finishPointerInteraction]
+  );
+
+  const handleLostPointerCapture = useCallback(() => {
+    finishPointerInteraction(true);
+  }, [finishPointerInteraction]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -126,62 +207,10 @@ export function ExperienceGlobe() {
       theta: getFocusTheta(activeMarker.location[0]),
     };
     orbitOffsetRef.current = 0;
+    dragOffset.current = { phi: 0, theta: 0 };
+    pointerInteracting.current = null;
+    pointerIdRef.current = null;
   }, [activeMarker]);
-
-  useEffect(() => {
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!pointerInteracting.current) return;
-
-      dragOffset.current = {
-        phi: (event.clientX - pointerInteracting.current.x) / 180,
-        theta: (event.clientY - pointerInteracting.current.y) / 360,
-      };
-      dragDistanceRef.current = Math.max(
-        dragDistanceRef.current,
-        Math.abs(event.clientX - pointerInteracting.current.x) +
-          Math.abs(event.clientY - pointerInteracting.current.y)
-      );
-    };
-
-    const handlePointerUp = () => {
-      if (!pointerInteracting.current) return;
-
-      if (dragDistanceRef.current > 18) {
-        trackPortfolioEvent({
-          eventType: 'globe_drag',
-          label: activeMarker.label,
-          section: 'experience',
-          metadata: {
-            city: activeMarker.cityLabel,
-            dragDistance: Math.round(dragDistanceRef.current),
-          },
-        });
-      }
-
-      focusRef.current = {
-        phi: focusRef.current.phi + dragOffset.current.phi,
-        theta: focusRef.current.theta + dragOffset.current.theta,
-      };
-      if (
-        pointerIdRef.current !== null &&
-        canvasRef.current?.hasPointerCapture(pointerIdRef.current)
-      ) {
-        canvasRef.current.releasePointerCapture(pointerIdRef.current);
-      }
-      pointerIdRef.current = null;
-      dragOffset.current = { phi: 0, theta: 0 };
-      dragDistanceRef.current = 0;
-      pointerInteracting.current = null;
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    window.addEventListener('pointerup', handlePointerUp, { passive: true });
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, [activeMarker.cityLabel, activeMarker.label]);
 
   useEffect(() => {
     if (!isGlobeVisible || !canvasRef.current) return;
@@ -226,7 +255,7 @@ export function ExperienceGlobe() {
 
         orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.00125;
         const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
-        const targetTheta = focusRef.current.theta + dragOffset.current.theta;
+        const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
 
         state.phi += (targetPhi - state.phi) * 0.085;
         state.theta += (targetTheta - state.theta) * 0.085;
@@ -265,9 +294,11 @@ export function ExperienceGlobe() {
           <GlobeCanvasShell
             canvasRef={canvasRef}
             hasEnteredViewport={hasEnteredViewport}
-            pointerInteractingRef={pointerInteracting}
-            pointerIdRef={pointerIdRef}
-            dragDistanceRef={dragDistanceRef}
+            onLostPointerCapture={handleLostPointerCapture}
+            onPointerCancel={handlePointerCancel}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
           />
           <div className="pointer-events-none absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 backdrop-blur-xl">
             <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/65">
@@ -343,29 +374,30 @@ export function ExperienceGlobe() {
 
 const GlobeCanvasShell = memo(function GlobeCanvasShell({
   canvasRef,
-  dragDistanceRef,
   hasEnteredViewport,
-  pointerInteractingRef,
-  pointerIdRef,
+  onLostPointerCapture,
+  onPointerCancel,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
 }: {
   canvasRef: MutableRefObject<HTMLCanvasElement | null>;
-  dragDistanceRef: MutableRefObject<number>;
   hasEnteredViewport: boolean;
-  pointerIdRef: MutableRefObject<number | null>;
-  pointerInteractingRef: MutableRefObject<{ x: number; y: number } | null>;
+  onLostPointerCapture: () => void;
+  onPointerCancel: (event: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onPointerDown: (event: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onPointerMove: (event: ReactPointerEvent<HTMLCanvasElement>) => void;
+  onPointerUp: (event: ReactPointerEvent<HTMLCanvasElement>) => void;
 }) {
-  const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
-    pointerInteractingRef.current = { x: event.clientX, y: event.clientY };
-    pointerIdRef.current = event.pointerId;
-    dragDistanceRef.current = 0;
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
   return (
     <>
       <canvas
         ref={canvasRef}
-        onPointerDown={handlePointerDown}
+        onLostPointerCapture={onLostPointerCapture}
+        onPointerCancel={onPointerCancel}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
         className="h-full w-full cursor-grab touch-none opacity-0 transition-opacity duration-1000 active:cursor-grabbing"
       />
       {!hasEnteredViewport ? (

@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,19 +12,18 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { SideSectionNav } from "@/components/portfolio/side-section-nav";
+import { PublicPageShell } from "@/components/portfolio/public-page-shell";
 import { ExperiencePreview } from "@/components/portfolio/sections/experience-preview";
 import { HospitalityStory } from "@/components/portfolio/sections/hospitality-story";
 import { ProjectAtlas } from "@/components/portfolio/sections/project-atlas";
 import { SkillsSnapshot } from "@/components/portfolio/sections/skills-snapshot";
 import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytics-tracker";
-import { Header } from "@/components/ui/header-1";
-import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { TerminalWindow } from "@/components/ui/terminal-window";
 import { RecommendationsCarousel } from "@/components/ui/recommendations";
 import { SpiralSignal } from "@/components/portfolio/graphics/spiral-signal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { WovenLightHero } from "@/components/ui/woven-light-hero";
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
 import { openPortfolioAssistant } from "@/lib/portfolio-assistant-ui";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
@@ -36,14 +34,6 @@ import {
   proofMetrics,
   recommendations,
 } from "@/content/portfolio";
-
-const FloatingAiAssistant = dynamic(
-  () =>
-    import("@/components/ui/glowing-ai-chat-assistant").then(
-      (mod) => mod.FloatingAiAssistant
-    ),
-  { ssr: false, loading: () => null }
-);
 
 function handleTrackedNavigation(
   eventType: Parameters<typeof trackPortfolioEvent>[0]["eventType"],
@@ -426,61 +416,100 @@ function ContactSection() {
 
 export default function PortfolioHome() {
   return (
-    <div id="home" className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background">
-      <SideSectionNav />
-      <Header />
-
-      <ScrollExpandMedia
-        mediaType={heroContent.mediaType}
-        mediaSrc={heroContent.mediaSrc}
-        posterSrc={heroContent.posterSrc}
-        bgImageSrc={heroContent.bgImageSrc}
-        eyebrow={heroContent.eyebrow}
-        title={heroContent.title}
-        titleLines={heroContent.titleLines}
-        subtitle={heroContent.subtitle}
-        date={heroContent.dateLabel}
-        scrollToExpand={heroContent.scrollLabel}
-        textBlend
-      >
-        <TerminalWindow>
-          <main className="relative z-10 grow bg-transparent">
-            <SectionAnalyticsTracker />
-            <ProofStrip />
-            <QuickRecruiterSummary />
-            <ProjectAtlas />
-            <SkillsSnapshot />
-            <section
-              className="portfolio-section-anchor section-glow mx-auto w-full max-w-6xl px-4 py-18"
-              id="advantage"
-              data-portfolio-section="true"
+    <PublicPageShell>
+      <main id="home" className="relative min-h-screen overflow-x-hidden bg-background">
+        <WovenLightHero
+          eyebrow={heroContent.eyebrow}
+          titleLines={heroContent.titleLines ?? [heroContent.title]}
+          subtitle={heroContent.subtitle}
+          actions={
+            <>
+              <Button asChild className="bg-cyan-400 text-slate-950 hover:bg-cyan-300">
+                <Link
+                  href="/projects"
+                  onClick={handleTrackedNavigation(
+                    "section_navigation",
+                    "hero-project-library",
+                    "/projects",
+                    "hero"
+                  )}
+                >
+                  Open project library
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10"
+              >
+                <Link
+                  href="/cv"
+                  onClick={handleTrackedNavigation("print_cv_open", "hero-web-cv", "/cv", "hero")}
+                >
+                  Open web CV
+                </Link>
+              </Button>
+            </>
+          }
+          footerHint={
+            <button
+              type="button"
+              onClick={() => {
+                openPortfolioAssistant();
+                trackPortfolioEvent({
+                  eventType: "assistant_open",
+                  label: "hero-assistant-hint",
+                  section: "hero",
+                });
+              }}
+              className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-zinc-300 transition-colors hover:border-cyan-300/25 hover:bg-white/[0.08] hover:text-white"
             >
-              <HospitalityStory />
-            </section>
-            <ExperiencePreview />
+              Prefer the guided version? Ask Michael-Bot for a recruiter-ready summary.
+            </button>
+          }
+        />
 
-            <section
-              className="portfolio-section-anchor w-full py-20"
-              id="recommendations"
-              data-portfolio-section="true"
-            >
-              <div className="mb-12 text-center space-y-4">
-                <Badge className="border-white/10 bg-white/5 text-zinc-100">Social proof</Badge>
-                <h2 className="text-4xl font-bold tracking-tight text-white">What leaders noticed first.</h2>
-                <p className="mx-auto max-w-3xl text-lg text-zinc-400">
-                  The throughline is consistent: strong judgment under pressure, fast ramp-up, and work that leaves the system better than before.
-                </p>
-              </div>
-              <RecommendationsCarousel recommendations={recommendations} />
-            </section>
+        <div className="relative px-4 md:px-6 lg:px-8">
+          <TerminalWindow className="-mt-16 md:-mt-24">
+            <div className="relative z-10 grow bg-transparent">
+              <SectionAnalyticsTracker />
+              <ProofStrip />
+              <QuickRecruiterSummary />
+              <ProjectAtlas />
+              <SkillsSnapshot />
+              <section
+                className="portfolio-section-anchor section-glow mx-auto w-full max-w-6xl px-4 py-18"
+                id="advantage"
+                data-portfolio-section="true"
+              >
+                <HospitalityStory />
+              </section>
+              <ExperiencePreview />
 
-            <ContactSection />
-            <div aria-hidden="true" className="h-16 md:h-24" />
-          </main>
-        </TerminalWindow>
-      </ScrollExpandMedia>
+              <section
+                className="portfolio-section-anchor w-full py-20"
+                id="recommendations"
+                data-portfolio-section="true"
+              >
+                <div className="mb-12 space-y-4 text-center">
+                  <Badge className="border-white/10 bg-white/5 text-zinc-100">Social proof</Badge>
+                  <h2 className="text-4xl font-bold tracking-tight text-white">
+                    What leaders noticed first.
+                  </h2>
+                  <p className="mx-auto max-w-3xl text-lg text-zinc-400">
+                    The throughline is consistent: strong judgment under pressure, fast ramp-up, and
+                    work that leaves the system better than before.
+                  </p>
+                </div>
+                <RecommendationsCarousel recommendations={recommendations} />
+              </section>
 
-      <FloatingAiAssistant />
-    </div>
+              <ContactSection />
+              <div aria-hidden="true" className="h-16 md:h-24" />
+            </div>
+          </TerminalWindow>
+        </div>
+      </main>
+    </PublicPageShell>
   );
 }

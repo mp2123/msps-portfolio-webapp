@@ -22,6 +22,14 @@ const PROJECTS_LINKS: PortfolioNavItem[] = [
   { label: "Contact", href: "/#contact", category: "Outreach" },
 ];
 
+const CV_LINKS: PortfolioNavItem[] = [
+  { label: "Experience", href: "#experience-visuals", category: "Visual arc" },
+  { label: "Advantage", href: "#cv-advantage", category: "Story" },
+  { label: "Capabilities", href: "#cv-capabilities", category: "Skills matrix" },
+  { label: "Projects", href: "/projects", category: "Library" },
+  { label: "Contact", href: "#contact", category: "Outreach" },
+];
+
 export interface PortfolioActionItem {
   label: string;
   href: string;
@@ -40,16 +48,33 @@ const PROJECTS_ACTIONS: PortfolioActionItem[] = [
   { label: "Open web CV", href: "/cv", category: "Resume" },
 ];
 
+const CV_ACTIONS: PortfolioActionItem[] = [
+  { label: "Open project library", href: "/projects", category: "Deep work" },
+  { label: "Jump to experience arc", href: "#experience-visuals", category: "Visual arc" },
+  { label: "Jump to capabilities", href: "#cv-capabilities", category: "Skills matrix" },
+  { label: "Back to homepage briefing", href: "/#home", category: "Briefing" },
+];
+
 export const getPortfolioNavLinks = (pathname: string) =>
-  pathname.startsWith("/projects") ? PROJECTS_LINKS : HOME_LINKS;
+  pathname.startsWith("/projects")
+    ? PROJECTS_LINKS
+    : pathname.startsWith("/cv")
+      ? CV_LINKS
+      : HOME_LINKS;
 
 export const getPortfolioActionItems = (pathname: string) =>
-  pathname.startsWith("/projects") ? PROJECTS_ACTIONS : HOME_ACTIONS;
+  pathname.startsWith("/projects")
+    ? PROJECTS_ACTIONS
+    : pathname.startsWith("/cv")
+      ? CV_ACTIONS
+      : HOME_ACTIONS;
 
 export const getHeaderPrimaryCta = (pathname: string) =>
   pathname.startsWith("/projects")
     ? { label: "Back Home", href: "/#home" }
-    : { label: "Project Library", href: "/projects" };
+    : pathname.startsWith("/cv")
+      ? { label: "Project Library", href: "/projects" }
+      : { label: "Project Library", href: "/projects" };
 
 export const getHomeLinkHref = (pathname: string) =>
   pathname === "/" ? "#home" : "/#home";

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bot,
@@ -81,6 +81,7 @@ const getNavItems = (pathname: string) => {
 
 export function SideSectionNav() {
   const pathname = usePathname() ?? "/";
+  const router = useRouter();
   const navItems = React.useMemo(() => getNavItems(pathname), [pathname]);
   const [activeSection, setActiveSection] = React.useState(navItems[0]?.id ?? "home");
   const [hoveredItem, setHoveredItem] = React.useState<string | null>(null);
@@ -151,7 +152,7 @@ export function SideSectionNav() {
       section: "side-nav",
       metadata: { pathname },
     });
-    window.location.assign(item.href);
+    router.push(item.href);
   };
 
   return (
