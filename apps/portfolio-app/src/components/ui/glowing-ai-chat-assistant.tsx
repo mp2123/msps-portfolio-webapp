@@ -564,8 +564,8 @@ export const FloatingAiAssistant = () => {
           background:
             'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.34), transparent 34%), linear-gradient(135deg, rgba(16,185,129,0.98) 0%, rgba(20,184,166,0.96) 48%, rgba(34,211,238,0.95) 100%)',
           boxShadow:
-            '0 0 26px rgba(16,185,129,0.72), 0 0 52px rgba(20,184,166,0.52), 0 0 96px rgba(34,211,238,0.28), 0 18px 40px rgba(2,6,23,0.42)',
-          border: '2px solid rgba(209, 250, 229, 0.24)',
+            '0 0 34px rgba(16,185,129,0.82), 0 0 74px rgba(20,184,166,0.6), 0 0 136px rgba(34,211,238,0.34), 0 20px 44px rgba(2,6,23,0.48)',
+          border: '2px solid rgba(209, 250, 229, 0.34)',
         }}
         aria-label={isChatOpen ? 'Close recruiter assistant' : 'Open recruiter assistant'}
         aria-haspopup="dialog"
@@ -573,16 +573,16 @@ export const FloatingAiAssistant = () => {
         aria-controls="recruiter-assistant-dialog"
       >
         <motion.div
-          className="absolute -inset-3 rounded-full bg-emerald-400/30 blur-[22px]"
-          animate={{ opacity: isChatOpen ? 0.86 : 0.52, scale: isChatOpen ? 1.1 : 1.02 }}
+          className="absolute -inset-4 rounded-full bg-emerald-400/45 blur-[28px]"
+          animate={{ opacity: isChatOpen ? 0.94 : 0.68, scale: isChatOpen ? 1.14 : 1.05 }}
           transition={{ duration: 0.3 }}
         />
         <motion.div
-          className="absolute -inset-5 rounded-full border border-emerald-200/30"
-          animate={{ opacity: isChatOpen ? 0.85 : 0.48, scale: isChatOpen ? 1.06 : 1.01 }}
+          className="absolute -inset-6 rounded-full border border-emerald-100/40"
+          animate={{ opacity: isChatOpen ? 0.9 : 0.62, scale: isChatOpen ? 1.1 : 1.03 }}
           transition={{ duration: 0.3 }}
         />
-        <div className="absolute -inset-8 rounded-full border border-emerald-300/15 opacity-45" />
+        <div className="absolute -inset-9 rounded-full border border-emerald-300/25 opacity-60" />
         <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-30" />
         <div className="absolute inset-0 rounded-full border-2 border-white/12" />
         <div className="absolute inset-[7px] rounded-full border border-emerald-50/20" />
@@ -590,9 +590,9 @@ export const FloatingAiAssistant = () => {
           {isChatOpen ? <X /> : <Bot className="h-8 w-8" />}
         </div>
         <motion.div
-          className="absolute inset-0 rounded-full border border-emerald-100/45"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.42, 0, 0.42] }}
-          transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-0 rounded-full border border-emerald-100/55"
+          animate={{ scale: [1, 1.24, 1], opacity: [0.56, 0, 0.56] }}
+          transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
         />
       </button>
 
@@ -605,7 +605,7 @@ export const FloatingAiAssistant = () => {
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             className="absolute bottom-20 right-0 h-[min(760px,calc(100dvh-2.75rem))] w-[min(452px,calc(100vw-0.75rem))] origin-bottom-right sm:h-[min(792px,calc(100dvh-4rem))] sm:w-[min(468px,calc(100vw-1rem))]"
           >
-            <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-emerald-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 translate-y-6 rounded-[2rem] bg-emerald-400/14 blur-3xl" />
             <div
               ref={dialogRef}
               id="recruiter-assistant-dialog"
@@ -613,7 +613,7 @@ export const FloatingAiAssistant = () => {
               aria-labelledby="recruiter-assistant-title"
               aria-describedby="recruiter-assistant-description"
               onKeyDown={handleDialogKeyDown}
-              className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-[0_0_60px_rgba(16,185,129,0.12)] backdrop-blur-3xl"
+              className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-emerald-400/24 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-[0_0_72px_rgba(16,185,129,0.16)] backdrop-blur-3xl"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.17),transparent_30%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />

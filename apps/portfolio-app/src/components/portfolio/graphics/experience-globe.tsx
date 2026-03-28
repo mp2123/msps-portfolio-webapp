@@ -66,16 +66,21 @@ const BASE_MARKER = markers[2];
 const degToRad = (value: number) => (value * Math.PI) / 180;
 const clampTheta = (value: number) =>
   Math.max(-Math.PI / 2 + 0.18, Math.min(Math.PI / 2 - 0.18, value));
+const clampTilt = (value: number) => Math.max(-18, Math.min(18, value));
 const getFocusPhi = (longitude: number) => degToRad(-(longitude + 90));
 const getFocusTheta = (latitude: number) => clampTheta(degToRad(latitude));
 
 export function ExperienceGlobe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const motionShellRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null);
   const pointerIdRef = useRef<number | null>(null);
   const dragOffset = useRef({ phi: 0, theta: 0 });
   const dragDistanceRef = useRef(0);
+  const visualRotationRef = useRef({ yaw: 0, pitch: -4, roll: 0 });
+  const visualDragOriginRef = useRef<{ yaw: number; pitch: number } | null>(null);
+  const idleVisualPhaseRef = useRef(0);
   const focusRef = useRef({
     phi: getFocusPhi(BASE_MARKER.location[1]),
     theta: getFocusTheta(BASE_MARKER.location[0]),
@@ -111,6 +116,7 @@ export function ExperienceGlobe() {
         theta: clampTheta(focusRef.current.theta + dragOffset.current.theta),
       };
       pointerIdRef.current = null;
+      visualDragOriginRef.current = null;
       dragOffset.current = { phi: 0, theta: 0 };
       dragDistanceRef.current = 0;
       pointerInteracting.current = null;
@@ -123,6 +129,10 @@ export function ExperienceGlobe() {
     pointerIdRef.current = event.pointerId;
     dragDistanceRef.current = 0;
     dragOffset.current = { phi: 0, theta: 0 };
+    visualDragOriginRef.current = {
+      yaw: visualRotationRef.current.yaw,
+      pitch: visualRotationRef.current.pitch,
+    };
     event.currentTarget.setPointerCapture(event.pointerId);
   }, []);
 
@@ -135,13 +145,21 @@ export function ExperienceGlobe() {
     const deltaY = event.clientY - pointerInteracting.current.y;
 
     dragOffset.current = {
-      phi: deltaX / 140,
-      theta: deltaY / 220,
+      phi: deltaX / 112,
+      theta: deltaY / 170,
     };
     dragDistanceRef.current = Math.max(
       dragDistanceRef.current,
       Math.abs(deltaX) + Math.abs(deltaY)
     );
+
+    if (visualDragOriginRef.current) {
+      visualRotationRef.current = {
+        yaw: visualDragOriginRef.current.yaw + deltaX * 0.16,
+        pitch: clampTilt(visualDragOriginRef.current.pitch - deltaY * 0.11),
+        roll: 0,
+      };
+    }
   }, []);
 
   const handlePointerUp = useCallback(
@@ -187,7 +205,7 @@ export function ExperienceGlobe() {
 
         setIsGlobeVisible(false);
       },
-      { threshold: 0.2 }
+      { threshold: 0.05, rootMargin: '160px 0px' }
     );
 
     observer.observe(containerRef.current);
@@ -203,6 +221,9 @@ export function ExperienceGlobe() {
     dragOffset.current = { phi: 0, theta: 0 };
     pointerInteracting.current = null;
     pointerIdRef.current = null;
+    visualDragOriginRef.current = null;
+    visualRotationRef.current = { yaw: 0, pitch: -4, roll: 0 };
+    idleVisualPhaseRef.current = 0;
   }, [activeMarker]);
 
   useEffect(() => {
@@ -216,6 +237,7 @@ export function ExperienceGlobe() {
     let frameId = 0;
     let currentPhi = focusRef.current.phi;
     let currentTheta = focusRef.current.theta;
+    const motionShell = motionShellRef.current;
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.55),
@@ -249,7 +271,10 @@ export function ExperienceGlobe() {
 
     const animate = () => {
       width = canvas.offsetWidth || width;
-      orbitOffsetRef.current += pointerInteracting.current ? 0 : 0.0048;
+      if (!pointerInteracting.current) {
+        orbitOffsetRef.current += 0.0052;
+        idleVisualPhaseRef.current += 0.028;
+      }
       const targetPhi = focusRef.current.phi + dragOffset.current.phi + orbitOffsetRef.current;
       const targetTheta = clampTheta(focusRef.current.theta + dragOffset.current.theta);
 
@@ -257,8 +282,19 @@ export function ExperienceGlobe() {
         currentPhi = targetPhi;
         currentTheta = targetTheta;
       } else {
-        currentPhi += (targetPhi - currentPhi) * 0.14;
-        currentTheta += (targetTheta - currentTheta) * 0.14;
+        currentPhi += (targetPhi - currentPhi) * 0.18;
+        currentTheta += (targetTheta - currentTheta) * 0.18;
+        visualRotationRef.current = {
+          yaw:
+            visualRotationRef.current.yaw +
+            (Math.sin(idleVisualPhaseRef.current) * 9.5 - visualRotationRef.current.yaw) * 0.08,
+          pitch:
+            visualRotationRef.current.pitch +
+            (-4 + Math.cos(idleVisualPhaseRef.current * 0.78) * 4.5 - visualRotationRef.current.pitch) * 0.08,
+          roll:
+            visualRotationRef.current.roll +
+            (Math.sin(idleVisualPhaseRef.current * 0.56) * 1.4 - visualRotationRef.current.roll) * 0.08,
+        };
       }
 
       globe.update({
@@ -267,6 +303,10 @@ export function ExperienceGlobe() {
         phi: currentPhi,
         theta: currentTheta,
       } as never);
+
+      if (motionShell) {
+        motionShell.style.transform = `translateZ(0) rotateX(${visualRotationRef.current.pitch}deg) rotateY(${visualRotationRef.current.yaw}deg) rotateZ(${visualRotationRef.current.roll}deg)`;
+      }
       frameId = window.requestAnimationFrame(animate);
     };
 
@@ -276,9 +316,12 @@ export function ExperienceGlobe() {
     return () => {
       window.cancelAnimationFrame(frameId);
       canvas.style.opacity = '0';
+      if (motionShell) {
+        motionShell.style.transform = 'translateZ(0) rotateX(-4deg) rotateY(0deg) rotateZ(0deg)';
+      }
       globe.destroy();
     };
-  }, [isGlobeVisible]);
+  }, [activeMarkerId, isGlobeVisible]);
 
   const handleStageSelect = (marker: GlobeMarker, source: 'card' | 'globe-hint' = 'card') => {
     setActiveMarkerId(marker.id);
@@ -300,16 +343,22 @@ export function ExperienceGlobe() {
         className="relative overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-black/30 p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-xl"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_52%)]" />
-        <div className="relative mx-auto aspect-square max-w-[26rem]">
-          <GlobeCanvasShell
-            canvasRef={canvasRef}
-            hasEnteredViewport={hasEnteredViewport}
-            onLostPointerCapture={handleLostPointerCapture}
-            onPointerCancel={handlePointerCancel}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-          />
+        <div className="relative mx-auto aspect-square max-w-[26rem]" style={{ perspective: '1400px' }}>
+          <div
+            ref={motionShellRef}
+            className="absolute inset-0 will-change-transform"
+            style={{ transform: 'translateZ(0) rotateX(-4deg) rotateY(0deg) rotateZ(0deg)', transformStyle: 'preserve-3d' }}
+          >
+            <GlobeCanvasShell
+              canvasRef={canvasRef}
+              hasEnteredViewport={hasEnteredViewport}
+              onLostPointerCapture={handleLostPointerCapture}
+              onPointerCancel={handlePointerCancel}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+            />
+          </div>
           <div className="pointer-events-none absolute bottom-6 left-1/2 w-[min(16rem,calc(100%-3rem))] -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/55 px-3.5 py-2.5 backdrop-blur-xl">
             <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/65">
               Active stage

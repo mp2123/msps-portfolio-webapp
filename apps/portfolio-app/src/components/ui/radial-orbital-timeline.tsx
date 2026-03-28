@@ -21,15 +21,15 @@ interface RadialOrbitalTimelineProps {
 
 type OrbitLabelSide = "top" | "bottom" | "left" | "right";
 
-const ORBIT_RADIUS_X = 294;
-const ORBIT_RADIUS_Y = 366;
+const ORBIT_RADIUS_X = 306;
+const ORBIT_RADIUS_Y = 382;
 const INNER_ORBIT_SIZE = {
-  width: 620,
-  height: 760,
+  width: 640,
+  height: 792,
 };
 const OUTER_ORBIT_SIZE = {
-  width: 760,
-  height: 920,
+  width: 796,
+  height: 960,
 };
 
 const statusStyles: Record<CareerNode["status"], string> = {
@@ -219,7 +219,7 @@ export default function RadialOrbitalTimeline({
         })}
       </div>
 
-      <div className="relative hidden min-h-[840px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-black/25 px-8 py-10 lg:flex">
+      <div className="relative hidden min-h-[860px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-black/25 px-8 py-10 lg:flex">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.08),transparent_55%)]" />
         <div
           className="absolute rounded-[999px] border border-white/10"
@@ -345,12 +345,12 @@ export default function RadialOrbitalTimeline({
               </div>
               <div
                 className={cn(
-                  "absolute max-w-[11rem] text-xs font-semibold leading-tight tracking-[0.14em] whitespace-normal",
+                  "absolute max-w-[12rem] text-xs font-semibold leading-tight tracking-[0.14em] whitespace-normal",
                   isActive ? "text-white" : "text-zinc-400",
-                  position?.labelSide === "top" && "bottom-[calc(100%+14px)] left-1/2 -translate-x-1/2 text-center",
-                  position?.labelSide === "bottom" && "top-[calc(100%+14px)] left-1/2 -translate-x-1/2 text-center",
-                  position?.labelSide === "left" && "right-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-right",
-                  position?.labelSide === "right" && "left-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-left"
+                  position?.labelSide === "top" && "bottom-[calc(100%+16px)] left-1/2 -translate-x-1/2 text-center",
+                  position?.labelSide === "bottom" && "top-[calc(100%+16px)] left-1/2 -translate-x-1/2 text-center",
+                  position?.labelSide === "left" && "right-[calc(100%+18px)] top-1/2 -translate-y-1/2 text-right",
+                  position?.labelSide === "right" && "left-[calc(100%+18px)] top-1/2 -translate-y-1/2 text-left"
                 )}
               >
                 {item.title}
