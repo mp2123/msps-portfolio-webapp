@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Wine, Database, Activity, Users, Layers, Cpu, SplitSquareHorizontal } from 'lucide-react';
 import { InteractiveGlobe } from '@/components/portfolio/graphics/interactive-orb';
+import { RandomCraftCocktail } from '@/components/portfolio/sections/random-craft-cocktail';
 
 export const HospitalityStory = () => {
   return (
@@ -119,6 +120,8 @@ export const HospitalityStory = () => {
           </div>
         </motion.div>
       </div>
+
+      <RandomCraftCocktail />
     </div>
   );
 };
