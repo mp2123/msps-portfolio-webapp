@@ -37,7 +37,8 @@ type RandomCraftCocktail = {
   source: "database" | "seed";
 };
 
-const orbitRadius = 118;
+const ORBIT_RADIUS_MOBILE = 82;
+const ORBIT_RADIUS_DEFAULT = 118;
 const spiritAccentMap: Record<string, string> = {
   gin: "from-emerald-300/40 via-cyan-300/18 to-slate-950",
   bourbon: "from-amber-300/45 via-orange-400/18 to-slate-950",
@@ -201,7 +202,7 @@ export function RandomCraftCocktail() {
           </div>
 
           <div className="flex justify-center lg:justify-end">
-            <div className="relative h-[20rem] w-[20rem] sm:h-[24rem] sm:w-[24rem]">
+            <div className="relative h-[14rem] w-[14rem] sm:h-[20rem] sm:w-[20rem] md:h-[24rem] md:w-[24rem]">
               <motion.div
                 className="absolute inset-0 rounded-full border border-cyan-300/12"
                 animate={{ rotate: 360 }}
@@ -213,8 +214,10 @@ export function RandomCraftCocktail() {
               >
                 {orbitLabels.map((label, index) => {
                   const angle = (index / orbitLabels.length) * Math.PI * 2 - Math.PI / 2;
-                  const x = Math.cos(angle) * orbitRadius;
-                  const y = Math.sin(angle) * orbitRadius;
+                  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+                  const radius = isMobile ? ORBIT_RADIUS_MOBILE : ORBIT_RADIUS_DEFAULT;
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
 
                   return (
                     <div
@@ -274,9 +277,23 @@ export function RandomCraftCocktail() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="h-[min(92dvh,920px)] max-w-4xl overflow-hidden border-white/10 bg-[#04070d]/95 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
+        <DialogContent className="h-[min(92dvh,920px)] max-w-4xl overflow-hidden border-white/10 bg-[#04070d] p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
           {activeCocktail ? (
             <div className="grid h-full min-h-0 overflow-hidden md:grid-cols-[0.96fr_1.04fr]">
+              {/* Mobile compact image header */}
+              <div className="relative h-48 overflow-hidden md:hidden">
+                <CocktailVisual cocktail={activeCocktail} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#04070d] via-[#04070d]/60 to-transparent" />
+                <div className="absolute inset-x-5 bottom-4 space-y-1">
+                  <Badge className="border-white/10 bg-black/50 text-zinc-100">
+                    {activeCocktail.style}
+                  </Badge>
+                  <p className="text-2xl font-black tracking-tight text-white drop-shadow-md">
+                    {activeCocktail.name}
+                  </p>
+                </div>
+              </div>
+              {/* Desktop full image panel */}
               <div className="relative hidden min-h-[21rem] overflow-hidden md:block md:min-h-0">
                 <CocktailVisual cocktail={activeCocktail} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />

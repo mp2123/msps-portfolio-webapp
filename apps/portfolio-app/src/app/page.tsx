@@ -57,7 +57,7 @@ function handleTrackedNavigation(
 export default function PortfolioHome() {
   return (
     <PublicPageShell>
-      <main id="home" className="relative min-h-screen overflow-x-hidden bg-background">
+      <main id="home" className="relative min-h-screen overflow-x-hidden bg-background pb-24 sm:pb-0">
         <WovenLightHero
           eyebrow={heroContent.eyebrow}
           titleLines={heroContent.titleLines ?? [heroContent.title]}

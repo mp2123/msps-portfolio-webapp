@@ -43,23 +43,23 @@ export function ProjectsLibrary() {
               data-portfolio-section="true"
               className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.05] via-slate-950/90 to-black/95 p-6 shadow-[0_30px_90px_rgba(2,6,23,0.24)] md:p-8"
             >
-              <div className="grid gap-8 xl:grid-cols-[0.9fr_1.1fr]">
+              <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
                 <div className="space-y-6">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-cyan-100">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-cyan-100">
                         <Icon className="h-6 w-6" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/60">
                           {project.meta}
                         </p>
-                        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+                        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
                           {project.title}
                         </h2>
                       </div>
                     </div>
-                    <div className="flex flex-wrap justify-end gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Badge variant="secondary" className="border-white/10 bg-white/5 text-zinc-100">
                         {project.status}
                       </Badge>

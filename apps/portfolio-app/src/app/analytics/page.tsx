@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+// notFound import removed — replaced with inline access-denied UI
 import type { Metadata } from 'next';
 import { ASSISTANT_CACHE_VERSION } from '@/lib/assistant-cache';
 import { getPrismaClient } from '@/lib/prisma';
@@ -494,7 +494,17 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
   const providedToken = getSingleSearchParam(resolvedSearchParams.token);
 
   if (requiredToken && providedToken !== requiredToken) {
-    notFound();
+    return (
+      <main className="relative flex min-h-screen items-center justify-center px-4 py-32 text-white">
+        <div className="mx-auto max-w-lg rounded-[28px] border border-white/10 bg-black/40 p-8 text-center backdrop-blur-xl">
+          <p className="text-xs uppercase tracking-[0.3em] text-cyan-400">Internal Diagnostics</p>
+          <h1 className="mt-4 text-2xl font-semibold">Access requires debug token</h1>
+          <p className="mt-4 text-sm leading-relaxed text-zinc-400">
+            Append <code className="rounded bg-white/10 px-2 py-0.5 text-cyan-200">?token=YOUR_TOKEN</code> to the URL to access this page.
+          </p>
+        </div>
+      </main>
+    );
   }
 
   const snapshot = await getDebugSnapshot();

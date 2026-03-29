@@ -483,10 +483,46 @@ export const FloatingAiAssistant = () => {
       event.preventDefault();
     };
 
+    let touchStartY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const touchY = event.touches[0]?.clientY ?? 0;
+      const deltaY = touchStartY - touchY;
+      touchStartY = touchY;
+
+      const currentViewport = messageViewportRef.current;
+      if (!currentViewport) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = currentViewport;
+      const maxScroll = scrollHeight - clientHeight;
+      const atTop = scrollTop <= 0 && deltaY < 0;
+      const atBottom = scrollTop >= maxScroll - 1 && deltaY > 0;
+
+      if (atTop || atBottom) {
+        event.preventDefault();
+      }
+    };
+
+    // Lock body scroll on mobile when chat is open
+    const previousOverflow = document.body.style.overflow;
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      document.body.style.overflow = 'hidden';
+    }
+
     dialog?.addEventListener('wheel', onWheel, { passive: false });
+    dialog?.addEventListener('touchstart', onTouchStart, { passive: true });
+    dialog?.addEventListener('touchmove', onTouchMove, { passive: false });
 
     return () => {
       dialog?.removeEventListener('wheel', onWheel);
+      dialog?.removeEventListener('touchstart', onTouchStart);
+      dialog?.removeEventListener('touchmove', onTouchMove);
+      if (isMobile) {
+        document.body.style.overflow = previousOverflow;
+      }
     };
   }, [isChatOpen]);
 
@@ -614,7 +650,7 @@ export const FloatingAiAssistant = () => {
               aria-describedby="recruiter-assistant-description"
               onKeyDown={handleDialogKeyDown}
               className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-emerald-400/24 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-[0_0_72px_rgba(16,185,129,0.16)] backdrop-blur-3xl"
-              style={{ overscrollBehavior: 'contain' }}
+              style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.17),transparent_30%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
@@ -671,7 +707,7 @@ export const FloatingAiAssistant = () => {
               {messages.length === 0 ? (
                 <div className="px-4 pb-2 sm:px-5 sm:pb-3">
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {recruiterPrompts.map((item) => (
+                    {recruiterPrompts.slice(0, typeof window !== 'undefined' && window.innerWidth < 400 ? 2 : recruiterPrompts.length).map((item) => (
                       <button
                         key={item.label}
                         type="button"

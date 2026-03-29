@@ -11,6 +11,7 @@ const HOME_LINKS: PortfolioNavItem[] = [
   { label: "Experience", href: "#experience", category: "Career" },
   { label: "Recommendations", href: "#recommendations", category: "Social proof" },
   { label: "Contact", href: "#contact", category: "Outreach" },
+  { label: "Open Web CV", href: "/cv", category: "Resume" },
 ];
 
 const PROJECTS_LINKS: PortfolioNavItem[] = [

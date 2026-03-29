@@ -147,7 +147,7 @@ export function Header() {
           id="mobile-menu"
           className={cn(
             'fixed top-14 right-0 bottom-0 left-0 z-40 lg:hidden',
-            'bg-background/95 backdrop-blur-lg border-t border-white/10',
+            'bg-background backdrop-blur-lg border-t border-white/10',
           )}
         >
           <div className="space-y-4 p-4">

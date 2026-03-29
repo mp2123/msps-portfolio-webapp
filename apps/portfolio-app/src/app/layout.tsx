@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getCanonicalUrl, siteDescription, siteName } from "@/lib/portfolio-site";
@@ -42,6 +42,13 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: ["/twitter-image"],
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

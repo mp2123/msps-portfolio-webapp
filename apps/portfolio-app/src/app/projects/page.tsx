@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <PublicPageShell>
-      <main className="relative z-10 px-0 pb-24 pt-24">
+      <main className="relative z-10 px-0 pb-32 pt-24 sm:pb-24">
         <SectionAnalyticsTracker />
 
         <section
@@ -60,7 +60,7 @@ export default function ProjectsPage() {
                 <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
                   Project library
                 </Badge>
-                <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl">
+                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-6xl">
                   Full project depth, proof surfaces, and recruiter-readable outcomes.
                 </h1>
                 <p className="max-w-3xl text-lg leading-relaxed text-zinc-300">
