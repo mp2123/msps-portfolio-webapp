@@ -22,7 +22,7 @@ export function ArtifactGallery() {
         </p>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
         {artifacts.map((artifact) => {
           const isLiveLink = Boolean(artifact.href && !artifact.href.startsWith("#"));
 
@@ -39,7 +39,7 @@ export function ArtifactGallery() {
                   alt={artifact.title}
                   fill
                   className="object-cover"
-                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  sizes="(min-width: 1280px) 33vw, (min-width: 1024px) 50vw, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_34%)]" />

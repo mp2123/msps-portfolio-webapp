@@ -4,6 +4,16 @@ All notable changes to the **Portfolio App** are documented here.
 
 ---
 
+## [1.3.1] — 2026-03-29
+
+### 🖥️ Desktop Audit Closure
+- **Analytics geo labels decoded** — Vercel geo metadata is now safely decoded during analytics summary aggregation, so locations render as `San Jose, CA` instead of URL-encoded values.
+- **Analytics tables hardened** — Wrapped all diagnostics tables in horizontal overflow shells with explicit inner min-widths to prevent brittle column collapse on narrower desktop widths.
+- **Artifact vault desktop rebalance** — The projects artifact gallery now uses 3 columns at `xl` desktop widths while preserving the 2-column `lg` layout for smaller laptops.
+- **Regression check retained** — Verified the Projects side-nav hover label does not collide with the hero at current desktop widths, so no nav change was needed in this pass.
+
+---
+
 ## [1.3.0] — 2026-03-29
 
 ### 📱 Mobile Optimization — Comprehensive Audit & Fix (14 bugs)

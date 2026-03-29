@@ -149,6 +149,16 @@ const formatPercent = (numerator: number, denominator: number) => {
   return `${Math.round((numerator / denominator) * 100)}%`;
 };
 
+const safeDecodeLabel = (value: string | null | undefined) => {
+  if (!value) return null;
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 const countTopValues = (
   values: Array<string | null | undefined>,
   limit = 6
@@ -392,10 +402,10 @@ const getDebugSnapshot = async (): Promise<DebugSnapshot> => {
     const byCity = countTopValues(
       analyticsRows.map((row) => {
         const metadata = row.metadata as Record<string, unknown> | null;
-        const city = readMetadataString(metadata, 'requestCity');
-        const region = readMetadataString(metadata, 'requestRegion');
+        const city = safeDecodeLabel(readMetadataString(metadata, 'requestCity'));
+        const region = safeDecodeLabel(readMetadataString(metadata, 'requestRegion'));
         if (city && region) return `${city}, ${region}`;
-        return city ?? region ?? readMetadataString(metadata, 'requestCountry');
+        return city ?? region ?? safeDecodeLabel(readMetadataString(metadata, 'requestCountry'));
       })
     );
 
@@ -715,47 +725,49 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
               Recent Cache Rows
             </p>
             <h2 className="mt-2 text-xl font-semibold">Latest durable assistant entries</h2>
-            <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-              <div className="grid grid-cols-[1.1fr,0.8fr,0.7fr,0.6fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
-                <span>Question</span>
-                <span>Strategy</span>
-                <span>Model</span>
-                <span>Hits</span>
-              </div>
-              <div className="divide-y divide-white/10">
-                {snapshot.assistantCache.recentEntries.length === 0 ? (
-                  <div className="px-4 py-6 text-sm text-white/50">No durable cache entries yet.</div>
-                ) : (
-                  snapshot.assistantCache.recentEntries.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="grid grid-cols-[1.1fr,0.8fr,0.7fr,0.6fr] gap-3 px-4 py-4 text-sm text-white/75"
-                    >
-                      <div>
-                        <p>{truncate(entry.normalizedQuestion)}</p>
-                        <p className="mt-1 text-xs text-white/45">
-                          {entry.intent ?? 'no-intent'} · expires {formatTimestamp(entry.expiresAt)}
-                        </p>
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+              <div className="min-w-[720px]">
+                <div className="grid grid-cols-[1.1fr,0.8fr,0.7fr,0.6fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
+                  <span className="min-w-0">Question</span>
+                  <span className="min-w-0">Strategy</span>
+                  <span className="min-w-0">Model</span>
+                  <span className="min-w-0">Hits</span>
+                </div>
+                <div className="divide-y divide-white/10">
+                  {snapshot.assistantCache.recentEntries.length === 0 ? (
+                    <div className="px-4 py-6 text-sm text-white/50">No durable cache entries yet.</div>
+                  ) : (
+                    snapshot.assistantCache.recentEntries.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="grid grid-cols-[1.1fr,0.8fr,0.7fr,0.6fr] gap-3 px-4 py-4 text-sm text-white/75"
+                      >
+                        <div className="min-w-0">
+                          <p>{truncate(entry.normalizedQuestion)}</p>
+                          <p className="mt-1 text-xs text-white/45">
+                            {entry.intent ?? 'no-intent'} · expires {formatTimestamp(entry.expiresAt)}
+                          </p>
+                        </div>
+                        <div className="min-w-0">
+                          <p>{entry.strategy}</p>
+                          <p className="mt-1 text-xs text-white/45">
+                            last hit {formatTimestamp(entry.lastHitAt)}
+                          </p>
+                        </div>
+                        <div className="min-w-0">
+                          <p>{entry.provider}</p>
+                          <p className="mt-1 truncate text-xs text-white/45">{entry.modelId}</p>
+                        </div>
+                        <div className="min-w-0">
+                          <p>{entry.hitCount}</p>
+                          <p className="mt-1 text-xs text-white/45">
+                            created {formatTimestamp(entry.createdAt)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p>{entry.strategy}</p>
-                        <p className="mt-1 text-xs text-white/45">
-                          last hit {formatTimestamp(entry.lastHitAt)}
-                        </p>
-                      </div>
-                      <div>
-                        <p>{entry.provider}</p>
-                        <p className="mt-1 text-xs text-white/45">{entry.modelId}</p>
-                      </div>
-                      <div>
-                        <p>{entry.hitCount}</p>
-                        <p className="mt-1 text-xs text-white/45">
-                          created {formatTimestamp(entry.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -827,44 +839,46 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                 </div>
               </div>
             </div>
-            <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-              <div className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
-                <span>Event</span>
-                <span>Label</span>
-                <span>Section</span>
-                <span>Context</span>
-                <span>When</span>
-              </div>
-              <div className="divide-y divide-white/10">
-                {snapshot.analytics.recentRows.length === 0 ? (
-                  <div className="px-4 py-6 text-sm text-white/50">No recent analytics rows yet.</div>
-                ) : (
-                  snapshot.analytics.recentRows.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
-                    >
-                      <div>
-                        <p>{entry.eventType}</p>
-                        <p className="mt-1 text-xs text-white/45">
-                          {truncate(entry.sessionId, 16)}
-                        </p>
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+              <div className="min-w-[860px]">
+                <div className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
+                  <span className="min-w-0">Event</span>
+                  <span className="min-w-0">Label</span>
+                  <span className="min-w-0">Section</span>
+                  <span className="min-w-0">Context</span>
+                  <span className="min-w-0">When</span>
+                </div>
+                <div className="divide-y divide-white/10">
+                  {snapshot.analytics.recentRows.length === 0 ? (
+                    <div className="px-4 py-6 text-sm text-white/50">No recent analytics rows yet.</div>
+                  ) : (
+                    snapshot.analytics.recentRows.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="grid grid-cols-[0.85fr,1.05fr,0.9fr,0.8fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
+                      >
+                        <div className="min-w-0">
+                          <p>{entry.eventType}</p>
+                          <p className="mt-1 text-xs text-white/45">
+                            {truncate(entry.sessionId, 16)}
+                          </p>
+                        </div>
+                        <div className="min-w-0">
+                          <p>{truncate(entry.label)}</p>
+                          <p className="mt-1 text-xs text-white/45">{truncate(entry.href, 36)}</p>
+                        </div>
+                        <div className="min-w-0">{entry.section ?? 'n/a'}</div>
+                        <div className="min-w-0 text-xs text-white/55">
+                          <p>{readMetadataString(entry.metadata, 'browser') ?? 'browser n/a'}</p>
+                          <p className="mt-1">
+                            {truncate(readMetadataString(entry.metadata, 'path'), 26)}
+                          </p>
+                        </div>
+                        <div className="min-w-0">{formatTimestamp(entry.createdAt)}</div>
                       </div>
-                      <div>
-                        <p>{truncate(entry.label)}</p>
-                        <p className="mt-1 text-xs text-white/45">{truncate(entry.href, 36)}</p>
-                      </div>
-                      <div>{entry.section ?? 'n/a'}</div>
-                      <div className="text-xs text-white/55">
-                        <p>{readMetadataString(entry.metadata, 'browser') ?? 'browser n/a'}</p>
-                        <p className="mt-1">
-                          {truncate(readMetadataString(entry.metadata, 'path'), 26)}
-                        </p>
-                      </div>
-                      <div>{formatTimestamp(entry.createdAt)}</div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -875,35 +889,37 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             Invisible Ink
           </p>
           <h2 className="mt-2 text-xl font-semibold">Recent hidden wall messages</h2>
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-            <div className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
-              <span>Alias</span>
-              <span>Message</span>
-              <span>Origin / time</span>
-            </div>
-            <div className="divide-y divide-white/10">
-              {snapshot.invisibleInk.recentEntries.length === 0 ? (
-                <div className="px-4 py-6 text-sm text-white/50">No invisible ink messages yet.</div>
-              ) : (
-                snapshot.invisibleInk.recentEntries.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
-                  >
-                    <div>{entry.alias ?? 'Anonymous signal'}</div>
-                    <div>{truncate(entry.message, 112)}</div>
-                    <div className="text-xs text-white/55">
-                      <p>
-                        {entry.createdFromCity ??
-                          entry.createdFromRegion ??
-                          entry.createdFromCountry ??
-                          'origin hidden'}
-                      </p>
-                      <p className="mt-1">{formatTimestamp(entry.createdAt)}</p>
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+            <div className="min-w-[720px]">
+              <div className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 border-b border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/50">
+                <span className="min-w-0">Alias</span>
+                <span className="min-w-0">Message</span>
+                <span className="min-w-0">Origin / time</span>
+              </div>
+              <div className="divide-y divide-white/10">
+                {snapshot.invisibleInk.recentEntries.length === 0 ? (
+                  <div className="px-4 py-6 text-sm text-white/50">No invisible ink messages yet.</div>
+                ) : (
+                  snapshot.invisibleInk.recentEntries.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="grid grid-cols-[0.75fr,1.55fr,0.9fr] gap-3 px-4 py-4 text-sm text-white/75"
+                    >
+                      <div className="min-w-0">{entry.alias ?? 'Anonymous signal'}</div>
+                      <div className="min-w-0">{truncate(entry.message, 112)}</div>
+                      <div className="min-w-0 text-xs text-white/55">
+                        <p>
+                          {entry.createdFromCity ??
+                            entry.createdFromRegion ??
+                            entry.createdFromCountry ??
+                            'origin hidden'}
+                        </p>
+                        <p className="mt-1">{formatTimestamp(entry.createdAt)}</p>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </section>
