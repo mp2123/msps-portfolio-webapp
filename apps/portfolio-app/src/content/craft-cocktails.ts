@@ -39,7 +39,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
       "Strain over a large cube in a chilled double rocks glass.",
       "Express an orange peel over the drink and drop it in.",
     ],
-    notes: "Example seeded recipe for the portfolio. Your spreadsheet can replace this later.",
+    notes: "Equal parts and stirred discipline. The Negroni demands restraint—over-dilution kills the bitter backbone, and under-stirred ice leaves the drink harsh. Express the orange peel clean and wide.",
   },
   {
     slug: "paper-plane",
@@ -63,7 +63,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
       "Double strain into a chilled coupe.",
       "Serve with no garnish for a clean presentation.",
     ],
-    notes: "This is a seeded example; final drinks can be spreadsheet-backed once your recipe sheet arrives.",
+    notes: "Sam Ross's modern classic. The equal-parts format makes it easy to remember, hard to perfect. Shake it aggressively—this drink needs full emulsification to land right. No garnish, no distraction.",
   },
   {
     slug: "last-word",

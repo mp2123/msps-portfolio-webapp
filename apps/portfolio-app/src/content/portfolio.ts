@@ -604,7 +604,7 @@ export const recommendations: Recommendation[] = [
   {
     quote:
       "Michael brought tremendous value to my team during his internship. He quickly understood our business needs and consistently went above and beyond to solve challenges, including turning a manual process that took hours into an automated solution completed in about 30 minutes.",
-    author: "Rashmi Bhakta",
+    author: "R. Bhakta",
     publicName: "Rashmi",
     role: "Global Sales Enablement Manager",
     company: "Avnet",
@@ -613,10 +613,10 @@ export const recommendations: Recommendation[] = [
   {
     quote:
       "Michael’s attention to detail, interpersonal strength, and instinct for consumer habits helped him grow quickly into management responsibilities. He is dedicated, adaptable, and willing to push himself into new domains.",
-    author: "Tania Kedyk",
+    author: "T. Kedyk",
     publicName: "Tania",
     role: "General Manager",
-    company: "Paramount Barco",
+    company: "Multi-Unit Hospitality Group",
     trustLevel: "operator",
   },
 ];
@@ -794,7 +794,7 @@ export function getPortfolioSystemPrompt() {
   const recommendationSummary = recommendations
     .map(
       (item) =>
-        `- ${item.publicName}, ${item.role} at ${item.company}: "${item.quote}"`
+        `- ${item.publicName}, ${item.role}: "${item.quote}"`
     )
     .join("\n");
 
