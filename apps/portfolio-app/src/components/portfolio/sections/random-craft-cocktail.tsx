@@ -285,10 +285,10 @@ export function RandomCraftCocktail() {
                     {activeCocktail.style}
                   </Badge>
                   <div>
-                    <p className="text-3xl font-black tracking-tight text-white md:text-4xl">
+                    <p className="text-3xl font-black tracking-tight text-white drop-shadow-md md:text-4xl">
                       {activeCocktail.name}
                     </p>
-                    <p className="mt-2 max-w-md text-sm leading-relaxed text-zinc-200/85">
+                    <p className="mt-2 line-clamp-2 max-w-md text-sm leading-relaxed text-zinc-100 drop-shadow-md sm:line-clamp-3">
                       {activeCocktail.shortDescription}
                     </p>
                   </div>

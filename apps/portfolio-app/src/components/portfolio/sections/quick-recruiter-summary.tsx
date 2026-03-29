@@ -157,7 +157,7 @@ export function QuickRecruiterSummary() {
               subtitle="The portfolio is built around the same pattern that shows up across Michael's work: absorb ambiguity fast, translate it into a cleaner system, then hand back something stakeholders can actually use."
               labels={["hospitality", "analytics", "automation", "storytelling"]}
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {summaryPanels.map((panel) => {
                 const Icon = panel.icon;
 

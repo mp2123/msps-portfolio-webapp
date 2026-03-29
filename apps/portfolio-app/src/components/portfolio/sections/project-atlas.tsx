@@ -78,14 +78,16 @@ export function ProjectAtlas() {
                   <p className="text-sm leading-relaxed text-zinc-300">{project.atlasSummary}</p>
                 </div>
 
-                <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
-                    Headline outcome
-                  </p>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-cyan-100">
-                    {project.headlineOutcome}
-                  </p>
-                </div>
+                {project.headlineOutcome ? (
+                  <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                      Headline outcome
+                    </p>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-cyan-100">
+                      {project.headlineOutcome}
+                    </p>
+                  </div>
+                ) : null}
 
                 <div className="mt-5 flex flex-wrap gap-2">
                   {project.tools.slice(0, 4).map((tool) => (
