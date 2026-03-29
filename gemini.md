@@ -34,9 +34,10 @@
 - **[x] Vercel Deployments:** All three apps connected to GitHub and hosted on Vercel.
 
 ## 📍 Where We Left Off (Next Steps)
-1.  **Portfolio App (Final 1% Polish):**
-    - Transition the `mailto:` links across the UI into a fully functional, dedicated "Contact Me" interactive form step.
-    - Test the `InteractiveGlobe` component somewhere interesting.
+1.  **Portfolio App (Final 1% Polish & Performance Optimization):**
+    - Transition the `mailto:` links across the UI (Footer, Final Contact Card, and Navbar) into a fully functional "Contact Me" interactive form.
+    - **Command Center BI:** Await sanitized wireframes/dashboards from the USER to inject into the `/projects/avnet-command-center` artifact payload, which currently just contains a data-scrubbing disclosure.
+    - **Performance Optimization Phase:** Implement dynamic imports (`next/dynamic`) for heavy Three.js assets, prune the root `layout.tsx` for optimal First Contentful Paint, and establish a global `framer-motion` lazy-loading context.
 2.  **Bartender App Development (New Focus):**
     - Run `npx prisma db push` using the new Bartender Supabase URL.
     - Run `node prisma/seed-bartender.js` to upload initial cocktail recipes.
