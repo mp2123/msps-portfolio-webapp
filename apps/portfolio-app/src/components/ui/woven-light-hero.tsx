@@ -289,8 +289,8 @@ export function WovenLightHero({
       <div className="absolute inset-x-10 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent shadow-[0_0_24px_rgba(34,211,238,0.2)]" />
       <WovenLightCanvas hostRef={heroRef} />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-var(--portfolio-header-height)-5rem)] max-w-7xl items-center">
-        <div className="max-w-4xl space-y-7">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-var(--portfolio-header-height)-5rem)] max-w-7xl items-center">
+        <div className="max-w-4xl space-y-5 sm:space-y-7">
           {eyebrow ? (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
