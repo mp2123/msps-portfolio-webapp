@@ -591,7 +591,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+          <div className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
@@ -645,7 +645,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+          <div className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
               Portfolio Analytics
             </p>
@@ -884,7 +884,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
           </div>
         </section>
 
-        <section className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+        <section className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
           <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
             Invisible Ink
           </p>
