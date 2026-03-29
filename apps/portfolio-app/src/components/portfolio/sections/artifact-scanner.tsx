@@ -59,7 +59,7 @@ export function ArtifactScanner() {
   });
   const physicsRef = useRef({
     direction: -1,
-    baseVelocity: 16,
+    baseVelocity: 40,
     userVelocity: 0,
     friction: 0.94,
     isHovering: false,
@@ -164,10 +164,9 @@ export function ArtifactScanner() {
         physics.userVelocity = 0;
       }
 
-      const totalVelocity =
-        physics.isHovering
-          ? 0
-          : (physics.baseVelocity + physics.userVelocity) * physics.direction;
+      const totalVelocity = physics.isHovering
+        ? physics.userVelocity * physics.direction
+        : (physics.baseVelocity + physics.userVelocity) * physics.direction;
 
       const singleSetWidth =
         (measurementsRef.current.cardWidth + CARD_GAP) * items.length;
@@ -217,7 +216,7 @@ export function ArtifactScanner() {
 
     if (Math.abs(delta) <= 1) return;
 
-    physics.direction = delta > 0 ? 1 : -1;
+    physics.direction = delta > 0 ? -1 : 1;
     physics.userVelocity += Math.min(Math.abs(delta) * 1.3, 90);
   };
 

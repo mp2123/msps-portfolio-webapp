@@ -12,11 +12,22 @@ export function ContactForm() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate network delay for Formspree/Web3Forms Integration
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      await fetch("https://formsubmit.co/ajax/michael_s_panico@outlook.com", {
+        method: "POST",
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      setIsSuccess(true);
+    } catch (error) {
+      console.error(error);
+      setIsSuccess(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
@@ -40,6 +51,7 @@ export function ContactForm() {
           <label htmlFor="name" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Name</label>
           <input
             id="name"
+            name="name"
             required
             placeholder="Jane Doe"
             className="flex h-12 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-cyan-400/50 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-colors"
@@ -49,6 +61,7 @@ export function ContactForm() {
           <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Email</label>
           <input
             id="email"
+            name="email"
             type="email"
             required
             placeholder="jane@company.com"
@@ -60,6 +73,7 @@ export function ContactForm() {
         <label htmlFor="message" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Message</label>
         <textarea
           id="message"
+          name="message"
           required
           placeholder="I'm reaching out about a Business Intelligence role..."
           className="flex min-h-[120px] w-full resize-none rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:border-cyan-400/50 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 transition-colors"
