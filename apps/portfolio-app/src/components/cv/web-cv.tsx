@@ -76,8 +76,8 @@ export function WebCv() {
           })}
         </section>
 
-        <section className="grid items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]" id="experience">
-          <div className="sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-white/10 bg-black/20 p-6 no-scrollbar">
+        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]" id="experience">
+          <div className="flex flex-col h-full rounded-[1.75rem] border border-white/10 bg-black/20 p-6">
             <h3 className="text-xl font-semibold text-white">Experience</h3>
             <div className="mt-4 space-y-4">
               {careerNodes.map((node) => (

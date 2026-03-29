@@ -126,8 +126,11 @@ export function ProjectsLibrary() {
                     <p className="mt-2 text-sm leading-relaxed text-zinc-200">{project.result}</p>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {artifacts.map((artifact) =>
-                      artifact.href ? (
+                    {artifacts.map((artifact) => {
+                      const targetHref = artifact.href || `/projects/${project.id}`;
+                      const isExternal = targetHref.startsWith("http");
+
+                      return (
                         <Button
                           key={`${project.id}-${artifact.id}`}
                           asChild
@@ -135,14 +138,14 @@ export function ProjectsLibrary() {
                           className="justify-between border-white/10 bg-white/5 text-zinc-100 hover:border-cyan-300/25 hover:bg-white/10"
                         >
                           <a
-                            href={artifact.href}
-                            target={artifact.href.startsWith("http") ? "_blank" : undefined}
-                            rel={artifact.href.startsWith("http") ? "noreferrer" : undefined}
+                            href={targetHref}
+                            target={isExternal ? "_blank" : undefined}
+                            rel={isExternal ? "noreferrer" : undefined}
                             onClick={() =>
                               trackPortfolioEvent({
                                 eventType: "project_action_click",
                                 label: `library-${project.id}-${artifact.id}`,
-                                href: artifact.href,
+                                href: targetHref,
                                 section: "projects-library",
                                 metadata: {
                                   projectTitle: project.title,
@@ -151,20 +154,12 @@ export function ProjectsLibrary() {
                               })
                             }
                           >
-                            {artifact.ctaLabel}
+                            {artifact.ctaLabel || "View artifact"}
                             <ArrowUpRight className="h-4 w-4" />
                           </a>
                         </Button>
-                      ) : (
-                        <div
-                          key={`${project.id}-${artifact.id}`}
-                          className="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-3 text-sm text-zinc-300"
-                        >
-                          <p className="font-medium text-white">{artifact.title}</p>
-                          <p className="mt-1 text-zinc-400">{artifact.note ?? artifact.summary}</p>
-                        </div>
-                      )
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
