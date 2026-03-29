@@ -4,6 +4,33 @@ All notable changes to the **Portfolio App** are documented here.
 
 ---
 
+## [1.3.0] — 2026-03-29
+
+### 📱 Mobile Optimization — Comprehensive Audit & Fix (14 bugs)
+
+#### Critical Layout Fixes
+- **Mobile menu fully opaque** — Replaced `bg-background backdrop-blur-lg` with hardcoded `bg-[#0a0a0f]` to eliminate all content bleed-through from the DynamicSiteBackground.
+- **Project badges stacked on mobile** — Status badges (`Live`, `sanitized`, `High confidence`) now stack below the title on small screens instead of crowding beside it. Grid breakpoint moved from `xl` to `lg`.
+- **Cocktail dialog opaque** — Changed dialog bg from `bg-[#04070d]/95` to fully opaque `bg-[#04070d]` to prevent ghost text bleed-through.
+- **AI button clearance** — Added `pb-24`/`pb-32` to homepage and projects page to prevent the floating AI assistant from overlapping page content.
+- **Projects hero sizing** — Reduced h1 from `text-4xl` to `text-3xl sm:text-4xl` for mobile readability.
+
+#### Responsive Component Fixes
+- **Cocktail orbit scaled for mobile** — Orbit container reduced to `14rem` (from `20rem`) with radius `82px` (from `118px`) on mobile to prevent right-side clipping.
+- **Cocktail image on mobile** — Added a compact `h-48` image header visible on mobile (previously `hidden md:block`).
+- **Command dialog mobile layout** — Dialog uses near-full-screen positioning on mobile with `inset-3` and `top-[4.5rem]`. CommandList max-height increased to `50dvh` on mobile.
+- **"Open Web CV" discoverable** — Added to `HOME_LINKS` so it appears in the Jump group of the search command on the homepage.
+- **Prompt chips optimized** — Limited to 2 starter prompts on screens <400px to give more room to the message area.
+
+#### Touch & Scroll Fixes
+- **Chatbot touch scroll containment** — Added `touchstart`/`touchmove` event handlers alongside existing `wheel` handler to prevent iOS Safari scroll bleed. Body scroll locked when chat is open on mobile.
+- **Viewport zoom lock** — Added `maximumScale: 1, userScalable: false` viewport export to prevent iOS pinch-zoom jank on input focus.
+
+#### Analytics Access
+- **Analytics 404 resolved** — Replaced `notFound()` with a graceful "Access requires debug token" message when the token is missing.
+
+---
+
 ## [1.2.0] — 2026-03-28
 
 ### 🐛 Bug Fixes
