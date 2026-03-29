@@ -48,20 +48,10 @@ function buildSignalText(signal: ArtifactScannerSignal, columns = 54, rows = 18)
 export function ArtifactScanner() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLAnchorElement | null>>([]);
-  const x = useMotionValue(0);
   const prefersReducedMotion = useReducedMotion();
   const playbackRef = useRef({
     sectionVisible: true,
     documentVisible: true,
-  });
-  const measurementsRef = useRef({
-    cardWidth: CARD_WIDTH_FALLBACK,
-  });
-  const physicsRef = useRef({
-    baseVelocity: -40,
-    userVelocity: 0,
-    friction: 0.94,
-    isHovering: false,
   });
   const animationBudgetRef = useRef(0);
 
@@ -76,45 +66,6 @@ export function ArtifactScanner() {
         .filter((item) => item.artifact),
     []
   );
-
-  const repeatedItems = useMemo(
-    () =>
-      Array.from({ length: 3 }, (_, setIndex) =>
-        items.map((item) => ({
-          ...item,
-          key: `${setIndex}-${item.signal.id}`,
-        }))
-      ).flat(),
-    [items]
-  );
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateMeasurements = () => {
-      const firstCard = cardRefs.current.find(Boolean);
-      if (firstCard) {
-        measurementsRef.current.cardWidth = firstCard.offsetWidth || CARD_WIDTH_FALLBACK;
-      }
-    };
-
-    updateMeasurements();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateMeasurements();
-    });
-
-    resizeObserver.observe(container);
-    const firstCard = cardRefs.current.find(Boolean);
-    if (firstCard) {
-      resizeObserver.observe(firstCard);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [repeatedItems.length]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -139,50 +90,16 @@ export function ArtifactScanner() {
     };
   }, []);
 
-  useAnimationFrame((_, delta) => {
+  useAnimationFrame(() => {
     const container = containerRef.current;
-    if (!container || repeatedItems.length === 0) return;
-
-    animationBudgetRef.current += delta;
-    if (animationBudgetRef.current < 1000 / 30) {
-      return;
-    }
-    const frameDelta = animationBudgetRef.current;
-    animationBudgetRef.current = 0;
+    if (!container || items.length === 0) return;
 
     const shouldAnimate =
       !prefersReducedMotion &&
       playbackRef.current.sectionVisible &&
       playbackRef.current.documentVisible;
 
-    if (shouldAnimate) {
-      const physics = physicsRef.current;
-      physics.userVelocity *= physics.friction;
-
-      if (Math.abs(physics.userVelocity) < 0.08) {
-        physics.userVelocity = 0;
-      }
-
-      // Base velocity is positive so items naturally flow left-to-right (x increases)
-      const totalVelocity = physics.isHovering
-        ? physics.userVelocity
-        : physics.baseVelocity + physics.userVelocity;
-
-      const singleSetWidth =
-        (measurementsRef.current.cardWidth + CARD_GAP) * items.length;
-
-      let nextX = x.get() + totalVelocity * (frameDelta / 1000);
-
-      if (singleSetWidth > 0) {
-        if (totalVelocity < 0 && nextX < -singleSetWidth) {
-          nextX += singleSetWidth;
-        } else if (totalVelocity > 0 && nextX > 0) {
-          nextX -= singleSetWidth;
-        }
-      }
-
-      x.set(nextX);
-    }
+    if (!shouldAnimate) return;
 
     const containerRect = container.getBoundingClientRect();
     const scannerX = containerRect.left + containerRect.width * 0.5;
@@ -210,22 +127,6 @@ export function ArtifactScanner() {
     });
   });
 
-  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    const physics = physicsRef.current;
-    
-    // Choose the dominant hardware scroll axis
-    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-
-    if (Math.abs(delta) <= 1) return;
-
-    // Apply native trackpad/wheel momentum explicitly without magnitude absolute mapping
-    physics.userVelocity += delta * -2.0;
-    
-    // Clamp extreme manual velocity to prevent jarring jumps
-    if (physics.userVelocity > 2000) physics.userVelocity = 2000;
-    if (physics.userVelocity < -2000) physics.userVelocity = -2000;
-  };
-
   return (
     <section
       id="translation-layer"
@@ -247,13 +148,6 @@ export function ArtifactScanner() {
 
       <div
         ref={containerRef}
-        onWheel={handleWheel}
-        onMouseEnter={() => {
-          physicsRef.current.isHovering = true;
-        }}
-        onMouseLeave={() => {
-          physicsRef.current.isHovering = false;
-        }}
         className="group relative isolate overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/8 via-black to-slate-950/90 px-4 py-12 shadow-[0_0_50px_rgba(34,211,238,0.08)] backdrop-blur-xl sm:px-6"
       >
         <style>{`
@@ -289,6 +183,13 @@ export function ArtifactScanner() {
               height: 19rem;
             }
           }
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
         `}</style>
 
         <div className="pointer-events-none absolute inset-y-8 left-1/2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-cyan-300/70 to-transparent md:block" />
@@ -299,16 +200,15 @@ export function ArtifactScanner() {
           <span>Raw signal</span>
           <div className="flex items-center gap-3 self-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
             <ChevronsLeftRight className="h-4 w-4" />
-            <span className="tracking-[0.24em]">Wheel to scan</span>
+            <span className="tracking-[0.24em]">Scroll to scan</span>
           </div>
           <span className="text-right">Proof asset</span>
         </div>
 
-        <motion.div
-          style={{ x }}
-          className="flex items-center gap-7 will-change-transform"
+        <div
+          className="flex items-center gap-7 overflow-x-auto snap-x snap-mandatory pt-4 pb-8 hide-scrollbar cursor-grab active:cursor-grabbing"
         >
-          {repeatedItems.map((item, index) => {
+          {items.map((item, index) => {
             const artifact = item.artifact;
             if (!artifact) {
               return null;
@@ -316,7 +216,7 @@ export function ArtifactScanner() {
 
             return (
               <a
-                key={item.key}
+                key={item.signal.id}
                 href={`#${artifact.id}`}
                 ref={(node) => {
                   cardRefs.current[index] = node;
@@ -333,7 +233,7 @@ export function ArtifactScanner() {
                     },
                   });
                 }}
-                className="artifact-scanner-wrapper group/card"
+                className="artifact-scanner-wrapper group/card snap-center"
               >
                 <div className="artifact-scanner-surface artifact-scanner-polished border border-white/10 bg-black/40 shadow-[0_20px_50px_rgba(2,6,23,0.35)]">
                   <Image
@@ -387,7 +287,7 @@ export function ArtifactScanner() {
               </a>
             );
           })}
-        </motion.div>
+        </div>
 
         <div className="mt-8 grid gap-3 md:grid-cols-3">
           {[
