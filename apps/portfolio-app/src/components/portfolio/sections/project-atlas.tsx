@@ -104,12 +104,12 @@ export function ProjectAtlas() {
                   <p className="text-sm text-zinc-400">{project.impact}</p>
                   <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
                     <Link
-                      href={`/projects#${project.id}`}
+                      href={`/projects/${project.id}`}
                       onClick={() =>
                         trackPortfolioEvent({
                           eventType: "project_action_click",
                           label: `atlas-${project.id}`,
-                          href: `/projects#${project.id}`,
+                          href: `/projects/${project.id}`,
                           section: "projects-atlas",
                           metadata: {
                             projectTitle: project.title,

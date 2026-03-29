@@ -122,24 +122,27 @@ export function WebCv() {
                 ))}
               </div>
             </section>
+          </div>
+        </section>
 
-            <section className="rounded-[1.75rem] border border-white/10 bg-black/20 p-6">
-              <h3 className="text-xl font-semibold text-white">Skills</h3>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                {skillsGroups.map((group) => (
-                  <div key={group.category} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">{group.category}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {group.items.map((item) => (
-                        <span key={item} className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-sm text-zinc-100">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+        <section className="rounded-[2rem] border border-white/10 bg-black/20 p-6 sm:p-8" id="skills">
+          <h3 className="text-2xl font-bold tracking-tight text-white">Skills</h3>
+          <p className="mt-2 text-sm text-zinc-300">
+            Core technical and functional domains used across projects.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {skillsGroups.map((group) => (
+              <div key={group.category} className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200/80">{group.category}</p>
+                <div className="mt-4 flex flex-wrap gap-2.5">
+                  {group.items.map((item) => (
+                    <span key={item} className="rounded-xl border border-white/10 bg-black/30 px-3.5 py-1.5 text-[15px] font-medium text-zinc-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors hover:border-cyan-300/25">
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </section>
+            ))}
           </div>
         </section>
 

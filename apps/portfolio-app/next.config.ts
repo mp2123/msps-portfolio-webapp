@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     root: workspaceRoot,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
