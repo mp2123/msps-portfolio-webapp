@@ -91,7 +91,7 @@ export function ExperienceGlobe() {
   });
   const orbitOffsetRef = useRef(0);
   const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
-  const [isGlobeVisible, setIsGlobeVisible] = useState(false);
+  const isVisibleRef = useRef(false);
   const [activeMarkerId, setActiveMarkerId] = useState(BASE_MARKER.id);
 
   const activeMarker = useMemo(
@@ -201,13 +201,10 @@ export function ExperienceGlobe() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        isVisibleRef.current = Boolean(entry?.isIntersecting);
         if (entry?.isIntersecting) {
           setHasEnteredViewport(true);
-          setIsGlobeVisible(true);
-          return;
         }
-
-        setIsGlobeVisible(false);
       },
       { threshold: 0.05, rootMargin: '160px 0px' }
     );
@@ -231,7 +228,7 @@ export function ExperienceGlobe() {
   }, [activeMarker]);
 
   useEffect(() => {
-    if (!isGlobeVisible || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const initialWidth = canvas.offsetWidth;
@@ -276,6 +273,7 @@ export function ExperienceGlobe() {
 
     const animate = (time: number) => {
       frameId = window.requestAnimationFrame(animate);
+      if (!isVisibleRef.current) return;
       if (lastFrameTime !== 0 && time - lastFrameTime < GLOBE_TARGET_FRAME_MS) {
         return;
       }
@@ -335,7 +333,7 @@ export function ExperienceGlobe() {
       }
       globe.destroy();
     };
-  }, [activeMarkerId, isGlobeVisible]);
+  }, []);
 
   const handleStageSelect = (marker: GlobeMarker, source: 'card' | 'globe-hint' = 'card') => {
     setActiveMarkerId(marker.id);

@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { MeshDistortMaterial, Sphere } from "@react-three/drei";
 import type { Mesh } from "three";
+import { useInView } from "framer-motion";
 
 type PointerState = {
   x: number;
@@ -73,9 +74,13 @@ export const InteractiveGlobe = () => {
   const pointerRef = useRef<PointerState>({ x: 0, y: 0 });
   const [pointerState, setPointerState] = useState<PointerState>({ x: 0, y: 0 });
   const cameraPosition = useMemo(() => [0, 0, 4.9] as const, []);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "100px" });
 
   return (
     <div
+      ref={containerRef}
       className="relative h-full min-h-[180px] w-full cursor-grab active:cursor-grabbing"
       onPointerMove={(event) => {
         const bounds = event.currentTarget.getBoundingClientRect();
@@ -104,11 +109,11 @@ export const InteractiveGlobe = () => {
         }}
       />
       <div className="pointer-events-none absolute inset-[18%] rounded-full border border-cyan-300/15 shadow-[0_0_42px_rgba(34,211,238,0.18)]" />
-      <Canvas camera={{ position: cameraPosition, fov: 36 }}>
+      <Canvas camera={{ position: cameraPosition, fov: 36 }} frameloop={isInView ? "always" : "never"}>
         <ambientLight intensity={0.55} />
         <pointLight position={[2.5, 2.5, 3]} intensity={hovered ? 18 : 11} color="#67e8f9" />
         <directionalLight position={[-3, 2, 4]} intensity={0.9} color="#dbeafe" />
-        <GlobeVisual hovered={hovered} pointerRef={pointerRef} />
+        {isInView && <GlobeVisual hovered={hovered} pointerRef={pointerRef} />}
       </Canvas>
     </div>
   );

@@ -18,7 +18,7 @@ export const TerminalWindow = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
       className={cn(
-        "group relative mx-auto mb-12 max-w-7xl overflow-hidden rounded-[1.75rem] border border-cyan-300/10 bg-black/35 shadow-[0_30px_90px_rgba(2,6,23,0.45)] backdrop-blur-3xl md:mb-14",
+        "group relative mx-auto mb-12 max-w-7xl overflow-hidden rounded-[1.75rem] border border-cyan-300/10 bg-slate-950/95 shadow-[0_30px_90px_rgba(2,6,23,0.65)] md:mb-14",
         className
       )}
     >
