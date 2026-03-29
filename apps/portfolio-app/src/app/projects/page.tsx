@@ -1,4 +1,4 @@
-"use client";
+import type { Metadata } from "next";
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -12,6 +12,36 @@ import { SectionAnalyticsTracker } from "@/components/portfolio/section-analytic
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/content/portfolio";
+import { siteDescription, getCanonicalUrl, siteName } from "@/lib/portfolio-site";
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description: siteDescription,
+  alternates: {
+    canonical: "/projects",
+  },
+  openGraph: {
+    title: "Michael Panico | Projects | Business Analytics & Operations",
+    description: siteDescription,
+    url: getCanonicalUrl("/projects"),
+    siteName,
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Michael Panico Projects Directory",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Michael Panico | Projects | Business Analytics & Operations",
+    description: siteDescription,
+    images: ["/opengraph-image"],
+  },
+};
 
 export default function ProjectsPage() {
   return (

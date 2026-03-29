@@ -1,6 +1,11 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { ASSISTANT_CACHE_VERSION } from '@/lib/assistant-cache';
 import { getPrismaClient } from '@/lib/prisma';
+
+export const metadata: Metadata = {
+  title: 'Analytics',
+};
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

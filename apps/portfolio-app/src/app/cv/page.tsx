@@ -7,13 +7,13 @@ import { WebCv } from '@/components/cv/web-cv';
 import { getCanonicalUrl, siteDescription, siteName } from '@/lib/portfolio-site';
 
 export const metadata: Metadata = {
-  title: 'Michael Panico | Web CV',
+  title: 'CV',
   description: siteDescription,
   alternates: {
     canonical: '/cv',
   },
   openGraph: {
-    title: 'Michael Panico | Web CV',
+    title: 'Michael Panico | CV | Business Analytics & Operations',
     description: siteDescription,
     url: getCanonicalUrl('/cv'),
     siteName,

@@ -14,8 +14,8 @@ const resumeUrl = getCanonicalUrl("/resume/michael-panico-resume.pdf");
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006"),
   title: {
-    default: siteName,
-    template: "%s | Michael Panico",
+    default: "Michael Panico | Home | Business Analytics & Operations",
+    template: "Michael Panico | %s | Business Analytics & Operations",
   },
   description: siteDescription,
   alternates: {
