@@ -4,12 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { getCanonicalUrl, siteDescription, siteName } from "@/lib/portfolio-site";
 import { FramerProvider } from "@/components/providers/framer-provider";
 import { Sora, Inter } from "next/font/google";
-import dynamic from "next/dynamic";
-
-const SiteBackground = dynamic(
-  () => import("@/components/site-background").then((mod) => mod.SiteBackground),
-  { ssr: false }
-);
+import { DynamicSiteBackground } from "@/components/dynamic-site-background";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -57,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased bg-background ${sora.variable} ${inter.variable}`}>
-        <SiteBackground />
+        <DynamicSiteBackground />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
