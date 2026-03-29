@@ -20,6 +20,10 @@
 4.  **AI BYOK:** Ensure the "Settings" button in the chatbot is used to save personal Gemini/OpenAI keys to `localStorage`.
 
 ## 🚀 Technical Status & Milestones
+- **[x] Deep-Dive Artifact Visualization Built:** Built `/projects/[slug]` detail pages. Overcame Vercel Edge constraints by migrating Markdown to statically typed `artifacts.ts` mapping. 
+- **[x] Native Framer Motion Data Viz:** Built `<ArtifactVisuals />` component hooking custom CSS layouts (Progress Bars, NLP Pipeline Grids, Regression Charts) directly into respective Case Study slugs, bypassing markdown limitations.
+- **[x] Asset Consolidation & Deployment:** Fully audited `source-material/` and bound every proprietary `.pdf`, `.pptx`, `.xlsx`, and `.docx` into UI download buttons for recruiters.
+- **[x] Turbopack Caching Bug Squashed:** Cleaned out root-locked `.next` caches to successfully resolve a deep `@tailwindcss/typography` Node module blockage on Localhost.
 - **[x] Portfolio "Final Polish" Complete:** Upgraded the project showcase to a `BentoGrid`, replaced the chatbot with a `GlowingAiAssistant`, and integrated a `SpotlightCard` mouse-follow effect.
 - **[x] Portfolio "Immersive Experience" Upgrade:** Implemented a `Scroll-Expanding Hero`, a "Glass Terminal" UI, and a generative `DotShader` background.
 - **[x] Portfolio "Salesworthy" Features:** Built and integrated an interactive `ROI Calculator` and a `Recharts` live data dashboard.
@@ -30,12 +34,12 @@
 - **[x] Vercel Deployments:** All three apps connected to GitHub and hosted on Vercel.
 
 ## 📍 Where We Left Off (Next Steps)
-1.  **Bartender App Development:**
+1.  **Portfolio App (Final 1% Polish):**
+    - Transition the `mailto:` links across the UI into a fully functional, dedicated "Contact Me" interactive form step.
+    - Test the `InteractiveGlobe` component somewhere interesting.
+2.  **Bartender App Development (New Focus):**
     - Run `npx prisma db push` using the new Bartender Supabase URL.
     - Run `node prisma/seed-bartender.js` to upload initial cocktail recipes.
     - Embed personal bartending tutorial videos into the landing page.
-2.  **Insurance App Development:**
+3.  **Insurance App Development:**
     - Build the interactive testing UI for the Practice Exam feature, using the live `Question` table.
-3.  **Portfolio App (Minor Polish):**
-    - Build a dedicated "Contact Me" form.
-    - Integrate the created `CodeSnippet` and `InteractiveGlobe` components into project detail views (when built).
