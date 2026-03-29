@@ -58,7 +58,7 @@ export function ArtifactScanner() {
     cardWidth: CARD_WIDTH_FALLBACK,
   });
   const physicsRef = useRef({
-    baseVelocity: 40,
+    baseVelocity: -40,
     userVelocity: 0,
     friction: 0.94,
     isHovering: false,
@@ -212,13 +212,14 @@ export function ArtifactScanner() {
 
   const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     const physics = physicsRef.current;
-    const delta = event.deltaX || event.deltaY;
+    
+    // Choose the dominant hardware scroll axis
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
 
     if (Math.abs(delta) <= 1) return;
 
-    // Scroll down/right (delta > 0) pushes items left (-x), Scroll up/left pushes items right (+x)
-    const acceleration = delta > 0 ? -1.5 : 1.5;
-    physics.userVelocity += Math.abs(delta) * acceleration;
+    // Apply native trackpad/wheel momentum explicitly without magnitude absolute mapping
+    physics.userVelocity += delta * -2.0;
     
     // Clamp extreme manual velocity to prevent jarring jumps
     if (physics.userVelocity > 2000) physics.userVelocity = 2000;
