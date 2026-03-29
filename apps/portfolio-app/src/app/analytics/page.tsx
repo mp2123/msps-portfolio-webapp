@@ -499,10 +499,10 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
   );
 
   return (
-    <main className="min-h-screen bg-[#061019] px-4 py-10 text-white md:px-8">
+    <main className="relative min-h-screen px-4 py-32 text-white md:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <header className="rounded-[28px] border border-cyan-400/15 bg-[linear-gradient(135deg,rgba(12,28,42,0.95),rgba(5,12,21,0.96))] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">
+        <header className="rounded-[28px] border border-cyan-400/20 bg-black/40 backdrop-blur-xl p-8 shadow-[0_0_40px_rgba(34,211,238,0.1)]">
+          <p className="text-xs uppercase tracking-[0.3em] text-cyan-400">
             Internal Diagnostics
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">
@@ -589,10 +589,10 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
                     snapshot.assistantCache.byStrategy.map((item) => (
                       <div
                         key={item.label}
-                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-black/20 p-4 transition-colors hover:bg-white/5"
                       >
-                        <span className="text-sm text-white/80">{item.label}</span>
-                        <span className="text-sm font-medium text-cyan-200">{item.count}</span>
+                        <span className="text-sm font-medium text-white/90">{item.label}</span>
+                        <span className="text-sm font-bold text-cyan-400">{item.count}</span>
                       </div>
                     ))
                   )}
