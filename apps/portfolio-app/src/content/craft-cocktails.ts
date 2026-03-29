@@ -27,8 +27,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "Orange peel",
     shortDescription:
       "A bitter-sweet, equal-parts classic that shows restraint, balance, and clean stirred technique.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1536935338213-d2c1238f91c6?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/negroni.png",
     ingredients: [
       { amount: "1 oz", item: "London dry gin" },
       { amount: "1 oz", item: "Campari" },
@@ -51,8 +50,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "None",
     shortDescription:
       "A sharp, modern classic with bright citrus and amaro structure that drinks fast but stays balanced.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/paper-plane.png",
     ingredients: [
       { amount: "3/4 oz", item: "Bourbon" },
       { amount: "3/4 oz", item: "Aperol" },
@@ -76,8 +74,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "Brandied cherry or none",
     shortDescription:
       "A vivid, high-aroma classic that rewards precise equal-parts builds and a crisp, cold shake.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/last-word.png",
     ingredients: [
       { amount: "3/4 oz", item: "Gin" },
       { amount: "3/4 oz", item: "Green Chartreuse" },
@@ -100,8 +97,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "Orange peel",
     shortDescription:
       "A benchmark stirred whiskey drink where dilution, texture, and restraint matter more than theatrics.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/old-fashioned.png",
     ingredients: [
       { amount: "2 oz", item: "Bourbon" },
       { amount: "1/4 oz", item: "Rich demerara syrup" },
@@ -124,8 +120,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "Lime wheel",
     shortDescription:
       "A citrus-forward agave classic that depends on acid balance, fresh juice, and tight shake discipline.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/margarita.png",
     ingredients: [
       { amount: "2 oz", item: "Blanco tequila" },
       { amount: "1 oz", item: "Cointreau" },
@@ -148,8 +143,7 @@ export const EXAMPLE_CRAFT_COCKTAILS: CraftCocktailSeed[] = [
     garnish: "Three espresso beans",
     shortDescription:
       "A clean, high-energy modern classic where texture, crema, and coffee quality matter as much as the base spirit.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "/cocktails/espresso-martini.png",
     ingredients: [
       { amount: "1 1/2 oz", item: "Vodka" },
       { amount: "1 oz", item: "Fresh espresso" },
