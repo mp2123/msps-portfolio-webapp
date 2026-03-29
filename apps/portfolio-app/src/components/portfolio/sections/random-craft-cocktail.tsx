@@ -274,10 +274,10 @@ export function RandomCraftCocktail() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="h-[min(92vh,920px)] max-w-[min(1120px,calc(100vw-1rem))] overflow-hidden border-white/10 bg-[#04070d]/95 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
+        <DialogContent className="h-[min(92dvh,920px)] max-w-4xl overflow-hidden border-white/10 bg-[#04070d]/95 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
           {activeCocktail ? (
-            <div className="grid h-full min-h-0 overflow-hidden lg:grid-cols-[0.96fr_1.04fr]">
-              <div className="relative min-h-[21rem] overflow-hidden lg:min-h-0">
+            <div className="grid h-full min-h-0 overflow-hidden md:grid-cols-[0.96fr_1.04fr]">
+              <div className="relative hidden min-h-[21rem] overflow-hidden md:block md:min-h-0">
                 <CocktailVisual cocktail={activeCocktail} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
                 <div className="absolute inset-x-6 bottom-6 space-y-3">
@@ -295,7 +295,7 @@ export function RandomCraftCocktail() {
                 </div>
               </div>
 
-              <div className="flex min-h-0 flex-col p-6 md:p-8">
+              <div className="flex min-h-0 flex-col overflow-y-auto p-5 sm:p-6 md:p-8">
                 <DialogHeader className="shrink-0 text-left">
                   <DialogTitle className="text-2xl font-black tracking-tight text-white md:text-3xl">
                     Full build and service call
@@ -305,7 +305,7 @@ export function RandomCraftCocktail() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-6 flex-1 overflow-y-auto pr-1">
+                <div className="mt-6 flex-1 pr-1">
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                       <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">Base spirit</p>
@@ -321,7 +321,7 @@ export function RandomCraftCocktail() {
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+                  <div className="mt-6 grid gap-4 sm:grid-cols-[0.9fr_1.1fr]">
                     <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                       <div className="flex items-center gap-2">
                         <Wine className="h-4 w-4 text-cyan-100" />
@@ -364,6 +364,7 @@ export function RandomCraftCocktail() {
                       <p className="mt-2 text-sm leading-relaxed text-zinc-200">{activeCocktail.notes}</p>
                     </div>
                   ) : null}
+                  <div aria-hidden="true" className="h-4 shrink-0" />
                 </div>
 
                 <DialogFooter className="mt-6 shrink-0 justify-between border-t border-white/10 pt-5 sm:items-center">

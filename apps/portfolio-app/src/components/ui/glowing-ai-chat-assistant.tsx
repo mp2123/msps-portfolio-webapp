@@ -614,6 +614,7 @@ export const FloatingAiAssistant = () => {
               aria-describedby="recruiter-assistant-description"
               onKeyDown={handleDialogKeyDown}
               className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border border-emerald-400/24 bg-gradient-to-br from-zinc-900/95 via-slate-950/95 to-black/95 shadow-[0_0_72px_rgba(16,185,129,0.16)] backdrop-blur-3xl"
+              style={{ overscrollBehavior: 'contain' }}
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.17),transparent_30%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_22%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,transparent_1px)] bg-[size:100%_24px] opacity-[0.08]" />
@@ -710,8 +711,8 @@ export const FloatingAiAssistant = () => {
 
               <ScrollArea
                 className="relative flex-1 min-h-0 px-4 sm:px-6"
-                style={{
-                  overscrollBehavior: 'auto',
+              style={{
+                  overscrollBehavior: 'contain',
                   WebkitOverflowScrolling: 'touch',
                   touchAction: 'pan-y',
                 }}
