@@ -29,15 +29,15 @@
 - **[x] Portfolio "Salesworthy" Features:** Built and integrated an interactive `ROI Calculator` and a `Recharts` live data dashboard.
 - **[x] Portfolio App Scaffolded & Deployed:** New Next.js app created in `apps/portfolio-app` with a custom "Dark Analytics" theme and all build errors resolved.
 - **[x] Comprehensive Documentation:** Created and updated READMEs for the root, all three apps, and key subdirectories, explaining architecture, features, and project goals.
+- **[x] Next.js Performance Optimization:** Successfully pruned `layout.tsx`, established a `LazyMotion` global Framer Provider, and deployed zero-CLS Google Fonts (`Sora` via `next/font`), slashing the Javascript payloads on load.
+- **[x] Custom Form Architecture:** Completely stripped standard `mailto:` links across the ecosystem and built a custom `<ContactForm />` intercepted by a Shadcn UI Dialog modal for premium recruiter interactions.
 - **[x] Insurance Database Live:** 307 verified questions successfully seeded to Supabase.
 - **[x] Bartender App Cloned:** Architecture duplicated and themed for Mixology.
 - **[x] Vercel Deployments:** All three apps connected to GitHub and hosted on Vercel.
 
 ## 📍 Where We Left Off (Next Steps)
-1.  **Portfolio App (Final 1% Polish & Performance Optimization):**
-    - Transition the `mailto:` links across the UI (Footer, Final Contact Card, and Navbar) into a fully functional "Contact Me" interactive form.
-    - **Command Center BI:** Await sanitized wireframes/dashboards from the USER to inject into the `/projects/avnet-command-center` artifact payload, which currently just contains a data-scrubbing disclosure.
-    - **Performance Optimization Phase:** Implement dynamic imports (`next/dynamic`) for heavy Three.js assets, prune the root `layout.tsx` for optimal First Contentful Paint, and establish a global `framer-motion` lazy-loading context.
+1.  **Command Center UI Artifact:**
+    - Await sanitized wireframes/dashboards from the USER to inject into the `/projects/avnet-command-center` artifact payload, which currently just contains a data-scrubbing disclosure.
 2.  **Bartender App Development (New Focus):**
     - Run `npx prisma db push` using the new Bartender Supabase URL.
     - Run `node prisma/seed-bartender.js` to upload initial cocktail recipes.

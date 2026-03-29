@@ -9,6 +9,7 @@ import {
 
 import { InvisibleInkWall } from "@/components/portfolio/invisible-ink-wall";
 import { Badge } from "@/components/ui/badge";
+import { ContactModal } from "@/components/forms/contact-modal";
 import { Button } from "@/components/ui/button";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { openPortfolioAssistant } from "@/lib/portfolio-assistant-ui";
@@ -64,15 +65,12 @@ export function ContactSection() {
                 <ArrowUpRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
-            <Button asChild variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10">
-              <a
-                href={contactProfile.links.find((link) => link.label === "Direct Email")?.href}
-                onClick={handleTrackedNavigation("contact_click", "contact-hero-email", "mailto:michael_s_panico@outlook.com", "contact")}
-              >
+            <ContactModal>
+              <Button variant="outline" className="border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10" onClick={handleTrackedNavigation("contact_click", "contact-hero-email", "modal", "contact")}>
                 Email Michael
                 <ArrowUpRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
+              </Button>
+            </ContactModal>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-2">
@@ -120,6 +118,20 @@ export function ContactSection() {
                 >
                   {cardContent}
                 </div>
+              );
+            }
+
+            if (link.href?.startsWith("mailto")) {
+              return (
+                <ContactModal key={link.label}>
+                  <button
+                    onClick={handleTrackedNavigation("contact_click", `contact-card-${link.label.toLowerCase().replace(/\s+/g, "-")}`, "modal", "contact")}
+                    className="w-full text-left group relative overflow-hidden rounded-[1.5rem] border border-dashed border-white/15 bg-black/20 p-5 backdrop-blur-xl transition-colors hover:border-cyan-400/30 hover:bg-white/5"
+                  >
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_30%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    {cardContent}
+                  </button>
+                </ContactModal>
               );
             }
 

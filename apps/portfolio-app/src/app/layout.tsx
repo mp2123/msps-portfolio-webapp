@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SiteBackground } from "@/components/site-background";
 import { getCanonicalUrl, siteDescription, siteName } from "@/lib/portfolio-site";
+import { FramerProvider } from "@/components/providers/framer-provider";
+import { Sora, Inter } from "next/font/google";
+import dynamic from "next/dynamic";
+
+const SiteBackground = dynamic(
+  () => import("@/components/site-background").then((mod) => mod.SiteBackground),
+  { ssr: false }
+);
+
+const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const resumeUrl = getCanonicalUrl("/resume/michael-panico-resume.pdf");
 
@@ -46,7 +56,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-background">
+      <body className={`antialiased bg-background ${sora.variable} ${inter.variable}`}>
         <SiteBackground />
         <script
           type="application/ld+json"
@@ -109,7 +119,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <FramerProvider>
+            {children}
+          </FramerProvider>
         </ThemeProvider>
       </body>
     </html>
