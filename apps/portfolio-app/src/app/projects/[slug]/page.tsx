@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { projects } from "@/content/portfolio";
 import { artifactDocs } from "@/content/artifacts";
 import { PublicPageShell } from "@/components/portfolio/public-page-shell";
+import { ArtifactVisuals } from "@/components/portfolio/graphics/artifact-visuals";
 
 interface PageProps {
   params: Promise<{
@@ -105,6 +106,8 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
             </div>
           )}
           
+          <ArtifactVisuals projectid={project.id} />
+
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
