@@ -10,6 +10,7 @@ import { ArrowLeft, ExternalLink, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/content/portfolio";
+import { artifactDocs } from "@/content/artifacts";
 import { PublicPageShell } from "@/components/portfolio/public-page-shell";
 
 interface PageProps {
@@ -39,16 +40,8 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
   let markdownContent = "### Artifact Documentation Pending\n\nThe sanitized documentation and technical artifacts for this project are currently being migrated into the portfolio. Please check back shortly.";
   
   try {
-    const targetDir = path.join(process.cwd(), "source-material", slug);
-    let potentialPath = path.join(targetDir, "02-sanitized", "artifact.md");
-    
-    if (fs.existsSync(potentialPath)) {
-      markdownContent = fs.readFileSync(potentialPath, "utf-8");
-    } else {
-      potentialPath = path.join(targetDir, "README.md");
-      if (fs.existsSync(potentialPath)) {
-        markdownContent = fs.readFileSync(potentialPath, "utf-8");
-      }
+    if (project.sourceMaterialFolder && artifactDocs[project.sourceMaterialFolder]) {
+      markdownContent = artifactDocs[project.sourceMaterialFolder];
     }
   } catch (err) {
     console.warn(`Could not load artifact markdown for ${slug}`, err);
