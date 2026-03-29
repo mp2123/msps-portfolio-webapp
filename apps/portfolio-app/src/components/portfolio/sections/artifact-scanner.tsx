@@ -58,7 +58,6 @@ export function ArtifactScanner() {
     cardWidth: CARD_WIDTH_FALLBACK,
   });
   const physicsRef = useRef({
-    direction: -1,
     baseVelocity: 40,
     userVelocity: 0,
     friction: 0.94,
@@ -164,9 +163,10 @@ export function ArtifactScanner() {
         physics.userVelocity = 0;
       }
 
+      // Base velocity is positive so items naturally flow left-to-right (x increases)
       const totalVelocity = physics.isHovering
-        ? physics.userVelocity * physics.direction
-        : (physics.baseVelocity + physics.userVelocity) * physics.direction;
+        ? physics.userVelocity
+        : physics.baseVelocity + physics.userVelocity;
 
       const singleSetWidth =
         (measurementsRef.current.cardWidth + CARD_GAP) * items.length;
@@ -174,9 +174,9 @@ export function ArtifactScanner() {
       let nextX = x.get() + totalVelocity * (frameDelta / 1000);
 
       if (singleSetWidth > 0) {
-        if (physics.direction === -1 && nextX < -singleSetWidth) {
+        if (totalVelocity < 0 && nextX < -singleSetWidth) {
           nextX += singleSetWidth;
-        } else if (physics.direction === 1 && nextX > 0) {
+        } else if (totalVelocity > 0 && nextX > 0) {
           nextX -= singleSetWidth;
         }
       }
@@ -216,8 +216,13 @@ export function ArtifactScanner() {
 
     if (Math.abs(delta) <= 1) return;
 
-    physics.direction = delta > 0 ? -1 : 1;
-    physics.userVelocity += Math.min(Math.abs(delta) * 1.3, 90);
+    // Scroll down/right (delta > 0) pushes items left (-x), Scroll up/left pushes items right (+x)
+    const acceleration = delta > 0 ? -1.5 : 1.5;
+    physics.userVelocity += Math.abs(delta) * acceleration;
+    
+    // Clamp extreme manual velocity to prevent jarring jumps
+    if (physics.userVelocity > 2000) physics.userVelocity = 2000;
+    if (physics.userVelocity < -2000) physics.userVelocity = -2000;
   };
 
   return (
