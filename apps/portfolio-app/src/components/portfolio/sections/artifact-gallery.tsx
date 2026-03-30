@@ -7,6 +7,31 @@ import { Badge } from "@/components/ui/badge";
 import { artifacts } from "@/content/portfolio";
 
 export function ArtifactGallery() {
+  const publicationLabels: Record<string, string> = {
+    live: "Live proof",
+    "request-only": "Request-only",
+    planned: "Planned proof",
+  };
+  const publicationPriority: Record<string, number> = {
+    live: 0,
+    "request-only": 0,
+    planned: 1,
+  };
+  const orderedArtifacts = artifacts
+    .map((artifact, index) => ({ artifact, index }))
+    .sort((left, right) => {
+      const publicationDelta =
+        publicationPriority[left.artifact.publicationState] -
+        publicationPriority[right.artifact.publicationState];
+
+      if (publicationDelta !== 0) {
+        return publicationDelta;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ artifact }) => artifact);
+
   return (
     <section
       className="portfolio-section-anchor section-glow grid-noise mx-auto w-full max-w-6xl px-4 py-20"
@@ -17,14 +42,16 @@ export function ArtifactGallery() {
         <Badge className="border-white/10 bg-white/5 text-zinc-200">Artifact vault</Badge>
         <h2 className="text-4xl font-bold tracking-tight text-white">Proof surfaces, downloads, and recruiter-safe artifacts.</h2>
         <p className="text-lg text-zinc-400">
-          This is where public-safe screenshots, short briefs, downloadable templates, and demo
-          media will land once each asset is cleared for sharing.
+          This vault now mixes live proof pages, downloadable artifacts, and request-only recruiter
+          walkthroughs. The most publishable project proof leads, and anything still planned stays
+          clearly labeled as planned.
         </p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        {artifacts.map((artifact) => {
+        {orderedArtifacts.map((artifact) => {
           const isLiveLink = Boolean(artifact.href && !artifact.href.startsWith("#"));
+          const isExternalLink = Boolean(artifact.href?.startsWith("http"));
 
           return (
             <div
@@ -45,6 +72,17 @@ export function ArtifactGallery() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_34%)]" />
                 <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                   <Badge className="border-white/10 bg-black/40 text-zinc-100">{artifact.badge}</Badge>
+                  <Badge
+                    className={
+                      artifact.publicationState === "request-only"
+                        ? "border-amber-400/20 bg-amber-400/10 text-amber-100"
+                        : artifact.publicationState === "planned"
+                          ? "border-white/10 bg-white/5 text-zinc-200"
+                          : "border-cyan-400/20 bg-cyan-400/10 text-cyan-100"
+                    }
+                  >
+                    {publicationLabels[artifact.publicationState]}
+                  </Badge>
                   <Badge className="border-cyan-400/20 bg-cyan-400/10 text-cyan-100">
                     {artifact.plannedAssetType}
                   </Badge>
@@ -69,9 +107,13 @@ export function ArtifactGallery() {
                 {isLiveLink ? (
                   <a
                     href={artifact.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-50 transition-colors hover:bg-cyan-400/15"
+                    target={isExternalLink ? "_blank" : undefined}
+                    rel={isExternalLink ? "noreferrer" : undefined}
+                    className={
+                      artifact.publicationState === "request-only"
+                        ? "flex items-center justify-between gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-50 transition-colors hover:bg-amber-400/15"
+                        : "flex items-center justify-between gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-50 transition-colors hover:bg-cyan-400/15"
+                    }
                   >
                     <span>{artifact.ctaLabel}</span>
                     <ArrowUpRight className="h-4 w-4" />

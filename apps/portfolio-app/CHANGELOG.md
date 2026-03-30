@@ -4,6 +4,22 @@ All notable changes to the **Portfolio App** are documented here.
 
 ---
 
+## [1.3.3] — 2026-03-29
+
+### 🧾 Proof Promotion and Assistant Hardening
+- **Typed project evidence layer added** — Introduced `src/content/project-evidence.ts` as the runtime projection of the fact-sheet layer for all seven major projects.
+- **First-wave proof promotion completed** — Command Center BI, Gemini/Codex Workflow Automation, Ticket Reassignment Prediction, and TJIX Net Sales Drivers now surface project-specific proof cards instead of generic placeholder artifacts.
+- **Second-wave proof promotion started** — Relational Database Design and Yelp Review Rating / Sentiment Modeling now have live project-specific artifact cards and sanitized project-page copy aligned with the fact-sheet layer.
+- **Artifact model extended** — Added `publicationState` (`live`, `request-only`, `planned`) so the artifact vault and assistant can distinguish between public proof and recruiter-only disclosure paths.
+- **Artifact vault reordered by proof readiness** — Live and request-only proof now leads the vault, while truly planned proof sinks to the bottom.
+- **Artifact generator corrected** — Sanitized markdown in `source-material/*/02-sanitized/artifact.md` is now treated as the source of truth for generated runtime artifact content.
+- **Assistant retrieval sharpened** — Added per-project evidence docs plus cross-project role-fit, business-impact, automation-proof, and comparison docs to improve recruiter-focused answers.
+- **Assistant prompt style tightened** — Answers now bias toward recruiter-briefing tone, explicit proof availability, and exact published proof paths only.
+- **Assistant cache invalidated for stronger answers** — Bumped the cache version so older, weaker assistant responses do not persist after the retrieval update.
+- **Framer runtime regression fixed** — Removed `LazyMotion strict` after local browser QA exposed a client-side runtime issue in the shared shell flow.
+
+---
+
 ## [1.3.2] — 2026-03-29
 
 ### 📚 Documentation and Repo Orientation Refresh

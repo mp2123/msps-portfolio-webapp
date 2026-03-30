@@ -81,6 +81,15 @@ const getMessageText = (message: {
   return '';
 };
 
+const formatAssistantDisplayText = (value: string) =>
+  value
+    .replace(/\*\*/g, '')
+    .replace(/__/g, '')
+    .replace(/ \* /g, '\n• ')
+    .replace(/\s\*\s(?=[A-Z0-9])/g, '\n• ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
 const buildClientCacheKeyFromBody = (body: unknown) => {
   if (!body || typeof body !== 'object' || !('messages' in body)) {
     return null;
@@ -821,7 +830,9 @@ export const FloatingAiAssistant = () => {
                               : 'bg-white/[0.07] text-zinc-100 backdrop-blur-sm ring-white/10 shadow-[0_0_25px_rgba(34,211,238,0.04)]'
                           )}
                         >
-                          {getMessageText(m)}
+                          {m.role === 'assistant'
+                            ? formatAssistantDisplayText(getMessageText(m))
+                            : getMessageText(m)}
                         </div>
                       </motion.div>
                     ))}

@@ -1,15 +1,13 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 
-import { ArrowLeft, ExternalLink, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { projects } from "@/content/portfolio";
+import { getArtifactById, projects } from "@/content/portfolio";
 import { artifactDocs } from "@/content/artifacts";
 import { PublicPageShell } from "@/components/portfolio/public-page-shell";
 import { ArtifactVisuals } from "@/components/portfolio/graphics/artifact-visuals";
@@ -37,8 +35,16 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
 
   if (!project) return notFound();
 
+  const projectArtifacts = project.artifactIds
+    .map((artifactId) => getArtifactById(artifactId))
+    .filter((artifact): artifact is NonNullable<ReturnType<typeof getArtifactById>> => Boolean(artifact));
+  const hasRequestOnlyArtifact = projectArtifacts.some(
+    (artifact) => artifact.publicationState === "request-only"
+  );
+
   // Look for artifact content in the local filesystem
-  let markdownContent = "### Artifact Documentation Pending\n\nThe sanitized documentation and technical artifacts for this project are currently being migrated into the portfolio. Please check back shortly.";
+  let markdownContent =
+    "### Proof Surface Pending\n\nA public-safe proof brief for this project is not published yet. The project summary is live, but the deeper artifact layer is still being prepared.";
   
   try {
     if (project.sourceMaterialFolder && artifactDocs[project.sourceMaterialFolder]) {
@@ -69,10 +75,25 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
               <Badge variant="outline" className="border-white/10 bg-white/5 text-zinc-200">
                 {project.status}
               </Badge>
-              <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+              <Badge
+                variant="outline"
+                className={
+                  project.sensitivity === "public"
+                    ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                }
+              >
                 <ShieldCheck className="mr-1 h-3 w-3" />
-                Sanitized
+                {project.sensitivity === "public" ? "Public-safe proof" : "Sanitized proof"}
               </Badge>
+              {hasRequestOnlyArtifact ? (
+                <Badge
+                  variant="outline"
+                  className="border-amber-400/30 bg-amber-400/10 text-amber-100"
+                >
+                  Request-only walkthrough
+                </Badge>
+              ) : null}
             </div>
 
             <div>

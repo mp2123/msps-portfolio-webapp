@@ -14,6 +14,7 @@ import {
   Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getProjectEvidence } from "@/content/project-evidence";
 
 export type ArtifactType = "video" | "image" | "dashboard" | "template" | "pdf" | "repo";
 export type SensitivityLevel = "public" | "sanitized";
@@ -69,6 +70,7 @@ export interface Artifact {
   thumbnail: string;
   badge: string;
   ctaLabel: string;
+  publicationState: "live" | "request-only" | "planned";
   href?: string;
   note?: string;
   sourceMaterialFolder: SourceMaterialFolder;
@@ -208,79 +210,139 @@ export const proofMetrics: ProofMetric[] = [
 
 export const artifacts: Artifact[] = [
   {
-    id: "artifact-dashboard",
+    id: "artifact-command-center-brief",
     type: "dashboard",
-    title: "Command Center dashboard walkthrough",
+    title: "Command Center BI proof brief",
     summary:
-      "Planned public-safe dashboard surface for KPI tracking, adoption visibility, and executive reporting flow from the Command Center work.",
+      "Sanitized recruiter-safe proof page for the Command Center BI work, including the problem, reporting method, measurable outcome, and the request-only path for a deeper walkthrough.",
     thumbnail:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
-    badge: "Sanitized asset slot",
-    ctaLabel: "See dashboard",
-    note: "Best fit: cropped Power BI screenshots or a short sanitized walkthrough from the Command Center reporting environment.",
+    badge: "Request-only proof",
+    ctaLabel: "Review sanitized brief",
+    publicationState: "request-only",
+    href: "/projects/avnet-command-center",
+    note: "Live dashboards remain private, but this brief documents the BI infrastructure and the recruiter-safe disclosure path.",
     sourceMaterialFolder: "command-center-bi",
-    plannedAssetType: "dashboard screenshots or short walkthrough video",
+    plannedAssetType: "sanitized web brief",
     websiteDestinations: ["Projects", "Translation layer", "Artifact vault", "Assistant"],
   },
   {
-    id: "artifact-template",
-    type: "template",
-    title: "Excel or reporting template",
-    summary:
-      "Planned downloadable scorecard, spreadsheet, or operating template that proves practical systems thinking rather than just presentation polish.",
-    thumbnail:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
-    badge: "Download-ready slot",
-    ctaLabel: "Download template",
-    note: "Best fit: a sanitized scorecard, checklist, or reporting template that a manager could actually reuse.",
-    sourceMaterialFolder: "shared-proof-assets",
-    plannedAssetType: "downloadable template, scorecard, or PDF export",
-    websiteDestinations: ["Artifact vault", "Contact", "Assistant"],
-  },
-  {
-    id: "artifact-video",
-    type: "video",
-    title: "Automation demo",
-    summary:
-      "Planned short walkthrough of an automation flow, notebook, or reporting pipeline that turns recurring manual work into a repeatable system.",
-    thumbnail:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-    badge: "Video slot",
-    ctaLabel: "Watch demo",
-    note: "Best fit: a 30 to 90 second clip showing workflow compression, QA steps, and the final business-facing output.",
-    sourceMaterialFolder: "automation-workflows",
-    plannedAssetType: "short video or annotated walkthrough",
-    websiteDestinations: ["Projects", "Translation layer", "Artifact vault", "Assistant"],
-  },
-  {
-    id: "artifact-methodology",
+    id: "artifact-gemini-brief",
     type: "pdf",
-    title: "Case-study methodology brief",
+    title: "Gemini/Codex workflow proof brief",
     summary:
-      "Planned concise methodology brief that explains business problem, analytical method, QA thinking, and business outcome without exposing sensitive internal detail.",
+      "Public-safe brief covering durable context, reconciliation, bridge scripts, and validation gates in the Gemini/Codex workflow system.",
     thumbnail:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
-    badge: "Methodology slot",
-    ctaLabel: "View methodology",
-    note: "Best fit: a 1 to 2 page PDF or web case-study page for modeling, BI design, or workflow methodology.",
-    sourceMaterialFolder: "ticket-routing-prediction",
-    plannedAssetType: "PDF brief or web case-study page",
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open proof brief",
+    publicationState: "live",
+    href: "/projects/gemini-codex-workflow",
+    note: "Pairs a sanitized web brief with direct links to the public docs repo and architecture receipts.",
+    sourceMaterialFolder: "ai-workflow-automation",
+    plannedAssetType: "sanitized web brief",
     websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
   },
   {
-    id: "artifact-repo",
+    id: "artifact-ticket-routing-brief",
+    type: "pdf",
+    title: "Ticket routing methodology brief",
+    summary:
+      "Sanitized project page for the Adidas ticket reassignment model, with the downloadable deck and business-facing methodology path.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open methodology page",
+    publicationState: "live",
+    href: "/projects/ticket-routing-prediction",
+    note: "The live proof surface is the methodology page and downloadable presentation deck.",
+    sourceMaterialFolder: "ticket-routing-prediction",
+    plannedAssetType: "methodology page + deck",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
+  {
+    id: "artifact-tjix-bundle",
+    type: "template",
+    title: "TJIX report and workbook bundle",
+    summary:
+      "Live proof bundle for the TJIX net-sales analysis, including the methodology page, native report, and supporting workbook.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open report bundle",
+    publicationState: "live",
+    href: "/projects/tjix-net-sales-drivers",
+    note: "This proof surface includes both the commercial regression writeup and the supporting workbook.",
+    sourceMaterialFolder: "tjix-net-sales-drivers",
+    plannedAssetType: "methodology page + downloads",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
+  {
+    id: "artifact-relational-db-brief",
+    type: "pdf",
+    title: "Relational database design brief",
+    summary:
+      "Project page covering the normalized database design, ERD logic, and the public-safe PDF walkthrough.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open database brief",
+    publicationState: "live",
+    href: "/projects/relational-database-design",
+    note: "The live proof surface includes the methodology page and the downloadable ERD PDF.",
+    sourceMaterialFolder: "relational-database-design",
+    plannedAssetType: "methodology page + PDF",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
+  {
+    id: "artifact-yelp-brief",
+    type: "video",
+    title: "Yelp sentiment modeling brief",
+    summary:
+      "Project page for the NLP classification workflow, with the recorded walkthrough plus downloadable deck and report.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open NLP brief",
+    publicationState: "live",
+    href: "/projects/yelp-review-modeling",
+    note: "The strongest public proof here is the recorded walkthrough paired with the downloadable project materials.",
+    sourceMaterialFolder: "yelp-review-modeling",
+    plannedAssetType: "methodology page + walkthrough",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
+  {
+    id: "artifact-spotify-brief",
+    type: "video",
+    title: "Spotify regression brief",
+    summary:
+      "Sanitized project page for the Spotify regression case study, focused on interpretable modeling and the recorded walkthrough.",
+    thumbnail:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80",
+    badge: "Live proof",
+    ctaLabel: "Open regression brief",
+    publicationState: "live",
+    href: "/projects/spotify-popularity",
+    note: "The live proof surface is the recorded walkthrough. The full final report is not yet published publicly.",
+    sourceMaterialFolder: "spotify-modeling",
+    plannedAssetType: "methodology page + walkthrough",
+    websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
+  },
+  {
+    id: "artifact-gemini-repo",
     type: "repo",
     title: "Gemini/Codex workflow docs repository",
     summary:
-      "Public documentation layer for the larger Gemini/Codex workflow automation system, including architecture notes, runbooks, and readiness receipts.",
+      "Live public documentation layer for the Gemini/Codex automation system, including architecture notes, runbooks, and readiness receipts.",
     thumbnail:
       "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80",
-    badge: "Public repo",
+    badge: "Live repo",
     ctaLabel: "Open docs repo",
+    publicationState: "live",
     href: "https://github.com/mp2123/Gemini_Codex_Project_1_Docs",
     note: "Public-safe companion repo for a much larger local automation workspace and CLI orchestration system.",
     sourceMaterialFolder: "ai-workflow-automation",
-    plannedAssetType: "public documentation repository",
+    plannedAssetType: "public docs repo",
     websiteDestinations: ["Projects", "Artifact vault", "Assistant"],
   },
 ];
@@ -309,34 +371,34 @@ export const impactSignals: ImpactSignal[] = [
   },
 ];
 
+const avnetCommandCenterEvidence = getProjectEvidence("avnet-command-center");
+const geminiCodexEvidence = getProjectEvidence("gemini-codex-workflow");
+const ticketRoutingEvidence = getProjectEvidence("ticket-routing-prediction");
+const spotifyEvidence = getProjectEvidence("spotify-popularity");
+const yelpEvidence = getProjectEvidence("yelp-review-modeling");
+const tjixEvidence = getProjectEvidence("tjix-net-sales-drivers");
+const relationalDatabaseEvidence = getProjectEvidence("relational-database-design");
+
 export const projects: PortfolioProject[] = [
   {
     id: "avnet-command-center",
     title: "Command Center BI Infrastructure",
     meta: "Power BI + stakeholder adoption",
-    oneLiner: "Built scalable reporting systems that turned fragmented sales data into decision-ready operating visibility.",
-    atlasSummary:
-      "Internal BI infrastructure for KPI clarity, adoption tracking, and recurring executive reporting at Avnet.",
-    problem:
-      "Stakeholders needed clean opportunity visibility, recurring executive reporting, and adoption tracking inside a growing internal analytics hub.",
-    method:
-      "Translated stakeholder requests into Power Query transformations, DAX KPI layers, PBIX conversion and adoption models, and recurring reporting workflows backed by QA and documentation.",
-    result:
-      "Created a more scalable reporting backbone for sales enablement, self-serve decision support, and recurring executive trend reviews.",
-    impact: "20+ hours per week removed from manual reporting and follow-up effort",
+    oneLiner: avnetCommandCenterEvidence.oneLiner,
+    atlasSummary: avnetCommandCenterEvidence.atlasSummary,
+    problem: avnetCommandCenterEvidence.problem,
+    method: avnetCommandCenterEvidence.method,
+    result: avnetCommandCenterEvidence.result,
+    impact: avnetCommandCenterEvidence.impact,
     impactLabel: "Operational leverage",
-    headlineOutcome: "Reporting cadence scaled beyond manual capacity",
+    headlineOutcome: avnetCommandCenterEvidence.headlineOutcome,
     tools: ["Power BI", "DAX", "Power Query", "VBA", "Databricks", "Stakeholder Discovery"],
     tags: ["BI", "Automation", "Executive Reporting"],
     status: "Live",
     sensitivity: "sanitized",
-    artifactIds: ["artifact-dashboard", "artifact-template"],
-    proofSurfaces: [
-      "Sanitized dashboard walkthrough",
-      "Automation process note",
-      "Reporting template or scorecard handoff",
-    ],
-    sourceConfidence: "High",
+    artifactIds: ["artifact-command-center-brief"],
+    proofSurfaces: avnetCommandCenterEvidence.proofSurfaces,
+    sourceConfidence: avnetCommandCenterEvidence.confidence,
     colSpan: 1,
     icon: Database,
     sourceMaterialFolder: "command-center-bi",
@@ -345,31 +407,21 @@ export const projects: PortfolioProject[] = [
     id: "gemini-codex-workflow",
     title: "Gemini/Codex Workflow Automation",
     meta: "CLI orchestration + durable context",
-    oneLiner:
-      "Built a file-driven AI orchestration system that keeps Gemini CLI and Codex CLI aligned through durable context, reconciliation, and validation gates.",
-    atlasSummary:
-      "A multi-agent automation system for context persistence, cross-model handoff, and deterministic session close-out.",
-    problem:
-      "Long-running AI coding workflows break when context lives only in chat history and when handoffs across models or sessions are not durable.",
-    method:
-      "Designed a constitution-first repository around declarative intent, a reconciliation loop, blackboard coordination, Gemini/Codex bridge scripts, MCP and n8n automation lanes, and deterministic close-out gates.",
-    result:
-      "Created a working orchestration environment that treats AI collaboration like an operational system instead of a one-off prompt chain.",
-    impact:
-      "100 automation scripts, 34 operating docs, and 58 research receipts in a working cross-model CLI workflow ecosystem",
+    oneLiner: geminiCodexEvidence.oneLiner,
+    atlasSummary: geminiCodexEvidence.atlasSummary,
+    problem: geminiCodexEvidence.problem,
+    method: geminiCodexEvidence.method,
+    result: geminiCodexEvidence.result,
+    impact: geminiCodexEvidence.impact,
     impactLabel: "System scale",
-    headlineOutcome: "Multi-agent AI work stopped depending on chat memory",
+    headlineOutcome: geminiCodexEvidence.headlineOutcome,
     tools: ["Shell", "Python", "Gemini CLI", "Codex CLI", "MCP", "n8n"],
     tags: ["AI Automation", "CLI", "Systems Design"],
     status: "Live",
     sensitivity: "public",
-    artifactIds: ["artifact-repo"],
-    proofSurfaces: [
-      "Public docs repository",
-      "Architecture and runbook corpus",
-      "Read-only local repo evidence",
-    ],
-    sourceConfidence: "High",
+    artifactIds: ["artifact-gemini-brief", "artifact-gemini-repo"],
+    proofSurfaces: geminiCodexEvidence.proofSurfaces,
+    sourceConfidence: geminiCodexEvidence.confidence,
     colSpan: 1,
     icon: Bot,
     sourceMaterialFolder: "ai-workflow-automation",
@@ -378,26 +430,21 @@ export const projects: PortfolioProject[] = [
     id: "ticket-routing-prediction",
     title: "Ticket Reassignment Prediction",
     meta: "Adidas IT · Gradient Boosting",
-    oneLiner:
-      "Modeled IT ticket reassignment behavior to reduce escalation friction, rerouting cost, and downtime risk.",
-    atlasSummary:
-      "Classification model for identifying reassigned tickets before extra handling time and store downtime accumulate.",
-    problem:
-      "IT support workflows were bleeding time through preventable reassignments and misrouted work.",
-    method:
-      "Built a Gradient Boosting workflow around ticket urgency, service, category, and geography variables, then evaluated the model with accuracy, recall, precision, and F1.",
-    result:
-      "Produced a predictive decision aid that could be integrated into ticket submission to flag likely reassignments earlier.",
-    impact: "76% accuracy, 86% recall, 73% F1, and roughly $280K in modeled annual labor savings",
+    oneLiner: ticketRoutingEvidence.oneLiner,
+    atlasSummary: ticketRoutingEvidence.atlasSummary,
+    problem: ticketRoutingEvidence.problem,
+    method: ticketRoutingEvidence.method,
+    result: ticketRoutingEvidence.result,
+    impact: ticketRoutingEvidence.impact,
     impactLabel: "Model performance",
-    headlineOutcome: "Reassigned tickets averaged roughly a week longer to resolve",
+    headlineOutcome: ticketRoutingEvidence.headlineOutcome,
     tools: ["Python", "scikit-learn", "Feature Engineering", "Model Evaluation"],
     tags: ["ML", "Prediction", "Ops Analytics"],
     status: "Completed",
     sensitivity: "sanitized",
-    artifactIds: ["artifact-methodology"],
-    proofSurfaces: ["Final presentation deck", "Adidas service poster", "Methodology brief"],
-    sourceConfidence: "High",
+    artifactIds: ["artifact-ticket-routing-brief"],
+    proofSurfaces: ticketRoutingEvidence.proofSurfaces,
+    sourceConfidence: ticketRoutingEvidence.confidence,
     colSpan: 1,
     icon: BrainCircuit,
     sourceMaterialFolder: "ticket-routing-prediction",
@@ -406,27 +453,21 @@ export const projects: PortfolioProject[] = [
     id: "spotify-popularity",
     title: "Spotify Popularity Prediction",
     meta: "Regression + cross-validation",
-    oneLiner:
-      "Used audio-feature data to model song popularity and translate statistical results into product and marketing recommendations.",
-    atlasSummary:
-      "Regression case study focused on feature interpretation, model significance, and business-readable music analytics.",
-    problem:
-      "Needed to understand which measurable audio features aligned most with song popularity rather than relying on intuition alone.",
-    method:
-      "Applied multiple linear regression, correlation analysis, outlier handling, and cross-validation-oriented model evaluation to a Spotify feature dataset.",
-    result:
-      "Produced an interpretable modeling case study that surfaced which features mattered most and how that insight could shape promotion strategy.",
-    impact:
-      "Statistically significant regression work with feature-level interpretation instead of inflated black-box claims",
+    oneLiner: spotifyEvidence.oneLiner,
+    atlasSummary: spotifyEvidence.atlasSummary,
+    problem: spotifyEvidence.problem,
+    method: spotifyEvidence.method,
+    result: spotifyEvidence.result,
+    impact: spotifyEvidence.impact,
     impactLabel: "Model insight",
-    headlineOutcome: "Turned audio features into business-readable popularity signals",
+    headlineOutcome: spotifyEvidence.headlineOutcome,
     tools: ["Python", "Regression", "Cross Validation", "Feature Analysis", "EDA"],
     tags: ["Modeling", "Analytics", "Communication"],
     status: "Completed",
     sensitivity: "public",
-    artifactIds: ["artifact-methodology"],
-    proofSurfaces: ["Phase 3 report", "Screen-recorded walkthrough", "Project proposal sequence"],
-    sourceConfidence: "Medium",
+    artifactIds: ["artifact-spotify-brief"],
+    proofSurfaces: spotifyEvidence.proofSurfaces,
+    sourceConfidence: spotifyEvidence.confidence,
     colSpan: 1,
     icon: LineChart,
     sourceMaterialFolder: "spotify-modeling",
@@ -435,26 +476,21 @@ export const projects: PortfolioProject[] = [
     id: "yelp-review-modeling",
     title: "Yelp Review Rating / Sentiment Modeling",
     meta: "TF-IDF + logistic regression",
-    oneLiner:
-      "Built a text-mining workflow to classify Yelp review sentiment and surface operational signals from customer language.",
-    atlasSummary:
-      "Restaurant review modeling using NLP preprocessing, TF-IDF, sentiment analyzers, and logistic regression.",
-    problem:
-      "Needed a structured way to turn large volumes of review text into actionable insight about customer sentiment and service issues.",
-    method:
-      "Applied text preprocessing, TF-IDF vectorization, VADER and FLAIR sentiment labeling, and logistic regression classification with standard evaluation metrics.",
-    result:
-      "Generated a model and business readout that highlighted where customer experience was strong and where wait time or staff issues were driving negative reviews.",
-    impact: "High-accuracy sentiment classification paired with operational feedback signals a manager could act on",
+    oneLiner: yelpEvidence.oneLiner,
+    atlasSummary: yelpEvidence.atlasSummary,
+    problem: yelpEvidence.problem,
+    method: yelpEvidence.method,
+    result: yelpEvidence.result,
+    impact: yelpEvidence.impact,
     impactLabel: "Decision support",
-    headlineOutcome: "Customer review text became a usable service-improvement signal",
+    headlineOutcome: yelpEvidence.headlineOutcome,
     tools: ["Python", "TF-IDF", "Logistic Regression", "VADER", "FLAIR"],
     tags: ["NLP", "Classification", "Customer Insight"],
     status: "Completed",
     sensitivity: "public",
-    artifactIds: ["artifact-video", "artifact-methodology"],
-    proofSurfaces: ["Final project report", "Final presentation deck", "Recorded walkthrough"],
-    sourceConfidence: "Medium",
+    artifactIds: ["artifact-yelp-brief"],
+    proofSurfaces: yelpEvidence.proofSurfaces,
+    sourceConfidence: yelpEvidence.confidence,
     colSpan: 1,
     icon: Radar,
     sourceMaterialFolder: "yelp-review-modeling",
@@ -463,26 +499,21 @@ export const projects: PortfolioProject[] = [
     id: "tjix-net-sales-drivers",
     title: "TJIX Net Sales Drivers",
     meta: "Multivariable regression",
-    oneLiner:
-      "Linked advertising, e-commerce growth, and market trends to a business-readable net-sales growth story for TJX.",
-    atlasSummary:
-      "Retail and e-commerce driver analysis combining regression, industry benchmarking, and scenario-based recommendation framing.",
-    problem:
-      "Needed to explain why TJX e-commerce penetration lagged peers and what levers could most credibly increase total net sales.",
-    method:
-      "Used regression, correlation analysis, scenario modeling, and competitor comparison to relate advertising and e-commerce growth to net-sales outcomes.",
-    result:
-      "Produced a business-facing argument for deeper e-commerce investment and more deliberate advertising support.",
-    impact: "Estimated ~$12.7M in net-sales lift per +$1M of advertising spend in the final model",
+    oneLiner: tjixEvidence.oneLiner,
+    atlasSummary: tjixEvidence.atlasSummary,
+    problem: tjixEvidence.problem,
+    method: tjixEvidence.method,
+    result: tjixEvidence.result,
+    impact: tjixEvidence.impact,
     impactLabel: "Revenue signal",
-    headlineOutcome: "Advertising and e-commerce were tied directly to net-sales upside",
+    headlineOutcome: tjixEvidence.headlineOutcome,
     tools: ["Regression", "Correlation Analysis", "Excel", "Decision Trees", "Scenario Modeling"],
     tags: ["Commercial Analytics", "Regression", "Strategy"],
     status: "Completed",
     sensitivity: "public",
-    artifactIds: ["artifact-methodology", "artifact-template"],
-    proofSurfaces: ["Final report", "Supporting workbook", "Scenario summary"],
-    sourceConfidence: "High",
+    artifactIds: ["artifact-tjix-bundle"],
+    proofSurfaces: tjixEvidence.proofSurfaces,
+    sourceConfidence: tjixEvidence.confidence,
     colSpan: 1,
     icon: Radar,
     sourceMaterialFolder: "tjix-net-sales-drivers",
@@ -491,26 +522,21 @@ export const projects: PortfolioProject[] = [
     id: "relational-database-design",
     title: "Relational Database Design",
     meta: "Access + SQL queries",
-    oneLiner:
-      "Designed a relational database structure to replace spreadsheet-driven project and staffing tracking for a growing IT support business.",
-    atlasSummary:
-      "Normalized Access database design for projects, employees, tickets, services, and client reporting.",
-    problem:
-      "A growing IT support firm had outgrown shared spreadsheets, making staffing, project status, and customer support visibility hard to manage cleanly.",
-    method:
-      "Designed normalized entities, bridge tables, business rules, metadata, and query patterns for projects, employees, clients, assets, tickets, and services.",
-    result:
-      "Produced a database design built for cleaner reporting, resource allocation visibility, and operational scalability.",
-    impact: "Replaced spreadsheet thinking with a relational model built for queryability, consistency, and future growth",
+    oneLiner: relationalDatabaseEvidence.oneLiner,
+    atlasSummary: relationalDatabaseEvidence.atlasSummary,
+    problem: relationalDatabaseEvidence.problem,
+    method: relationalDatabaseEvidence.method,
+    result: relationalDatabaseEvidence.result,
+    impact: relationalDatabaseEvidence.impact,
     impactLabel: "Systems design",
-    headlineOutcome: "Operations data became structured, relational, and report-ready",
+    headlineOutcome: relationalDatabaseEvidence.headlineOutcome,
     tools: ["Microsoft Access", "SQL", "ERD Design", "Normalization", "Metadata Design"],
     tags: ["Database", "SQL", "Operations Systems"],
     status: "Completed",
     sensitivity: "public",
-    artifactIds: ["artifact-template", "artifact-methodology"],
-    proofSurfaces: ["Final report", "Presentation deck", "ERD and metadata narrative"],
-    sourceConfidence: "High",
+    artifactIds: ["artifact-relational-db-brief"],
+    proofSurfaces: relationalDatabaseEvidence.proofSurfaces,
+    sourceConfidence: relationalDatabaseEvidence.confidence,
     colSpan: 1,
     icon: Workflow,
     sourceMaterialFolder: "relational-database-design",
@@ -666,10 +692,10 @@ export const skillsGroups: SkillsGroup[] = [
 export const artifactScannerSignals: ArtifactScannerSignal[] = [
   {
     id: "scanner-command-center",
-    artifactId: "artifact-dashboard",
+    artifactId: "artifact-command-center-brief",
     scannerId: "SCAN-2026-PROOF-1001",
     rawLabel: "Raw stakeholder ask",
-    title: "Command Center dashboard walkthrough",
+    title: "Command Center BI proof brief",
     meta: "Power BI / KPI translation",
     proofLabel: "Executive visibility surface",
     outcome: "Fragmented opportunity reporting becomes a recruiter-ready walkthrough of KPI logic, adoption flow, and operating visibility.",
@@ -682,13 +708,13 @@ export const artifactScannerSignals: ArtifactScannerSignal[] = [
   },
   {
     id: "scanner-ai-workflow",
-    artifactId: "artifact-repo",
+    artifactId: "artifact-gemini-brief",
     scannerId: "SCAN-2026-PROOF-1002",
     rawLabel: "Agent orchestration contract",
-    title: "Workflow docs repository",
+    title: "Gemini/Codex workflow proof brief",
     meta: "Durable context / AI orchestration",
     proofLabel: "Public systems proof",
-    outcome: "Bridge scripts, blackboard coordination, and reconciliation logic resolve into a public-safe documentation layer that shows the automation system is real.",
+    outcome: "Bridge scripts, blackboard coordination, and reconciliation logic resolve into a public-safe proof brief with a live docs-repo handoff.",
     rawFragments: [
       "DECLARE desired_state = INTENT.md",
       "LEASE blackboard.owner = atomic_file_lock",
@@ -698,29 +724,29 @@ export const artifactScannerSignals: ArtifactScannerSignal[] = [
   },
   {
     id: "scanner-template",
-    artifactId: "artifact-template",
+    artifactId: "artifact-tjix-bundle",
     scannerId: "SCAN-2026-PROOF-1003",
-    rawLabel: "Operator handoff format",
-    title: "Reporting template handoff",
-    meta: "Scorecard / repeatable ops tool",
-    proofLabel: "Download-ready artifact",
-    outcome: "Loose spreadsheet logic turns into a polished template that an operator or manager could actually reuse without needing the backstory.",
+    rawLabel: "Commercial model handoff",
+    title: "TJIX report and workbook bundle",
+    meta: "Regression / downloadable proof",
+    proofLabel: "Download-ready bundle",
+    outcome: "Regression notes, scenario framing, and workbook logic resolve into a downloadable proof bundle that keeps the business story intact.",
     rawFragments: [
-      "SOURCE = scorecard_columns, owner_flags, labor_notes",
-      "STANDARDIZE header_naming, status_bands, date_logic",
-      "LOCK formula_cells = true",
-      "EXPORT handoff = public_safe_template",
+      "SOURCE = ad_spend, ecommerce_penetration, competitor_growth",
+      "FIT regression = revenue_signal_story",
+      "EXPORT report = recruiter_safe_pdf",
+      "EXPORT workbook = scenario_model_bundle",
     ],
   },
   {
     id: "scanner-methodology",
-    artifactId: "artifact-methodology",
+    artifactId: "artifact-ticket-routing-brief",
     scannerId: "SCAN-2026-PROOF-1004",
     rawLabel: "Analysis notes",
-    title: "Methodology brief",
-    meta: "Analytical rigor for recruiters",
-    proofLabel: "Business-readable brief",
-    outcome: "Model notes, QA choices, and business framing resolve into a short proof brief that explains what was built and why it mattered.",
+    title: "Ticket routing methodology brief",
+    meta: "Predictive analytics for recruiters",
+    proofLabel: "Business-readable methodology",
+    outcome: "Model notes, evaluation metrics, and business framing resolve into a concise predictive-analytics proof surface with a live deck handoff.",
     rawFragments: [
       "MODEL = gradient_boosting_classifier",
       "METRICS = accuracy, recall, f1_score",
@@ -784,6 +810,13 @@ export function getPortfolioSystemPrompt() {
     )
     .join("\n");
 
+  const artifactSummary = artifacts
+    .map(
+      (artifact) =>
+        `- ${artifact.title} (${artifact.publicationState}): ${artifact.summary} Format: ${artifact.plannedAssetType}.${artifact.href ? ` Published path: ${artifact.href}.` : ""}`
+    )
+    .join("\n");
+
   const experienceSummary = careerNodes
     .map(
       (node) =>
@@ -801,21 +834,26 @@ export function getPortfolioSystemPrompt() {
   return `You are Michael-Bot, the recruiter-facing portfolio assistant for Michael Panico.
 Your job is to answer clearly, confidently, and concisely using the portfolio facts below.
 Optimize for recruiters, hiring managers, and stakeholders evaluating Michael for BI, analytics, automation, and operations-intelligence roles.
-Answer directly first, then give 2 to 4 concrete proof points, and optionally end with one short follow-up question.
+Use plain text only, not markdown formatting.
+Answer directly first, then give 2 to 4 short concrete proof lines.
+For comparison questions, use short labels like "Short answer:", "Project A:", "Project B:", and "Proof:".
+Keep most answers to 5 short lines or fewer unless the user clearly asks for depth.
+Only end with one short follow-up question when it materially helps narrow role fit or proof type.
 
 Positioning:
 - Michael is a hybrid operator-to-analyst builder with frontline leadership experience and strong business analytics instincts.
 - He is strongest when translating messy business needs into repeatable reporting, automation, and decision support.
 - Keep the tone sharp, business-oriented, and proof-first.
 - Do not fabricate employers, credentials, URLs, or confidential client details.
+- Never invent or rewrite proof links. Only mention an exact published path from the portfolio context, and only when it is actually present.
 - When a detail is not public, say it is sanitized or not yet published.
 
 Projects:
 ${projectSummary}
 
 Artifacts:
-- The portfolio includes a sanitized artifact vault for dashboard walkthroughs, downloadable templates, automation demos, and methodology briefs.
-- If asked for proof or examples, use the most relevant project first, then mention the artifact vault when helpful.
+${artifactSummary}
+- If asked for proof or examples, use the most relevant project first, then explain whether the best proof is live, request-only, or not yet published.
 
 Experience:
 ${experienceSummary}

@@ -1,4 +1,4 @@
-export const ASSISTANT_CACHE_VERSION = 'portfolio-assistant-cache-v2';
+export const ASSISTANT_CACHE_VERSION = 'portfolio-assistant-cache-v3';
 export const ASSISTANT_CLIENT_CACHE_TTL_MS = 1000 * 60 * 10;
 export const ASSISTANT_MEMORY_CACHE_TTL_MS = 1000 * 60 * 5;
 export const ASSISTANT_DATABASE_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
@@ -8,6 +8,9 @@ export type AssistantCacheStrategy = 'exact_transcript' | 'intent_single_turn';
 export type AssistantIntent =
   | 'summary'
   | 'role_fit'
+  | 'business_impact'
+  | 'automation_proof'
+  | 'project_comparison'
   | 'hours_saved'
   | 'best_example'
   | 'cross_functional'
@@ -33,6 +36,21 @@ export type AssistantCacheLookup = {
 };
 
 const INTENT_RULES: Array<{ intent: AssistantIntent; terms: string[] }> = [
+  {
+    intent: 'project_comparison',
+    terms: [
+      'compare',
+      'versus',
+      'vs',
+      'difference between',
+      'compare command center',
+      'compare gemini',
+      'compare ticket routing',
+      'command center vs',
+      'gemini vs',
+      'ticket routing vs',
+    ],
+  },
   {
     intent: 'hours_saved',
     terms: [
@@ -67,6 +85,35 @@ const INTENT_RULES: Array<{ intent: AssistantIntent; terms: string[] }> = [
       'bi developer',
       'data analyst',
       'operations intelligence',
+    ],
+  },
+  {
+    intent: 'business_impact',
+    terms: [
+      'business impact',
+      'strongest business impact',
+      'most impact',
+      'biggest impact',
+      'business value',
+      'commercial impact',
+      'revenue impact',
+      'best business outcome',
+      'quantified impact',
+      'measurable impact',
+      'largest savings',
+    ],
+  },
+  {
+    intent: 'automation_proof',
+    terms: [
+      'automation proof',
+      'strongest automation',
+      'cleanest proof of automation',
+      'best automation proof',
+      'workflow automation',
+      'systems thinking proof',
+      'durable workflow',
+      'automation system',
     ],
   },
   {
