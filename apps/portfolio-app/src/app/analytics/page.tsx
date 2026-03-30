@@ -719,8 +719,8 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
           </div>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+        <section className="min-w-0 grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
+          <div className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
               Recent Cache Rows
             </p>
@@ -772,7 +772,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+          <div className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
               Recent Analytics
             </p>
@@ -924,7 +924,7 @@ export default async function AssistantDebugPage({ searchParams }: PageProps) {
           </div>
         </section>
 
-        <section className="rounded-[24px] border border-white/10 bg-white/5 p-6">
+        <section className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6">
           <p className="text-xs uppercase tracking-[0.24em] text-cyan-200/70">
             Notes
           </p>

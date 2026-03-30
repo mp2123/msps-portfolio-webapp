@@ -1,52 +1,141 @@
-# 📊 Michael Panico: Professional CV & Analytics Portfolio
+# Portfolio App
 
-This application is an interactive, "sales-worthy" professional portfolio designed to showcase Michael Panico's unique background in both high-volume hospitality management and high-impact data analytics.
+`portfolio-app` is the public recruiter-facing portfolio for Michael Panico inside the `MPs_Web-App_Ecosystem` monorepo.
 
----
+It is intentionally built as an interactive web app rather than a static site:
+- recruiter-first homepage with guided navigation
+- dedicated project library
+- web CV with deeper visual modules
+- floating recruiter assistant
+- analytics diagnostics surface
+- local-only source-material intake system for future proof upgrades
 
-## ✨ Core Features & Enhancements (Phase 3 & 4)
+## Current Routes
 
-### Immersive User Experience:
--   **Scroll-Expanding Hero:** A high-impact hero section featuring a dynamic video or image background that expands upon scroll, immediately engaging visitors.
--   **"Glass Terminal" UI:** The main content is wrapped in a sleek, glassmorphic terminal window aesthetic, providing a consistent high-tech feel.
--   **Generative Art Background:** A subtle, mouse-reactive dot shader background integrated into the root layout, adding a layer of dynamic visual polish across the entire site.
--   **Spotlight Card Effect:** Project and information cards now feature an interactive mouse-follow glow effect, enhancing engagement.
+- `/`
+  Recruiter briefing surface with the Woven Light hero, proof strip, project atlas, advantage story, experience preview, recommendations, and contact.
+- `/projects`
+  Equal-weight project library with the impact lab, translation-layer scanner, and artifact vault.
+- `/projects/[slug]`
+  Individual project detail pages.
+- `/cv`
+  Printable web CV plus deeper experience visuals, hospitality/advantage context, timeline/orbital systems visuals, and skills.
+- `/analytics`
+  Read-only diagnostics surface for assistant cache, analytics events, and invisible-ink activity.
+- `/api/chat`
+  Recruiter assistant route with layered caching.
+- `/api/portfolio-events`
+  Analytics event ingestion.
+- `/api/invisible-wall`
+  Hidden wall note ingestion and retrieval.
+- `/api/random-cocktail`
+  Random cocktail generator endpoint used by the hospitality section.
 
-### Sales-Focused Content:
--   **Interactive ROI Calculator:** Allows visitors (recruiters) to estimate time and cost savings Michael can bring to their team, based on his real-world automation achievements.
--   **Live Data Dashboard:** A compelling, interactive chart that visualizes the tangible financial impact of Michael's key projects, turning metrics into a dynamic story.
--   **The "Hospitality to Quant" Story Map:** A dedicated section visually bridging his operational management skills with his data analytics expertise, highlighting his unique competitive advantage.
--   **Animated Code Snippets:** Key project descriptions feature animated, typing code blocks, demonstrating practical coding skills.
+## Current Product Structure
 
-### Enhanced AI Assistant:
--   **Glowing AI Assistant (Michael-Bot):** A visually upgraded, floating chatbot assistant trained on Michael's resume and projects, featuring guided prompt suggestions for recruiters.
+### Shared shell
 
-### Presentation & Navigation:
--   **Bento Grid Project Showcase:** A modern, flexible grid layout for displaying key projects, making information digestible and visually appealing.
--   **Clean Header:** A minimalist header with a custom "MP" logo and a direct "Contact Me" call-to-action.
+- `src/components/portfolio/public-page-shell.tsx`
+  Shared public wrapper for the header, left rail, and floating assistant across `/`, `/projects`, `/cv`, and project detail pages.
 
-## 🤔 Why a Web App, Not a Website?
+### Homepage
 
-A standard, static website is like a digital brochure—it presents information. This project, however, is an **interactive experience** designed to *demonstrate* skill, not just list it. We chose a Web App architecture for several key reasons:
+- `src/app/page.tsx`
+- `src/components/ui/woven-light-hero.tsx`
+- `src/components/portfolio/sections/proof-strip.tsx`
+- `src/components/portfolio/sections/quick-recruiter-summary.tsx`
+- `src/components/portfolio/sections/project-atlas.tsx`
+- `src/components/portfolio/sections/skills-snapshot.tsx`
+- `src/components/portfolio/sections/hospitality-story.tsx`
+- `src/components/portfolio/sections/experience-preview.tsx`
+- `src/components/portfolio/sections/contact-section.tsx`
 
-1.  **Interactivity & Engagement:** Features like the ROI Calculator, the live Recharts dashboard, the AI chatbot, and the scroll-expanding hero require a stateful, client-side application structure that a static HTML/CSS site cannot support.
-2.  **Dynamic Content:** While the content is currently hard-coded, the architecture is built to easily pull data from a CMS or a database (like our Supabase instances) in the future.
-3.  **Performance & Animations:** Using Next.js and Framer Motion allows for complex, hardware-accelerated animations and page transitions that create a premium, "buttery-smooth" user experience.
-4.  **Scalability & Maintainability:** As a full-fledged application within our monorepo, it can share components, types, and logic with the other apps, making future feature development (like a blog or more complex case studies) much more efficient.
+### Projects surface
 
-In short, this isn't just a resume—it's a product, and the product is Michael's expertise.
+- `src/app/projects/page.tsx`
+- `src/components/portfolio/sections/projects-library.tsx`
+- `src/components/portfolio/sections/project-impact-lab.tsx`
+- `src/components/portfolio/sections/artifact-scanner.tsx`
+- `src/components/portfolio/sections/artifact-gallery.tsx`
 
-## 🚀 Getting Started
+### CV surface
 
-1.  **Install Dependencies:**
-    ```bash
-    npm install
-    ```
-2.  **Environment Setup:**
-    Create a `.env` file and populate it with your Supabase and AI provider keys (see `.env.template`).
-3.  **Run Development Server:**
-    ```bash
-    npm run dev
-    ```
----
-*Part of the Michael Panico Web-App Ecosystem*
+- `src/app/cv/page.tsx`
+- `src/components/cv/web-cv.tsx`
+- `src/components/cv/cv-deep-dive.tsx`
+- `src/components/portfolio/graphics/experience-globe.tsx`
+- `src/components/ui/radial-orbital-timeline.tsx`
+- `src/components/ui/skills-matrix.tsx`
+
+### Assistant and analytics
+
+- `src/components/ui/glowing-ai-chat-assistant.tsx`
+- `src/content/portfolio-assistant.ts`
+- `src/lib/portfolio-analytics.ts`
+- `src/app/analytics/page.tsx`
+
+## Current Visual / Interaction Direction
+
+- dark cinematic surfaces
+- cyan/blue luminous accents
+- orbital and systems-thinking visuals
+- glassy shell framing
+- subtle motion where it adds atmosphere
+- shared floating assistant on all public pages
+
+## Source Material Workflow
+
+All future project-proof upgrades start in `source-material/`.
+
+Working order:
+1. Drop unsorted files into `source-material/_incoming/`.
+2. Move originals into `01-raw`.
+3. Create public-safe copies in `02-sanitized`.
+4. Promote likely publishable candidates to `03-selected-assets`.
+5. Capture provenance, impact, and publishing notes in `04-notes`.
+
+Important rule:
+- Nothing in `source-material/` should be treated as public-safe by default.
+
+## Documentation Map
+
+Start here when orienting yourself:
+
+- `docs/README.md`
+  Central guide to the app docs and where to look first.
+- `docs/current-state.md`
+  Fast implementation snapshot for the current route architecture and recent stabilization work.
+- `docs/architecture-map.md`
+  Routes, major systems, runtime stack, environment, and data flows.
+- `docs/component-inventory.md`
+  Current section/component ownership map.
+- `docs/qa-checklist.md`
+  Breakpoint and interaction verification checklist.
+- `docs/source-material-map.md`
+  Intake buckets mapped to live site surfaces.
+- `docs/project-fact-sheets.md`
+  Canonical derived project facts for public-safe copy and assistant behavior.
+- `CHANGELOG.md`
+  Versioned history of recent implementation passes.
+
+## Local Development
+
+From `apps/portfolio-app`:
+
+```bash
+npm install
+npm run dev
+```
+
+Production verification:
+
+```bash
+npm run build
+```
+
+## Working Notes
+
+- The app currently uses `WovenLightHero`, not the older scroll-expansion hero, on the homepage.
+- The assistant is mounted via the shared public shell to prevent route drift.
+- `/analytics` is the active diagnostics surface; older references to `/internal/assistant-debug` are historical and should not be treated as current.
+- `source-material/` is local-only working state. Public portfolio content should always be derived and sanitized first.

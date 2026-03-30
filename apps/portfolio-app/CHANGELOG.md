@@ -4,6 +4,17 @@ All notable changes to the **Portfolio App** are documented here.
 
 ---
 
+## [1.3.2] — 2026-03-29
+
+### 📚 Documentation and Repo Orientation Refresh
+- **Root README rewritten** — Replaced the old scroll-expansion-era overview with a current map of routes, shared shell behavior, assistant/analytics surfaces, and source-material workflow.
+- **Architecture docs synchronized** — Updated the architecture map to reflect the active routes (`/`, `/projects`, `/projects/[slug]`, `/cv`, `/analytics`), shared shell, Woven Light hero, current API surfaces, and active data models.
+- **Component inventory corrected** — Re-mapped the homepage, projects, CV, diagnostics, and shared chrome to the current implementation files instead of outdated monolithic page references.
+- **QA checklist refreshed** — Replaced stale references like `/internal/assistant-debug`, `CV companion`, and the old hero assumptions with the current verification flow.
+- **Documentation index added** — Added a single index file so routes, features, verification, and intake workflow have an obvious entry point for future maintenance.
+
+---
+
 ## [1.3.1] — 2026-03-29
 
 ### 🖥️ Desktop Audit Closure
