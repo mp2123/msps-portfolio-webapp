@@ -26,7 +26,7 @@ A premium digital destination for cocktail education, professional networking, a
 
 - **Framework:** Next.js 15+ (App Router, Server Actions)
 - **Styling:** Tailwind CSS 4, Framer Motion, Radix UI (Shadcn/UI)
-- **Database:** Supabase (PostgreSQL), Prisma ORM
+- **Database:** Supabase (PostgreSQL), Prisma ORM (Row Level Security enabled for client protection)
 - **AI Integration:** Vercel AI SDK v6 (Streaming)
 
 ---
