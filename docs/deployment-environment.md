@@ -32,6 +32,24 @@ This file is the source-of-truth checklist for the four production-facing web ap
 - Supabase Performance Advisor no longer reports the original missing `Favorite` foreign-key indexes or RLS initplan warnings after migration `20260502114040_harden_rls_and_indexes.sql`.
 - Supabase Performance Advisor reports the two new `Favorite` indexes as unused immediately after creation; this is expected while the live `User` and `Favorite` tables have no rows and should be rechecked after authenticated bartender usage creates favorite rows.
 
+## Local Storage Hygiene
+
+On 2026-05-02, local-only generated artifacts were removed from the three Next.js app folders to reclaim disk space without changing source, configuration, migrations, docs, or deployment state.
+
+Removed from `apps/portfolio-app`, `apps/mixology-app`, and `apps/insurance-app`:
+
+- `node_modules`
+- `.next`
+- stale `.next.stale.*` output found under `apps/insurance-app`
+
+These directories are intentionally ignored build/dependency artifacts. They are safe to delete because they are regenerated from committed project files:
+
+- Run `npm ci` in an app folder to restore `node_modules`.
+- Run `npm run build` to regenerate `.next`.
+- Run `npm run dev` after `npm ci` for local development.
+
+Do not delete app source files, `package-lock.json`, Prisma schemas, Supabase migrations, `.env` files, or Vercel/GitHub configuration as part of storage cleanup.
+
 ## Preview Verification
 
 On 2026-05-02, local build fixes were deployed through Vercel preview deployments:
