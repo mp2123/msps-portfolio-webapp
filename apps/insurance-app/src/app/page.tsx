@@ -9,7 +9,6 @@ import { Flashcards } from "@/components/ui/flashcards";
 import { HeroSection, LogosSection } from "@/components/ui/hero-1";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { DotScreenShader } from "@/components/ui/dot-shader-background";
-import { SplineScene } from "@/components/ui/splite";
 import { HalideLanding } from "@/components/ui/halide-topo-hero";
 import { renderCanvas } from "@/components/ui/canvas";
 import Image from "next/image";
@@ -70,7 +69,7 @@ export default function DemoOne() {
           >
             <div className="relative h-full w-full bg-muted flex items-center justify-center">
                 <Image
-                    src="https://images.unsplash.com/photo-1454165833767-027ffea10c4b?auto=format&fit=crop&q=80&w=1200"
+                    src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=1200"
                     alt="Study App Dashboard"
                     fill
                     className="object-cover rounded-2xl"
@@ -82,7 +81,7 @@ export default function DemoOne() {
           </ContainerScroll>
         </section>
 
-        {/* Interactive Spline 3D Section */}
+        {/* Interactive Study Tools Section */}
         <section className="mx-auto w-full max-w-5xl px-4 py-20" id="guide">
             <Card className="w-full h-[600px] bg-black/[0.96] relative overflow-hidden border-border/40 shadow-2xl">
                 <div className="flex h-full flex-col md:flex-row">
@@ -101,12 +100,28 @@ export default function DemoOne() {
                         </div>
                     </div>
 
-                    {/* Right content - Spline Scene */}
-                    <div className="flex-1 relative h-full min-h-[300px]">
-                        <SplineScene 
-                            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                            className="w-full h-full"
-                        />
+                    <div className="flex-1 relative h-full min-h-[300px] overflow-hidden border-t border-white/10 bg-[radial-gradient(circle_at_50%_25%,rgba(34,197,94,0.26),transparent_32%),linear-gradient(145deg,rgba(15,23,42,0.95),rgba(2,6,23,1))] md:border-l md:border-t-0">
+                        <div className="absolute inset-8 rounded-full border border-emerald-300/25" />
+                        <div className="absolute inset-16 rounded-full border border-cyan-300/20" />
+                        <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300/15 blur-2xl" />
+                        <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/40 bg-white/5 shadow-[0_0_60px_rgba(16,185,129,0.28)]" />
+                        <div className="absolute left-[18%] top-[24%] rounded-lg border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                            <p className="text-xs uppercase tracking-[0.18em] text-emerald-100/70">Module</p>
+                            <p className="mt-1 text-sm font-semibold text-white">Policy Types</p>
+                        </div>
+                        <div className="absolute right-[12%] top-[36%] rounded-lg border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                            <p className="text-xs uppercase tracking-[0.18em] text-cyan-100/70">Focus</p>
+                            <p className="mt-1 text-sm font-semibold text-white">Underwriting</p>
+                        </div>
+                        <div className="absolute bottom-[18%] left-[28%] rounded-lg border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                            <p className="text-xs uppercase tracking-[0.18em] text-sky-100/70">Exam</p>
+                            <p className="mt-1 text-sm font-semibold text-white">AZ Rules</p>
+                        </div>
+                        <div className="absolute bottom-8 right-8 flex gap-2">
+                            <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                            <span className="h-2 w-2 rounded-full bg-cyan-300" />
+                            <span className="h-2 w-2 rounded-full bg-sky-300" />
+                        </div>
                     </div>
                 </div>
             </Card>

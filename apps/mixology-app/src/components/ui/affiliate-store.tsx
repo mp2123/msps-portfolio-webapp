@@ -27,7 +27,7 @@ const products = [
     title: "Hendrick's Gin",
     description: "Premium gin infused with rose and cucumber. Master's choice.",
     price: "$39.99",
-    imageUrl: "https://images.unsplash.com/photo-1632935187088-ec0bc9ba2bf5?auto=format&fit=crop&q=80&w=400",
+    imageUrl: "https://images.unsplash.com/photo-1578911373434-0cb395d2cbfb?auto=format&fit=crop&q=80&w=400",
     url: "#",
     category: "Spirits"
   },

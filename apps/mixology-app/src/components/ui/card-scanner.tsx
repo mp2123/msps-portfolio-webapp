@@ -8,7 +8,7 @@ import { motion, useAnimationFrame, useMotionValue } from 'framer-motion';
 
 const recipes = [
   { name: "Paper Plane", imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1002" },
-  { name: "Negroni", imageUrl: "https://images.unsplash.com/photo-1536935338213-d2c1238f91c6?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1001" },
+  { name: "Negroni", imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1001" },
   { name: "Last Word", imageUrl: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1003" },
   { name: "Old Fashioned", imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1000" },
   { name: "Margarita", imageUrl: "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&q=80&w=800", id: "MIX-2026-DRINK-1004" },

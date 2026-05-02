@@ -31,7 +31,7 @@ interface RecipeGalleryProps {
 
 const recipes: Recipe[] = [
   { id: 1, name: "Paper Plane", ingredients: ["Bourbon", "Amaro Nonino", "Aperol", "Lemon"], difficulty: "Medium", glass: "Coupe", imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800" },
-  { id: 2, name: "Negroni", ingredients: ["Gin", "Campari", "Sweet Vermouth"], difficulty: "Easy", glass: "Rocks", imageUrl: "https://images.unsplash.com/photo-1536935338213-d2c1238f91c6?auto=format&fit=crop&q=80&w=800" },
+  { id: 2, name: "Negroni", ingredients: ["Gin", "Campari", "Sweet Vermouth"], difficulty: "Easy", glass: "Rocks", imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800" },
   { id: 3, name: "Last Word", ingredients: ["Gin", "Green Chartreuse", "Maraschino", "Lime"], difficulty: "Hard", glass: "Coupe", imageUrl: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&q=80&w=800" }
 ];
 

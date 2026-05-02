@@ -15,7 +15,7 @@ const videos = [
   {
     title: "The Art of the Dry Shake",
     description: "How to get the perfect thick foam every single time.",
-    thumbnail: "https://images.unsplash.com/photo-1536935338213-d2c1238f91c6?auto=format&fit=crop&q=80&w=800",
+    thumbnail: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800",
     url: "#",
   },
   {

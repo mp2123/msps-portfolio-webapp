@@ -181,8 +181,6 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
     hostElement.addEventListener("pointerleave", handlePointerLeave);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    const clock = new THREE.Clock();
-
     function renderFrame(now: number) {
       frameId = window.requestAnimationFrame(renderFrame);
       if (lastRenderTime !== 0 && now - lastRenderTime < HERO_TARGET_FRAME_MS) {
@@ -226,7 +224,6 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
       }
 
       isAnimating = true;
-      clock.start();
       lastRenderTime = 0;
       elapsedTime = 0;
       frameId = window.requestAnimationFrame(renderFrame);
@@ -238,7 +235,6 @@ const WovenLightCanvas = memo(function WovenLightCanvas({
       }
 
       isAnimating = false;
-      clock.stop();
       window.cancelAnimationFrame(frameId);
     }
 

@@ -33,7 +33,7 @@ async function main() {
         instructions: "Stir all ingredients with ice in a mixing glass. Strain into a rocks glass over a large ice cube. Garnish with an orange twist.",
         glassware: "Rocks Glass",
         category: "The Unforgettables",
-        imageUrl: "https://images.unsplash.com/photo-1536935338213-d2c1238f91c6?auto=format&fit=crop&q=80&w=800"
+        imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800"
       },
       {
         name: "Paper Plane",
@@ -90,14 +90,14 @@ async function main() {
         title: "Buffalo Trace Bourbon",
         description: "The flagship bourbon from the world's most award-winning distillery.",
         url: "https://www.totalwine.com/p/1431750",
-        imageUrl: "https://images.unsplash.com/photo-1527281400828-ac737aff2ad0?auto=format&fit=crop&q=80&w=400",
+        imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400",
         category: "Spirits"
       },
       {
         title: "Hendrick's Gin",
         description: "A uniquely refreshing gin infused with cucumber and rose petals.",
         url: "https://www.totalwine.com/p/92617750",
-        imageUrl: "https://images.unsplash.com/photo-1632935187088-ec0bc9ba2bf5?auto=format&fit=crop&q=80&w=400",
+        imageUrl: "https://images.unsplash.com/photo-1578911373434-0cb395d2cbfb?auto=format&fit=crop&q=80&w=400",
         category: "Spirits"
       },
       // Sour Beers

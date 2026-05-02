@@ -6,11 +6,11 @@ import { ChevronsLeftRight } from "lucide-react";
 import { motion, useAnimationFrame, useMotionValue } from 'framer-motion';
 
 const policies = [
-  { name: "Term Life 20", imageUrl: "https://images.unsplash.com/photo-1611926520333-8a0a5d2a4c6?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1000" },
+  { name: "Term Life 20", imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1000" },
   { name: "Whole Life Secure", imageUrl: "https://images.unsplash.com/photo-1559526324-c1f275fbfa32?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1001" },
-  { name: "Universal Life Flex", imageUrl: "https://images.unsplash.com/photo-1600880292210-f79a4a7a7a5e?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1002" },
-  { name: "Variable Life Growth", imageUrl: "https://images.unsplash.com/photo-1554224155-8d044b4045f8?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1003" },
-  { name: "Final Expense Shield", imageUrl: "https://images.unsplash.com/photo-1560518883-ce09059ee212?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1004" },
+  { name: "Universal Life Flex", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1002" },
+  { name: "Variable Life Growth", imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1003" },
+  { name: "Final Expense Shield", imageUrl: "https://images.unsplash.com/photo-1559526324-c1f275fbfa32?auto=format&fit=crop&q=80&w=800", id: "AZ-2026-LIFE-1004" },
 ];
 
 const generateCode = (width: number, height: number, policyName: string) => {

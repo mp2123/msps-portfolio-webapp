@@ -23,6 +23,9 @@ This file is the source-of-truth checklist for the four production-facing web ap
 - Bartender, life-insurance, and portfolio are on green production deployments from `main`.
 - The GitHub Actions matrix runs `npm ci`, `npm run lint`, and `npm run build` for the three Next.js apps.
 - `npm ci` reports `found 0 vulnerabilities` for portfolio, bartender/mixology, and life-insurance after the May 2026 dependency hardening pass.
+- React is pinned to the patched 19.2 line and the Three.js stack is deduped through `@react-three/fiber` plus one app-level `three` package.
+- The unused Spline runtime was removed from the Next.js apps to reduce client bundle weight and avoid loading two Three.js runtimes on the life-insurance home page.
+- Source and seed-data Unsplash image URLs were checked on 2026-05-02; every referenced Unsplash URL returned HTTP 200.
 - The bartender Vercel Preview environment has project-level `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - Keep database URLs out of Preview until a separate preview database or schema boundary is intentionally configured.
 
