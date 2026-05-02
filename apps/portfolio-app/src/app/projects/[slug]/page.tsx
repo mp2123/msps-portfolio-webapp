@@ -122,7 +122,7 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
         <article className="prose prose-invert prose-cyan max-w-none rounded-3xl border border-white/10 bg-black/25 p-6 shadow-[0_0_80px_rgba(34,211,238,0.03)] backdrop-blur-xl sm:p-10 lg:prose-lg">
           {markdownContent.length > 200 ? null : (
             <div className="mb-10 rounded-xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-zinc-400">
-              <p>The raw artifacts for {project.title} (.sql, .pbix, .pdf) are located in the repository's source materials.</p>
+              <p>The raw artifacts for {project.title} (.sql, .pbix, .pdf) are located in the repository&apos;s source materials.</p>
               <p className="mt-2 text-cyan-200">They are currently being converted to Markdown documentation for web rendering.</p>
             </div>
           )}

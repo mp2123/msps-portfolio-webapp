@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { GlassWater, FileDown, Heart, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useTransition, useRef } from 'react';
+import type { User } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -22,7 +23,7 @@ interface Recipe {
 }
 
 interface RecipeGalleryProps {
-    user: any;
+    user: User | null;
     onSignInClick: () => void;
     initialFavorites: number[];
 }
@@ -38,7 +39,7 @@ export function RecipeGallery({ user, onSignInClick, initialFavorites }: RecipeG
   const [downloading, setDownloading] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
   const printRef = useRef<HTMLDivElement>(null);
-  const [activePrintRecipe, setActivePrintRecipe] = useState<any>(null);
+  const [activePrintRecipe, setActivePrintRecipe] = useState<Recipe | null>(null);
 
   const handleToggleFavorite = (recipeId: number) => {
     if (!user) {

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Life Insurance AZ 2026 Study App",
-  description: "Master the Arizona Life Insurance Exam",
+  title: "Mixology Lab",
+  description: "Explore cocktail recipes, bar tools, tutorials, and recipe requests.",
 };
 
 export default function RootLayout({

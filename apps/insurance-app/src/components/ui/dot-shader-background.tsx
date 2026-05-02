@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect } from 'react'
 import { Canvas, ThreeEvent, useFrame, useThree } from '@react-three/fiber'
 import { shaderMaterial, useTrailTexture } from '@react-three/drei'
 import { useTheme } from 'next-themes'
@@ -98,6 +98,17 @@ const DotMaterial = shaderMaterial(
   `
 )
 
+type DotShaderMaterial = THREE.ShaderMaterial & {
+  uniforms: {
+    time: { value: number }
+    dotColor: { value: THREE.Color }
+    bgColor: { value: THREE.Color }
+    dotOpacity: { value: number }
+  }
+}
+
+const DotMaterialConstructor = DotMaterial as unknown as new () => DotShaderMaterial
+
 function Scene() {
   const size = useThree((s) => s.size)
   const viewport = useThree((s) => s.viewport)
@@ -142,17 +153,19 @@ function Scene() {
   })
 
   const dotMaterial = useMemo(() => {
-    // @ts-ignore
-    return new DotMaterial()
+    return new DotMaterialConstructor()
   }, [])
 
   useEffect(() => {
-    dotMaterial.uniforms.dotColor.value.setHex(themeColors.dotColor.replace('#', '0x'))
-    dotMaterial.uniforms.bgColor.value.setHex(themeColors.bgColor.replace('#', '0x'))
+    // Three.js shader uniforms are intentionally mutable runtime state.
+    dotMaterial.uniforms.dotColor.value.set(themeColors.dotColor)
+    dotMaterial.uniforms.bgColor.value.set(themeColors.bgColor)
+    // eslint-disable-next-line react-hooks/immutability
     dotMaterial.uniforms.dotOpacity.value = themeColors.dotOpacity
   }, [theme, dotMaterial, themeColors])
 
   useFrame((state) => {
+    // eslint-disable-next-line react-hooks/immutability
     dotMaterial.uniforms.time.value = state.clock.elapsedTime
   })
 
@@ -178,13 +191,6 @@ function Scene() {
 }
 
 export const DotScreenShader = () => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return <div className="w-full h-full bg-[#121212]" />;
-
   return (
     <Canvas
       gl={{

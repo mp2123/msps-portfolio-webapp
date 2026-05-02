@@ -6,26 +6,31 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, X, Send, Bot, User, Settings, ExternalLink } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+
+type ChatProvider = 'google' | 'openai';
+
+function readStoredProvider(): ChatProvider {
+  if (typeof window === 'undefined') return 'google';
+  const savedProvider = localStorage.getItem('insurance_study_provider');
+  return savedProvider === 'openai' ? 'openai' : 'google';
+}
+
+function readStoredApiKey() {
+  if (typeof window === 'undefined') return '';
+  return localStorage.getItem('insurance_study_api_key') ?? '';
+}
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [input, setInput] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'google' | 'openai'>('google');
+  const [apiKey, setApiKey] = useState(readStoredApiKey);
+  const [provider, setProvider] = useState<ChatProvider>(readStoredProvider);
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
-    const savedKey = localStorage.getItem('insurance_study_api_key');
-    const savedProvider = localStorage.getItem('insurance_study_provider');
-    if (savedKey) setApiKey(savedKey);
-    if (savedProvider) setProvider(savedProvider as any);
-  }, []);
-
-  const saveSettings = (key: string, prov: 'google' | 'openai') => {
+  const saveSettings = (key: string, prov: ChatProvider) => {
     localStorage.setItem('insurance_study_api_key', key);
     localStorage.setItem('insurance_study_provider', prov);
     setShowSettings(false);
@@ -184,7 +189,7 @@ export function Chatbot() {
                     >
                       <Bot className="h-12 w-12 text-muted-foreground/30 mb-4" />
                       <p className="text-sm text-muted-foreground">
-                        Hi! I'm your Arizona 2026 Insurance Assistant. How can I help you study today?
+                        Hi! I&apos;m your Arizona 2026 Insurance Assistant. How can I help you study today?
                       </p>
                     </motion.div>
                   )}

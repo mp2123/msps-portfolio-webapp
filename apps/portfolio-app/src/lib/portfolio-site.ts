@@ -16,7 +16,7 @@ export function getSiteUrl() {
     normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL) ??
     normalizeSiteUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
     normalizeSiteUrl(process.env.VERCEL_URL) ??
-    "http://localhost:3006";
+    "https://www.michaelspanico.com";
 
   return new URL(resolvedUrl);
 }

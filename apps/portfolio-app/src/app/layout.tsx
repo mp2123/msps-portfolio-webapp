@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { getCanonicalUrl, siteDescription, siteName } from "@/lib/portfolio-site";
+import { getCanonicalUrl, getSiteUrl, siteDescription, siteName } from "@/lib/portfolio-site";
 import { FramerProvider } from "@/components/providers/framer-provider";
 import { Sora, Inter } from "next/font/google";
 import { DynamicSiteBackground } from "@/components/dynamic-site-background";
@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const resumeUrl = getCanonicalUrl("/resume/michael-panico-resume.pdf");
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006"),
+  metadataBase: getSiteUrl(),
   title: {
     default: "Michael Panico | Home | Business Analytics & Operations",
     template: "Michael Panico | %s | Business Analytics & Operations",

@@ -1,6 +1,7 @@
 // apps/mixology-app/src/components/ui/header-1.tsx
 'use client';
 import React from 'react';
+import type { User } from '@supabase/supabase-js';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
@@ -11,7 +12,7 @@ interface HeaderProps {
 }
 
 export function Header({ onSignInClick }: HeaderProps) {
-	const [user, setUser] = React.useState<any>(null);
+	const [user, setUser] = React.useState<User | null>(null);
 	const supabase = createClient();
 
 	React.useEffect(() => {

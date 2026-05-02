@@ -1,6 +1,7 @@
 # OS files
 .DS_Store
 .DS_Store?
+**/.DS_Store
 ._*
 .Spotlight-V100
 .Trashes
@@ -12,6 +13,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock 2.json
 .next/
 out/
 build/
@@ -43,3 +45,7 @@ pnpm-debug.log*
 
 # Project specific
 .gemini/
+.vercel/
+Resume_Crafter/
+~$*.docx
+.vercel

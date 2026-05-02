@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 export async function toggleFavoriteAction(recipeId: number) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -39,6 +39,7 @@ export async function toggleFavoriteAction(recipeId: number) {
     revalidatePath('/');
     return { success: true };
   } catch (error) {
+    console.error('Toggle favorite failed:', error);
     return { error: 'Database error.' };
   }
 }

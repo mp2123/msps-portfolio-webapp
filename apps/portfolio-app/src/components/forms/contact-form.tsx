@@ -38,7 +38,7 @@ export function ContactForm() {
         </div>
         <h3 className="text-xl font-bold text-white">Message Sent</h3>
         <p className="text-sm text-zinc-400 max-w-sm">
-          Thanks for reaching out! I'll review your message and get back to you shortly.
+          Thanks for reaching out! I&apos;ll review your message and get back to you shortly.
         </p>
       </div>
     );

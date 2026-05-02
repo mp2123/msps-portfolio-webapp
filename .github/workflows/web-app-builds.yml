@@ -1,0 +1,56 @@
+name: Web App Build Checks
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - ".github/workflows/web-app-builds.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**"
+      - ".github/workflows/web-app-builds.yml"
+
+jobs:
+  build:
+    name: Build ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - apps/portfolio-app
+          - apps/mixology-app
+          - apps/insurance-app
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/postgres?schema=public
+      NEXT_PUBLIC_SITE_URL: https://www.michaelspanico.com
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+      OPENAI_API_KEY: placeholder
+      GOOGLE_API_KEY: placeholder
+      GEMINI_API_KEY: placeholder
+      GOOGLE_GENERATIVE_AI_API_KEY: placeholder
+      PORTFOLIO_DEBUG_TOKEN: placeholder
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build

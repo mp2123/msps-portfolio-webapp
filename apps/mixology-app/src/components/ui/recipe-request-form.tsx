@@ -9,9 +9,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Send, GlassWater } from 'lucide-react';
 
+type RecipeRequestValues = {
+  name: string;
+  email: string;
+  spirit: string;
+  request: string;
+};
+
 export function RecipeRequestForm() {
   const [submitted, setSubmitted] = useState(false);
-  const form = useForm({
+  const form = useForm<RecipeRequestValues>({
     defaultValues: {
       name: '',
       email: '',
@@ -20,7 +27,7 @@ export function RecipeRequestForm() {
     },
   });
 
-  function onSubmit(values: any) {
+  function onSubmit(values: RecipeRequestValues) {
     console.log(values);
     setSubmitted(true);
   }

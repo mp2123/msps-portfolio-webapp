@@ -1,8 +1,7 @@
 // apps/mixology-app/src/components/ui/card-scanner.tsx
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { cn } from "@/lib/utils";
+import React, { useEffect, useRef } from 'react';
 import { ChevronsLeftRight } from "lucide-react";
 import { motion, useAnimationFrame, useMotionValue } from 'framer-motion';
 
@@ -25,7 +24,6 @@ const generateCode = (width: number, height: number, recipeName: string) => {
 };
 
 export const CardScanner = () => {
-  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
 
@@ -37,8 +35,6 @@ export const CardScanner = () => {
     isHovering: false,
     isStill: true,
   });
-
-  useEffect(() => { setMounted(true); }, []);
 
   const handleInteraction = (e: React.WheelEvent | React.MouseEvent) => {
     const { current: physics } = physicsRef;
@@ -68,7 +64,6 @@ export const CardScanner = () => {
   }, []);
 
   useAnimationFrame((time, delta) => {
-    if (!mounted) return;
     const { current: physics } = physicsRef;
 
     physics.userVelocity *= physics.friction;
@@ -88,10 +83,12 @@ export const CardScanner = () => {
     
     const scannerX = window.innerWidth / 2;
     const cards = containerRef.current?.querySelectorAll('.card-wrapper');
-    cards?.forEach((card: any) => {
+    cards?.forEach((card) => {
+      if (!(card instanceof HTMLElement)) return;
       const rect = card.getBoundingClientRect();
       const normal = card.querySelector('.card-normal');
       const ascii = card.querySelector('.card-ascii');
+      if (!(normal instanceof HTMLElement) || !(ascii instanceof HTMLElement)) return;
       if (normal && ascii && rect.left < scannerX + 10 && rect.right > scannerX - 10) {
           const intersect = ((scannerX - rect.left) / rect.width) * 100;
           normal.style.setProperty('--clip-right', `${intersect}%`);
@@ -102,8 +99,6 @@ export const CardScanner = () => {
       }
     });
   });
-
-  if (!mounted) return <div className="h-[500px] w-full bg-black" />;
 
   return (
     <div 
