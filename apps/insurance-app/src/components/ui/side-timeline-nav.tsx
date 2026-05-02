@@ -5,11 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
-  Search, 
   BookOpen, 
-  GraduationCap, 
   LayoutDashboard, 
-  MessageSquare,
   ShieldCheck,
   Zap
 } from 'lucide-react';

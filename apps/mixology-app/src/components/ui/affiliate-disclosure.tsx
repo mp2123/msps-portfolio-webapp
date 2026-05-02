@@ -1,7 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 export function AffiliateDisclosure() {
   return (
     <footer className="w-full py-12 border-t border-border/40 bg-background/50 backdrop-blur-md">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
@@ -14,19 +14,19 @@ interface BarBookDashboardProps {
 
 export function BarBookDashboard({ onSignInClick }: BarBookDashboardProps) {
   const [user, setUser] = useState<User | null>(null);
-  const supabase = createClient();
+  const auth = useMemo(() => createClient().auth, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [auth]);
 
   if (!user) {
     return (
@@ -64,7 +64,7 @@ export function BarBookDashboard({ onSignInClick }: BarBookDashboardProps) {
         </div>
         <div className="text-right">
           <p className="text-sm font-bold">{user.email}</p>
-          <Button variant="link" size="sm" className="text-primary text-[10px] uppercase tracking-widest p-0" onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+          <Button variant="link" size="sm" className="text-primary text-[10px] uppercase tracking-widest p-0" onClick={() => auth.signOut()}>Sign Out</Button>
         </div>
       </div>
 

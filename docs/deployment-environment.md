@@ -7,8 +7,8 @@ This file is the source-of-truth checklist for the four production-facing web ap
 | App | Local path | GitHub repo | Vercel project | Root directory | Framework | Production branch | Public status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Portfolio | `apps/portfolio-app` | `mp2123/msps-portfolio-webapp` | `msps_portfolio_webapp` | `apps/portfolio-app` | Next.js | `main` | Public |
-| Bartender / Mixology | `apps/mixology-app` | `mp2123/msps-portfolio-webapp` | `bartender_app` | `apps/mixology-app` | Next.js | `main` | Protected until green |
-| Life Insurance | `apps/insurance-app` | `mp2123/msps-portfolio-webapp` | `life-insurance-app` | `apps/insurance-app` | Next.js | `main` | Protected until green |
+| Bartender / Mixology | `apps/mixology-app` | `mp2123/msps-portfolio-webapp` | `bartender_app` | `apps/mixology-app` | Next.js | `main` | Public |
+| Life Insurance | `apps/insurance-app` | `mp2123/msps-portfolio-webapp` | `life-insurance-app` | `apps/insurance-app` | Next.js | `main` | Public |
 | OSU Equivalency | `Interactive_Dashboard` | `mp2123/osu-equivalency-engine` | `osu-equivalency-engine` | `Interactive_Dashboard` | Static | `main` | Public |
 
 ## Runtime Baseline
@@ -17,11 +17,14 @@ This file is the source-of-truth checklist for the four production-facing web ap
 - Each Next.js app has a local `.nvmrc` and `package.json#engines.node` aligned to Node `24.x`.
 - Keep app-level environment variables in Vercel. Do not commit real `.env` files.
 
-## Required Follow-up Checks
+## Current Hardening Status
 
-- Portfolio metadata must resolve social images against `https://www.michaelspanico.com` unless `NEXT_PUBLIC_SITE_URL` intentionally overrides it.
-- Bartender and life-insurance should stay behind Vercel Deployment Protection until production builds are green.
-- If bartender or life-insurance become public, confirm intentional domains and noindex/robots behavior before disabling protection.
+- Portfolio metadata resolves social images against `https://www.michaelspanico.com` unless `NEXT_PUBLIC_SITE_URL` intentionally overrides it.
+- Bartender, life-insurance, and portfolio are on green production deployments from `main`.
+- The GitHub Actions matrix runs `npm ci`, `npm run lint`, and `npm run build` for the three Next.js apps.
+- `npm ci` reports `found 0 vulnerabilities` for portfolio, bartender/mixology, and life-insurance after the May 2026 dependency hardening pass.
+- The bartender Vercel Preview environment has project-level `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Keep database URLs out of Preview until a separate preview database or schema boundary is intentionally configured.
 
 ## Preview Verification
 
@@ -34,6 +37,6 @@ On 2026-05-02, local build fixes were deployed through Vercel preview deployment
 
 Notes:
 
-- The bartender preview was deployed with deployment-scoped preview-only Supabase placeholder values because the Vercel Preview environment did not have `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` configured at project level.
-- Before relying on GitHub preview deployments, configure preview-safe Vercel environment variables for bartender and use a separate preview database before adding preview `DATABASE_URL` or `DIRECT_URL`.
-- The CLI preview deploys were run from the ecosystem repository root so Vercel would honor each project's configured Root Directory. Prefer GitHub-generated previews after these changes are committed and pushed.
+- The original bartender preview used deployment-scoped placeholder Supabase values before project-level Preview env vars were fixed.
+- On 2026-05-02, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` were copied from Production into the bartender Preview environment through the Vercel REST API because the CLI repeatedly returned `git_branch_required`.
+- The CLI preview deploys were run from the ecosystem repository root so Vercel would honor each project's configured Root Directory. Prefer GitHub-generated previews now that CI and Preview public env coverage are in place.

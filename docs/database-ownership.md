@@ -12,7 +12,7 @@ Supabase project `tozhwycrkpwvrmveykbm` is currently shared by the portfolio, ba
 
 ## Live Database Inventory
 
-Read-only inventory on 2026-05-02 found these app-owned `public` tables in Supabase:
+Read-only inventories on 2026-05-02 found these app-owned `public` tables in Supabase:
 
 | Table | RLS | Policies | Current owner signal |
 | --- | --- | ---: | --- |
@@ -22,6 +22,13 @@ Read-only inventory on 2026-05-02 found these app-owned `public` tables in Supab
 | `public.AffiliateLink` | Enabled | 1 | Mixology affiliate catalog |
 
 The portfolio and life-insurance Prisma models were not present in the live `public` schema during this inventory. Treat those app schemas as local/contracts until a migration plan intentionally deploys them.
+
+Additional read-only security checks on 2026-05-02 found:
+
+- No public views.
+- No public `security definer` functions.
+- No extensions installed in the exposed `public` schema.
+- No browser/client code references to service-role or secret Supabase keys.
 
 ## Rules
 
@@ -33,4 +40,4 @@ The portfolio and life-insurance Prisma models were not present in the live `pub
 
 ## Connector Status
 
-The Supabase connector can list the project, but project details/advisors required reauthentication during the May 2026 audit. Re-run security and performance advisors after refreshing Supabase auth.
+Supabase project-level advisor tools were not exposed in the May 2026 Codex session. A connector authorization retry also failed with `OAuth authorization request does not exist`. Re-run Supabase security and performance advisors after refreshing Supabase auth from a fresh connector prompt.

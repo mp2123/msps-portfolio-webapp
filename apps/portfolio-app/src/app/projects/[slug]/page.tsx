@@ -133,11 +133,26 @@ export default async function ProjectArtifactPage({ params }: PageProps) {
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
             components={{
-              h1: ({ node, ...props }) => <h1 className="border-b border-white/10 pb-4 text-3xl font-bold" {...props} />,
-              h2: ({ node, ...props }) => <h2 className="mt-12 text-2xl font-semibold text-cyan-50" {...props} />,
-              h3: ({ node, ...props }) => <h3 className="text-xl font-medium text-cyan-100" {...props} />,
-              a: ({ node, ...props }) => <a className="font-medium text-cyan-400 underline decoration-cyan-400/30 underline-offset-4 hover:decoration-cyan-400" {...props} />,
-              pre: ({ node, ...props }) => <pre className="overflow-x-auto rounded-xl border border-white/10 bg-black/50 p-4 shadow-inner" {...props} />,
+              h1: ({ node, ...props }) => {
+                void node;
+                return <h1 className="border-b border-white/10 pb-4 text-3xl font-bold" {...props} />;
+              },
+              h2: ({ node, ...props }) => {
+                void node;
+                return <h2 className="mt-12 text-2xl font-semibold text-cyan-50" {...props} />;
+              },
+              h3: ({ node, ...props }) => {
+                void node;
+                return <h3 className="text-xl font-medium text-cyan-100" {...props} />;
+              },
+              a: ({ node, ...props }) => {
+                void node;
+                return <a className="font-medium text-cyan-400 underline decoration-cyan-400/30 underline-offset-4 hover:decoration-cyan-400" {...props} />;
+              },
+              pre: ({ node, ...props }) => {
+                void node;
+                return <pre className="overflow-x-auto rounded-xl border border-white/10 bg-black/50 p-4 shadow-inner" {...props} />;
+              },
               code: ({ className, children, ...props }) => {
                 const match = /language-(\w+)/.exec(className || "");
                 return match ? (

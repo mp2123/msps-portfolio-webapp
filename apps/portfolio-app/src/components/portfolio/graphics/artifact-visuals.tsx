@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Database, Network, LineChart, TrendingUp, Music, AlertCircle, ShieldCheck } from "lucide-react";
+import { Network, TrendingUp, Music, ShieldCheck } from "lucide-react";
 
 interface ArtifactVisualsProps {
   projectid: string;

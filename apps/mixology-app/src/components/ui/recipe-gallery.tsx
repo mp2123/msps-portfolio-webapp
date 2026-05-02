@@ -2,6 +2,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { GlassWater, FileDown, Heart, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -89,7 +90,7 @@ export function RecipeGallery({ user, onSignInClick, initialFavorites }: RecipeG
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200" />
               <Card className="relative bg-black border-none overflow-hidden h-full flex flex-col">
                 <div className="h-48 w-full overflow-hidden relative">
-                  <img src={recipe.imageUrl} alt={recipe.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <Image src={recipe.imageUrl} alt={recipe.name} fill sizes="(min-width: 768px) 33vw, 100vw" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   <Button variant="ghost" size="icon" onClick={() => handleToggleFavorite(recipe.id)} className="absolute top-4 right-4 z-20 h-10 w-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 hover:bg-white/20 transition-all group/heart" disabled={isPending}>
                     <Heart className={cn("h-5 w-5 transition-all duration-300", favorites.includes(recipe.id) ? "fill-red-500 text-red-500 scale-110" : "text-white group-hover/heart:scale-110")} />
                   </Button>

@@ -11,7 +11,6 @@ import {
   ShoppingCart, 
   User, 
   Send,
-  Sparkles,
   BookMarked
 } from 'lucide-react';
 

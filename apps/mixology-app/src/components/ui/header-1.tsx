@@ -13,15 +13,15 @@ interface HeaderProps {
 
 export function Header({ onSignInClick }: HeaderProps) {
 	const [user, setUser] = React.useState<User | null>(null);
-	const supabase = createClient();
+	const auth = React.useMemo(() => createClient().auth, []);
 
 	React.useEffect(() => {
-		const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+		const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
 			setUser(session?.user ?? null);
 		});
-		supabase.auth.getUser().then(({ data: { user }}) => setUser(user));
+		auth.getUser().then(({ data: { user }}) => setUser(user));
 		return () => subscription.unsubscribe();
-	}, []);
+	}, [auth]);
 
 	const links = [
 		{ label: 'Cocktail Library', href: '#recipes' },
@@ -48,7 +48,7 @@ export function Header({ onSignInClick }: HeaderProps) {
 					{user ? (
 						<>
 							<span className="text-xs text-muted-foreground font-mono truncate max-w-[150px]">{user.email}</span>
-							<Button variant="outline" size="sm" onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+							<Button variant="outline" size="sm" onClick={() => auth.signOut()}>Sign Out</Button>
 						</>
 					) : (
 						<>

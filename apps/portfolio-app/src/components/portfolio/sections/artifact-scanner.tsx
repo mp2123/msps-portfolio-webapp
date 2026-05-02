@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { ArrowUpRight, ChevronsLeftRight } from "lucide-react";
-import { motion, useAnimationFrame, useMotionValue, useReducedMotion } from "framer-motion";
+import { useAnimationFrame, useReducedMotion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,9 +12,6 @@ import {
   type ArtifactScannerSignal,
 } from "@/content/portfolio";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
-
-const CARD_GAP = 28;
-const CARD_WIDTH_FALLBACK = 368;
 
 function buildSignalText(signal: ArtifactScannerSignal, columns = 54, rows = 18) {
   const source = [
@@ -53,7 +50,6 @@ export function ArtifactScanner() {
     sectionVisible: true,
     documentVisible: true,
   });
-  const animationBudgetRef = useRef(0);
 
   const items = useMemo(
     () =>

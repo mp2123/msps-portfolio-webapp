@@ -1,6 +1,6 @@
 // apps/mixology-app/src/app/page.tsx
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
 import { Header } from "@/components/ui/header-1";
@@ -23,11 +23,11 @@ export default function DemoOne() {
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const initialFavorites: number[] = [];
-  const supabase = createClient();
+  const auth = useMemo(() => createClient().auth, []);
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await auth.getUser();
       setUser(user);
       if (user) {
         // Here you would fetch the user's favorites from your DB
@@ -37,7 +37,7 @@ export default function DemoOne() {
       }
     };
     getUser();
-  }, []);
+  }, [auth]);
 
   return (
     <>

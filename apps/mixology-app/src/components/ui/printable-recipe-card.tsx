@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { GlassWater, Flame, Info } from 'lucide-react';
+import Image from 'next/image';
+import { GlassWater, Info } from 'lucide-react';
 
 interface RecipeCardProps {
   recipe: {
@@ -64,7 +65,7 @@ export const PrintableRecipeCard = React.forwardRef<HTMLDivElement, RecipeCardPr
 
           <div className="space-y-6">
             <div className="aspect-square rounded-2xl overflow-hidden border-4 border-black shadow-2xl">
-              <img src={recipe.imageUrl} alt={recipe.name} className="w-full h-full object-cover" />
+              <Image src={recipe.imageUrl} alt={recipe.name} width={500} height={500} className="w-full h-full object-cover" />
             </div>
             <div className="bg-black text-white p-6 rounded-xl space-y-2">
               <p className="text-[10px] uppercase font-bold tracking-widest text-amber-400 flex items-center gap-2">

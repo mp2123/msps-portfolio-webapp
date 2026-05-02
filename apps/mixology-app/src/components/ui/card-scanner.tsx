@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { ChevronsLeftRight } from "lucide-react";
 import { motion, useAnimationFrame, useMotionValue } from 'framer-motion';
 
@@ -145,7 +146,13 @@ export const CardScanner = () => {
         {[...recipes, ...recipes, ...recipes].map((recipe, i) => (
           <a href="#recipes" key={i} className="card-wrapper group/card">
             <div className="card card-normal">
-              <img src={recipe.imageUrl} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500" alt={recipe.name} />
+              <Image
+                src={recipe.imageUrl}
+                className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                alt={recipe.name}
+                fill
+                sizes="400px"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
               <div className="absolute bottom-6 left-6 text-white">
                 <p className="text-xl font-black uppercase tracking-tighter">{recipe.name}</p>

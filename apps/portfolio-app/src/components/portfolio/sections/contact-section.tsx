@@ -13,7 +13,6 @@ import { ContactModal } from "@/components/forms/contact-modal";
 import { Button } from "@/components/ui/button";
 import { trackPortfolioEvent } from "@/lib/portfolio-analytics";
 import { openPortfolioAssistant } from "@/lib/portfolio-assistant-ui";
-import { scrollToPortfolioSection } from "@/lib/portfolio-navigation";
 import { contactProfile } from "@/content/portfolio";
 
 function handleTrackedNavigation(

@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { ChevronsLeftRight } from "lucide-react";
 import { motion, useAnimationFrame, useMotionValue } from 'framer-motion';
 
@@ -145,7 +146,13 @@ export const CardScanner = () => {
         {[...policies, ...policies, ...policies].map((policy, i) => (
           <a href="#dashboard" key={i} className="card-wrapper group/card">
             <div className="card card-normal">
-              <img src={policy.imageUrl} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500" alt={policy.name} />
+              <Image
+                src={policy.imageUrl}
+                className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                alt={policy.name}
+                fill
+                sizes="400px"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
               <div className="absolute bottom-6 left-6 text-white">
                 <p className="text-xl font-black uppercase tracking-tighter">{policy.name}</p>

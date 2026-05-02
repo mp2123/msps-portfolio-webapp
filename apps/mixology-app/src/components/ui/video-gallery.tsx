@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Image from 'next/image';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, ExternalLink } from 'lucide-react';
 
 const videos = [
@@ -46,9 +47,11 @@ export function VideoGallery() {
           >
             <Card className="group overflow-hidden border-border/40 bg-muted/20 backdrop-blur-sm cursor-pointer">
               <div className="relative h-48 w-full overflow-hidden">
-                <img 
+                <Image
                   src={video.thumbnail} 
                   alt={video.title}
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

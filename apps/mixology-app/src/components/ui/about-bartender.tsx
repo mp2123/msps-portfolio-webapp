@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Instagram, Youtube, Mail, MapPin } from 'lucide-react';
+import Image from 'next/image';
+import { Instagram, Youtube, Mail } from 'lucide-react';
 
 export function AboutTheBartender() {
   return (
@@ -17,9 +17,11 @@ export function AboutTheBartender() {
         >
           <div className="absolute -inset-4 bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
-            <img 
+            <Image
               src="https://images.unsplash.com/photo-1574096079513-d8259312b785?auto=format&fit=crop&q=80&w=800" 
               alt="The Bartender"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="h-full w-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
             />
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/40 to-transparent p-8">
