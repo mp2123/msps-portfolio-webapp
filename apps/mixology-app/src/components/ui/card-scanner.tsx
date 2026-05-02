@@ -17,10 +17,18 @@ const generateCode = (width: number, height: number, recipeName: string) => {
   const library = [ `// RECIPE_MODULE: ${recipeName.toUpperCase().replace(/\s/g, '_')}`, "const SERVE_IMMEDIATELY = true;", "const CHILL_GLASS = 'coupe';", "function calculateDilution(ice, time) { return ice.quality * time; }" ];
   let flow = library.join(" ").replace(/\s+/g, " ").trim();
   const totalChars = width * height;
-  while (flow.length < totalChars + width) { flow += " " + library[Math.floor(Math.random() * library.length)]; }
+  while (flow.length < totalChars + width) { flow += " " + library[hashCode(`${recipeName}:${flow.length}`) % library.length]; }
   let out = ""; let offset = 0;
   for (let row = 0; row < height; row++) { out += flow.slice(offset, offset + width) + (row < height - 1 ? "\n" : ""); offset += width; }
   return out;
+};
+
+const hashCode = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = Math.imul(31, hash) + value.charCodeAt(i);
+  }
+  return hash >>> 0;
 };
 
 export const CardScanner = () => {

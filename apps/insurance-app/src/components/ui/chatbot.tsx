@@ -6,29 +6,28 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, X, Send, Bot, User, Settings, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type ChatProvider = 'google' | 'openai';
 
-function readStoredProvider(): ChatProvider {
-  if (typeof window === 'undefined') return 'google';
-  const savedProvider = localStorage.getItem('insurance_study_provider');
-  return savedProvider === 'openai' ? 'openai' : 'google';
-}
-
-function readStoredApiKey() {
-  if (typeof window === 'undefined') return '';
-  return localStorage.getItem('insurance_study_api_key') ?? '';
-}
-
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [input, setInput] = useState('');
-  const [apiKey, setApiKey] = useState(readStoredApiKey);
-  const [provider, setProvider] = useState<ChatProvider>(readStoredProvider);
+  const [apiKey, setApiKey] = useState('');
+  const [provider, setProvider] = useState<ChatProvider>('google');
+
+  useEffect(() => {
+    const loadStoredSettings = window.setTimeout(() => {
+      const savedProvider = localStorage.getItem('insurance_study_provider');
+      setProvider(savedProvider === 'openai' ? 'openai' : 'google');
+      setApiKey(localStorage.getItem('insurance_study_api_key') ?? '');
+    }, 0);
+
+    return () => window.clearTimeout(loadStoredSettings);
+  }, []);
 
   const saveSettings = (key: string, prov: ChatProvider) => {
     localStorage.setItem('insurance_study_api_key', key);

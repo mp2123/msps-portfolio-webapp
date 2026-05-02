@@ -6,33 +6,34 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, X, Send, Bot, User, Settings, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type ChatProvider = 'google' | 'openai';
-
-function readStoredProvider(): ChatProvider {
-  if (typeof window === 'undefined') return 'google';
-  const savedProvider = localStorage.getItem('insurance_study_provider');
-  return savedProvider === 'openai' ? 'openai' : 'google';
-}
-
-function readStoredApiKey() {
-  if (typeof window === 'undefined') return '';
-  return localStorage.getItem('insurance_study_api_key') ?? '';
-}
+const API_KEY_STORAGE_KEY = 'mixology_assistant_api_key';
+const PROVIDER_STORAGE_KEY = 'mixology_assistant_provider';
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [input, setInput] = useState('');
-  const [apiKey, setApiKey] = useState(readStoredApiKey);
-  const [provider, setProvider] = useState<ChatProvider>(readStoredProvider);
+  const [apiKey, setApiKey] = useState('');
+  const [provider, setProvider] = useState<ChatProvider>('google');
+
+  useEffect(() => {
+    const loadStoredSettings = window.setTimeout(() => {
+      const savedProvider = localStorage.getItem(PROVIDER_STORAGE_KEY);
+      setProvider(savedProvider === 'openai' ? 'openai' : 'google');
+      setApiKey(localStorage.getItem(API_KEY_STORAGE_KEY) ?? '');
+    }, 0);
+
+    return () => window.clearTimeout(loadStoredSettings);
+  }, []);
 
   const saveSettings = (key: string, prov: ChatProvider) => {
-    localStorage.setItem('insurance_study_api_key', key);
-    localStorage.setItem('insurance_study_provider', prov);
+    localStorage.setItem(API_KEY_STORAGE_KEY, key);
+    localStorage.setItem(PROVIDER_STORAGE_KEY, prov);
     setShowSettings(false);
   };
 
@@ -95,7 +96,7 @@ export function Chatbot() {
                     <Bot className="h-6 w-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-bold tracking-tight">AI Study Guide</CardTitle>
+                    <CardTitle className="text-sm font-bold tracking-tight">AI Bartender</CardTitle>
                     <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                       {provider === 'google' ? 'Gemini AI' : 'OpenAI'}
@@ -189,7 +190,7 @@ export function Chatbot() {
                     >
                       <Bot className="h-12 w-12 text-muted-foreground/30 mb-4" />
                       <p className="text-sm text-muted-foreground">
-                        Hi! I&apos;m your Arizona 2026 Insurance Assistant. How can I help you study today?
+                        Hi! I&apos;m your mixology assistant. Ask me for cocktail recipes, substitutions, bar setup, or technique help.
                       </p>
                     </motion.div>
                   )}
@@ -240,7 +241,7 @@ export function Chatbot() {
               <CardFooter className="border-t border-border/40 bg-muted/20 p-4">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-3">
                   <Input
-                    placeholder="Ask about MIB, Term, Universal Life..."
+                    placeholder="Ask about cocktails, spirits, techniques..."
                     value={input}
                     onChange={handleInputChange}
                     className="flex-1 rounded-full border-border/50 bg-background/50 focus-visible:ring-primary/20"

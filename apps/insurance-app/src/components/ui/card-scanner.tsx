@@ -17,10 +17,18 @@ const generateCode = (width: number, height: number, policyName: string) => {
   const library = [ `// POLICY_MODULE: ${policyName.toUpperCase().replace(/\s/g, '_')}`, "const COVERAGE_AMT = 500000;", "const PREMIUM_FREQ = 'MONTHLY';", "const UNDERWRITING_CLASS = 'PREFERRED';" ];
   let flow = library.join(" ").replace(/\s+/g, " ").trim();
   const totalChars = width * height;
-  while (flow.length < totalChars + width) { flow += " " + library[Math.floor(Math.random() * library.length)]; }
+  while (flow.length < totalChars + width) { flow += " " + library[hashCode(`${policyName}:${flow.length}`) % library.length]; }
   let out = ""; let offset = 0;
   for (let row = 0; row < height; row++) { out += flow.slice(offset, offset + width) + (row < height - 1 ? "\n" : ""); offset += width; }
   return out;
+};
+
+const hashCode = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = Math.imul(31, hash) + value.charCodeAt(i);
+  }
+  return hash >>> 0;
 };
 
 export const CardScanner = () => {
