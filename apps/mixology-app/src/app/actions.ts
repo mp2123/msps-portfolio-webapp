@@ -13,7 +13,24 @@ export async function toggleFavoriteAction(recipeId: number) {
     return { error: 'You must be logged in to favorite recipes.' };
   }
 
+  if (!user.email) {
+    return { error: 'Your account needs an email address before favoriting recipes.' };
+  }
+
   try {
+    await prisma.user.upsert({
+      where: {
+        id: user.id,
+      },
+      update: {
+        email: user.email,
+      },
+      create: {
+        id: user.id,
+        email: user.email,
+      },
+    });
+
     const existingFavorite = await prisma.favorite.findFirst({
       where: {
         userId: user.id,

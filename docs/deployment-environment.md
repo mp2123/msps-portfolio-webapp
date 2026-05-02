@@ -28,6 +28,9 @@ This file is the source-of-truth checklist for the four production-facing web ap
 - Source and seed-data Unsplash image URLs were checked on 2026-05-02; every referenced Unsplash URL returned HTTP 200.
 - The bartender Vercel Preview environment has project-level `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - Keep database URLs out of Preview until a separate preview database or schema boundary is intentionally configured.
+- Supabase Security Advisor was rerun on 2026-05-02 after RLS hardening and reports no findings.
+- Supabase Performance Advisor no longer reports the original missing `Favorite` foreign-key indexes or RLS initplan warnings after migration `20260502114040_harden_rls_and_indexes.sql`.
+- Supabase Performance Advisor reports the two new `Favorite` indexes as unused immediately after creation; this is expected while the live `User` and `Favorite` tables have no rows and should be rechecked after authenticated bartender usage creates favorite rows.
 
 ## Preview Verification
 
